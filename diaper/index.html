@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Definitive Guide to a Leak-Proof Diaper</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals (Beige, Soft Brown, Muted Teal) -->
+    <!-- Application Structure Plan: The SPA is structured into three core, task-oriented sections: 1) 'Get the Right Fit', 2) 'Master the Technique', and 3) 'Troubleshoot Leaks'. This non-linear, thematic structure was chosen over the report's original sections to align with a caregiver's immediate needs. A user can quickly jump to their specific problem (e.g., "Why is it leaking from the back?") without reading linearly. The navigation is a sticky header for easy access. Key interactions include an interactive fit checklist, a step-by-step visual guide for application, and a diagnostic tool for leaks that updates the main content area. This design prioritizes quick problem-solving and skill-building for a stressed, time-poor user. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Diaper Fit Checklist (Table 1) -> Goal: Inform/Organize -> Viz/Method: Interactive HTML checklist with toggles/buttons -> Interaction: User clicks checklist items to see "Good Fit" vs "Red Flag" details dynamically displayed. Justification: More engaging and less overwhelming than a static table. Method: HTML/CSS/JS.
+        - Report Info: Application Steps (Section 2) -> Goal: Inform/Organize -> Viz/Method: A horizontal, numbered-step process diagram. -> Interaction: Clicking on a step number reveals detailed instructions and a visual cue. Justification: Breaks down a complex process into manageable, sequential chunks. Method: HTML/Tailwind CSS/JS.
+        - Report Info: Leak Troubleshooting (Table 2) -> Goal: Organize/Relationships -> Viz/Method: An interactive "Leak Detective" diagnostic tool. -> Interaction: User clicks on a leak location (e.g., "Back," "Legs") on a simple diagram or button list, and the app displays the corresponding causes and solutions. Justification: Provides immediate, targeted answers to the user's most pressing question. Method: HTML/JS.
+        - Report Info: Gender/Special Cases (Sections 3.2, 3.4) -> Goal: Inform -> Viz/Method: Tabbed content sections. -> Interaction: User clicks tabs for "Boys," "Girls," "Tummy Sleepers," etc., to reveal specific advice. Justification: Organizes secondary but important information cleanly without cluttering the main view. Method: HTML/JS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #4A4A4A;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #00796B;
+            border-bottom-color: #00796B;
+        }
+        .card {
+            background-color: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+        .btn {
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .btn-primary {
+            background-color: #00796B;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #00695C;
+        }
+        .btn-secondary {
+            background-color: #E0F2F1;
+            color: #00796B;
+        }
+        .btn-secondary.active, .btn-secondary:hover {
+            background-color: #B2DFDB;
+        }
+        .step-item.active .step-circle {
+            background-color: #00796B;
+            color: white;
+            border-color: #00796B;
+        }
+        .step-item.active .step-title {
+            color: #00796B;
+            font-weight: 600;
+        }
+        .step-circle {
+            transition: all 0.3s;
+        }
+        .troubleshoot-btn.active {
+            background-color: #00796B;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 121, 107, 0.3);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="sticky top-0 bg-white/80 backdrop-blur-lg shadow-sm z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-gray-800">Leak-Proof Diapering</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#fit" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Get the Right Fit</a>
+                        <a href="#technique" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Master the Technique</a>
+                        <a href="#troubleshoot" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700">Troubleshoot Leaks</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <select id="mobile-nav" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm rounded-md">
+                        <option value="#fit">Get the Right Fit</option>
+                        <option value="#technique">Master the Technique</option>
+                        <option value="#troubleshoot">Troubleshoot Leaks</option>
+                    </select>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        <section class="text-center mb-12 md:mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 mb-4">End Diaper Leaks for Good</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600">This interactive guide transforms the expert report on preventing diaper leaks into simple, actionable steps. Master the three pillars of leak prevention: the right **product**, the right **process**, and the right **adjustments**.</p>
+        </section>
+
+        <!-- Section 1: Get the Right Fit -->
+        <section id="fit" class="mb-16 scroll-mt-20">
+            <div class="text-center mb-10">
+                <span class="text-sm font-semibold uppercase text-teal-700">Pillar 1</span>
+                <h3 class="text-2xl md:text-3xl font-bold text-gray-800 mt-1">Get the Right Fit</h3>
+                <p class="max-w-2xl mx-auto mt-3 text-gray-600">An incorrectly sized diaper is the #1 cause of leaks. Use this interactive checklist to perform a multi-point inspection and ensure a perfect, gap-free fit for your baby.</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8 items-start">
+                <div class="card p-6">
+                    <h4 class="font-bold text-lg mb-4 text-gray-800">The Ultimate Fit Checklist</h4>
+                    <div id="fit-checklist" class="space-y-3">
+                        <!-- Checklist items will be injected by JS -->
+                    </div>
+                </div>
+                <div id="fit-details" class="card p-6 sticky top-24">
+                    <!-- Details will be injected by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Master the Technique -->
+        <section id="technique" class="mb-16 scroll-mt-20">
+            <div class="text-center mb-10">
+                <span class="text-sm font-semibold uppercase text-teal-700">Pillar 2</span>
+                <h3 class="text-2xl md:text-3xl font-bold text-gray-800 mt-1">Master the Technique</h3>
+                <p class="max-w-2xl mx-auto mt-3 text-gray-600">A perfect diaper change is a science. Follow this step-by-step guide to create a secure, three-point seal every time, turning a routine chore into a proactive skill.</p>
+            </div>
+            <div class="card p-6 md:p-8">
+                <div class="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-8 mb-8" id="technique-steps-nav">
+                    <!-- Step navigation will be injected by JS -->
+                </div>
+                <div id="technique-details-content" class="grid md:grid-cols-5 gap-8 items-center">
+                    <!-- Step details will be injected by JS -->
+                </div>
+            </div>
+        </section>
+        
+        <!-- Section 3: Troubleshoot Leaks -->
+        <section id="troubleshoot" class="scroll-mt-20">
+            <div class="text-center mb-10">
+                <span class="text-sm font-semibold uppercase text-teal-700">Pillar 3</span>
+                <h3 class="text-2xl md:text-3xl font-bold text-gray-800 mt-1">Troubleshoot Leaks</h3>
+                <p class="max-w-2xl mx-auto mt-3 text-gray-600">Persistent leaks require a targeted solution. Use the "Leak Detective" tool to diagnose the problem based on its location and get expert strategies to solve it.</p>
+            </div>
+            <div class="card p-6 md:p-8">
+                <h4 class="text-lg font-bold text-center mb-6 text-gray-800">Leak Detective: Where is the leak coming from?</h4>
+                <div class="flex flex-wrap justify-center gap-3 mb-8" id="troubleshoot-buttons">
+                    <!-- Troubleshoot buttons injected by JS -->
+                </div>
+                <div id="troubleshoot-results">
+                    <!-- Results injected by JS -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+    <footer class="bg-gray-100 mt-16">
+        <div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-gray-500 text-sm">
+            <p>&copy; 2024 Interactive Diapering Guide. All rights reserved.</p>
+            <p class="mt-1">Synthesized from "The Definitive Guide to a Leak-Proof Diaper."</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const app = {
+                fitChecklistData: [
+                    { id: 'waistband', title: 'Waistband Fit', good: 'Snug, but two fingers fit easily under the waistband just below the belly button.', bad: 'Cannot fit two fingers under the waistband; or, the waistband is sagging and loose.' },
+                    { id: 'tabs', title: 'Tab Position', good: 'Tabs fasten symmetrically near the center of the front panel.', bad: 'Tabs overlap each other (too big) or are very far apart on the hips (too small).' },
+                    { id: 'legGaps', title: 'Leg Gaps', good: 'Elastic cuffs are snug against the thighs with no visible gaps.', bad: 'Visible gaps are present around the leg openings, especially during movement.' },
+                    { id: 'coverage', title: 'Bottom Coverage', good: 'The diaper completely covers the baby\'s entire bottom.', bad: 'The baby\'s buttocks are partially exposed or "peeking out".' },
+                    { id: 'redMarks', title: 'Red Marks', good: 'Skin is clear of any red marks or indentations after diaper removal.', bad: 'Red marks are visible on the tummy or thighs from the diaper\'s elastic.' },
+                    { id: 'performance', title: 'Performance', good: 'Leaks are rare and typically attributable to an unusual event (e.g., diarrhea).', bad: 'Frequent leaks or "blowouts" occur despite proper application.' }
+                ],
+
+                techniqueStepsData: [
+                    { id: 'prep', title: 'Preparation', icon: '📦', description: 'Gather all supplies first: clean diaper, wipes, and cream. Place the open, clean diaper under the baby before removing the dirty one. This creates a protective barrier.' },
+                    { id: 'clean', title: 'Clean Thoroughly', icon: '🧼', description: 'Use the front of the dirty diaper for a first wipe. Then, clean the entire area with wipes, always moving from front to back, especially for girls, to prevent infection.' },
+                    { id: 'dry', title: 'Dry & Protect', icon: '💨', description: 'Pat the skin completely dry with a soft cloth to prevent diaper rash. Apply a thick layer of barrier cream if needed.' },
+                    { id: 'position', title: 'Position & Secure', icon: '🎯', description: 'Lift baby\'s bottom to center the clean diaper underneath, with the back edge at their navel. Pull the front panel up flat onto their belly.' },
+                    { id: 'seal', title: 'Create the Seal', icon: '🔒', description: 'Fasten tabs symmetrically for a snug fit (use the "Two-Finger Rule"). **Crucially, run a finger along each leg opening to flare out the elastic ruffles.** This is the most vital step to prevent side leaks.' }
+                ],
+                
+                troubleshootData: {
+                    back: { title: 'Up the Back ("Blowout")', icon: '⬆️', causes: 'Gap at back waistband; Diaper positioned too low; Diaper is too small.', solution: 'Ensure the back of the diaper is pulled up slightly higher than the front. Fasten tabs at a slight downward angle to cinch the back. If it persists, size up or choose a brand with a "blowout barrier" pocket.' },
+                    legs: { title: 'Around the Legs/Thighs', icon: '↔️', causes: 'Inner leg cuffs are tucked in; Gaps around thighs (diaper is too large).', solution: 'The #1 fix: ALWAYS run a finger around each leg opening to flare the cuffs out after every change. If gaps persist, try a smaller size or a different brand for a snugger leg fit.' },
+                    front: { title: 'At the Front/Tummy', icon: '💧', causes: 'Loose waistband; Penis pointing up (for boys); Tummy sleeping position.', solution: 'Ensure waistband is snug. For boys, it is ESSENTIAL to point the penis down before closing the diaper. For tummy sleepers, position the front panel slightly higher.' },
+                    overnight: { title: 'Overnight Saturation', icon: '🌙', causes: 'Diaper\'s absorbency capacity is exceeded over a long period.', solution: 'Use a dedicated, more absorbent overnight diaper. You can also try going up one size just for nighttime or adding an absorbent "booster pad" inside the diaper.' }
+                },
+
+                init() {
+                    this.setupSmoothScrolling();
+                    this.setupMobileNav();
+                    this.renderFitChecklist();
+                    this.renderTechniqueSteps();
+                    this.renderTroubleshoot();
+                    this.observeSections();
+                },
+                
+                setupSmoothScrolling() {
+                    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                        anchor.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            const targetId = this.getAttribute('href');
+                            const targetElement = document.querySelector(targetId);
+                            if(targetElement) {
+                                targetElement.scrollIntoView({ behavior: 'smooth' });
+                                if (window.history.pushState) {
+                                    window.history.pushState(null, null, targetId);
+                                } else {
+                                    window.location.hash = targetId;
+                                }
+                            }
+                        });
+                    });
+                },
+
+                setupMobileNav() {
+                    const mobileNav = document.getElementById('mobile-nav');
+                    mobileNav.addEventListener('change', (e) => {
+                        window.location.hash = e.target.value;
+                    });
+                },
+
+                observeSections() {
+                    const sections = document.querySelectorAll('section[id]');
+                    const navLinks = document.querySelectorAll('.nav-link');
+                    
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                navLinks.forEach(link => {
+                                    link.classList.toggle('active', link.getAttribute('href') === `#${entry.target.id}`);
+                                });
+                            }
+                        });
+                    }, { rootMargin: '-50% 0px -50% 0px' });
+
+                    sections.forEach(section => observer.observe(section));
+                },
+
+                renderFitChecklist() {
+                    const checklistContainer = document.getElementById('fit-checklist');
+                    const detailsContainer = document.getElementById('fit-details');
+
+                    this.fitChecklistData.forEach((item, index) => {
+                        const button = document.createElement('button');
+                        button.className = `w-full text-left p-3 rounded-lg btn btn-secondary ${index === 0 ? 'active' : ''}`;
+                        button.textContent = item.title;
+                        button.dataset.id = item.id;
+                        checklistContainer.appendChild(button);
+                    });
+
+                    checklistContainer.addEventListener('click', (e) => {
+                        if (e.target.tagName === 'BUTTON') {
+                            const id = e.target.dataset.id;
+                            this.updateFitDetails(id);
+                            checklistContainer.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+                            e.target.classList.add('active');
+                        }
+                    });
+
+                    this.updateFitDetails(this.fitChecklistData[0].id);
+                },
+
+                updateFitDetails(id) {
+                    const data = this.fitChecklistData.find(item => item.id === id);
+                    const detailsContainer = document.getElementById('fit-details');
+                    detailsContainer.innerHTML = `
+                        <h5 class="font-bold text-lg mb-4 text-gray-800">${data.title}</h5>
+                        <div class="space-y-4">
+                            <div>
+                                <h6 class="font-semibold text-green-700 flex items-center">
+                                    <span class="text-xl mr-2">✅</span> Good Fit (Green Light)
+                                </h6>
+                                <p class="text-gray-600 pl-8">${data.good}</p>
+                            </div>
+                            <div>
+                                <h6 class="font-semibold text-red-700 flex items-center">
+                                    <span class="text-xl mr-2">🚩</span> Time to Size Up (Red Flag)
+                                </h6>
+                                <p class="text-gray-600 pl-8">${data.bad}</p>
+                            </div>
+                        </div>
+                    `;
+                },
+
+                renderTechniqueSteps() {
+                    const navContainer = document.getElementById('technique-steps-nav');
+                    this.techniqueStepsData.forEach((step, index) => {
+                        const stepEl = document.createElement('div');
+                        stepEl.className = `step-item flex-1 text-center cursor-pointer p-2 rounded-lg ${index === 0 ? 'active' : ''}`;
+                        stepEl.dataset.id = step.id;
+                        stepEl.innerHTML = `
+                            <div class="step-circle w-10 h-10 mx-auto rounded-full border-2 border-gray-300 flex items-center justify-center text-lg font-bold text-gray-500 bg-gray-50">${step.icon}</div>
+                            <p class="step-title mt-2 text-sm font-medium text-gray-600">${step.title}</p>
+                        `;
+                        navContainer.appendChild(stepEl);
+                    });
+
+                    navContainer.addEventListener('click', (e) => {
+                        const stepItem = e.target.closest('.step-item');
+                        if (stepItem) {
+                            const id = stepItem.dataset.id;
+                            this.updateTechniqueDetails(id);
+                            navContainer.querySelectorAll('.step-item').forEach(item => item.classList.remove('active'));
+                            stepItem.classList.add('active');
+                        }
+                    });
+                    
+                    this.updateTechniqueDetails(this.techniqueStepsData[0].id);
+                },
+
+                updateTechniqueDetails(id) {
+                    const data = this.techniqueStepsData.find(step => step.id === id);
+                    const contentContainer = document.getElementById('technique-details-content');
+                    contentContainer.innerHTML = `
+                        <div class="md:col-span-2 flex items-center justify-center text-8xl">${data.icon}</div>
+                        <div class="md:col-span-3">
+                            <h5 class="font-bold text-xl mb-3 text-gray-800">${data.title}</h5>
+                            <p class="text-gray-600 text-base leading-relaxed">${data.description.replace(/\*\*(.*?)\*\*/g, '<strong class="text-teal-800">$1</strong>')}</p>
+                        </div>
+                    `;
+                },
+
+                renderTroubleshoot() {
+                    const buttonsContainer = document.getElementById('troubleshoot-buttons');
+                    Object.keys(this.troubleshootData).forEach((key, index) => {
+                        const data = this.troubleshootData[key];
+                        const button = document.createElement('button');
+                        button.className = `troubleshoot-btn p-3 px-4 rounded-full text-sm font-semibold btn bg-gray-100 text-gray-700 hover:bg-gray-200 ${index === 0 ? 'active' : ''}`;
+                        button.dataset.key = key;
+                        button.innerHTML = `<span class="mr-2">${data.icon}</span> ${data.title}`;
+                        buttonsContainer.appendChild(button);
+                    });
+
+                    buttonsContainer.addEventListener('click', (e) => {
+                        const button = e.target.closest('.troubleshoot-btn');
+                        if (button) {
+                            const key = button.dataset.key;
+                            this.updateTroubleshootResults(key);
+                            buttonsContainer.querySelectorAll('.troubleshoot-btn').forEach(btn => btn.classList.remove('active'));
+                            button.classList.add('active');
+                        }
+                    });
+
+                    this.updateTroubleshootResults(Object.keys(this.troubleshootData)[0]);
+                },
+
+                updateTroubleshootResults(key) {
+                    const data = this.troubleshootData[key];
+                    const resultsContainer = document.getElementById('troubleshoot-results');
+                    resultsContainer.innerHTML = `
+                        <div class="bg-teal-50/50 p-6 rounded-lg border border-teal-100">
+                            <h5 class="font-bold text-xl mb-4 text-teal-900 flex items-center">${data.title}</h5>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <h6 class="font-semibold text-gray-700 mb-2">Primary Cause(s)</h6>
+                                    <p class="text-gray-600">${data.causes}</p>
+                                </div>
+                                <div>
+                                    <h6 class="font-semibold text-teal-800 mb-2">Solution</h6>
+                                    <p class="text-gray-600">${data.solution.replace(/#1 fix:|ALWAYS|ESSENTIAL/g, '<strong class="text-red-600">$&</strong>')}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            };
+
+            app.init();
+        });
+    </script>
+</body>
+</html>

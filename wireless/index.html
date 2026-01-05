@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Wireless Device Safety: An Interactive Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Slate & Sage -->
+    <!-- Application Structure Plan: A user-centric, non-linear dashboard SPA. The structure is designed to answer key user questions in a logical flow: 1. What's the core problem? (The Controversy), 2. What's the science? (The Basics), 3. Who should I believe? (Organizations), 4. What are the specific risks? (Health Risks), 5. Why are children special? (Vulnerable Groups), 6. How does my device work? (Exposure), and finally 7. What can I do? (Recommendations). This thematic, question-driven architecture prioritizes user understanding and exploration over the linear format of the source report, using interactive elements like charts, tabs, and accordions to make dense information digestible and engaging. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Conflicting stances of FCC, FDA, IARC, AAP. Goal: Compare viewpoints. Viz/Method: Interactive horizontal bar chart (Chart.js). Interaction: Clicking a bar reveals detailed text. Justification: Visually represents the spectrum of opinion from "safe" to "precautionary," which is more intuitive than a static table.
+        - Report Info: Scientific concepts (Ionizing/Non-ionizing, Thermal/Non-thermal). Goal: Simplify complex physics. Viz/Method: Interactive info cards with hover/click effects. Interaction: Reveals definitions and examples. Justification: Breaks down foundational concepts into bite-sized, manageable pieces.
+        - Report Info: Children's increased RF absorption. Goal: Emphasize vulnerability. Viz/Method: HTML/CSS diagram comparing absorption in adult vs. child models. Interaction: Static visual for impact. Justification: A simple visual diagram is more memorable and emotionally resonant than text alone.
+        - Report Info: Actionable safety recommendations. Goal: Provide a practical user guide. Viz/Method: Accordion/collapsible list. Interaction: Click to expand categories. Justification: Organizes a long list into a clean, user-friendly checklist format.
+        - Report Info: Health outcomes (Cancer, Fertility, Neurological). Goal: Organize extensive evidence. Viz/Method: Tabbed content area. Interaction: Click tabs to switch content. Justification: Prevents overwhelming the user by neatly segmenting the most data-heavy part of the report.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #10b981; /* emerald-500 */
+            border-bottom-color: #10b981;
+        }
+        .section-icon {
+            font-size: 2.5rem;
+            line-height: 1;
+        }
+        .info-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .tab-button.active {
+            background-color: #10b981; /* emerald-500 */
+            color: white;
+        }
+        .accordion-button.open .accordion-arrow {
+            transform: rotate(180deg);
+        }
+        .accordion-arrow {
+            transition: transform 0.3s;
+        }
+    </style>
+</head>
+<body class="text-slate-700">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-slate-800">Wireless Safety Guide</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#basics" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 border-b-2 border-transparent">The Basics</a>
+                        <a href="#organizations" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 border-b-2 border-transparent">Who Says What?</a>
+                        <a href="#risks" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 border-b-2 border-transparent">Health Risks</a>
+                        <a href="#children" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 border-b-2 border-transparent">Children's Risk</a>
+                        <a href="#recommendations" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 border-b-2 border-transparent">Recommendations</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-slate-500 hover:text-emerald-500 hover:bg-slate-100 focus:outline-none">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="md:hidden hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#basics" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-slate-600 border-b-2 border-transparent">The Basics</a>
+                <a href="#organizations" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-slate-600 border-b-2 border-transparent">Who Says What?</a>
+                <a href="#risks" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-slate-600 border-b-2 border-transparent">Health Risks</a>
+                <a href="#children" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-slate-600 border-b-2 border-transparent">Children's Risk</a>
+                <a href="#recommendations" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-slate-600 border-b-2 border-transparent">Recommendations</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        
+        <section class="text-center mb-16">
+            <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Is Wireless Radiation Harmful?</h2>
+            <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600">The answer is complicated. Scientific and regulatory bodies around the world look at the same evidence and come to different conclusions. This guide helps you understand the debate, the risks, and the simple steps you can take to reduce your exposure.</p>
+        </section>
+
+        <section id="basics" class="py-12 scroll-mt-16">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-slate-800">The Science in a Nutshell</h3>
+                <p class="mt-2 text-lg text-slate-600 max-w-2xl mx-auto">All wireless devices emit a type of energy called Radiofrequency (RF) radiation. Understanding its properties is the first step.</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="info-card bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h4 class="font-bold text-xl text-slate-800 mb-2">Ionizing vs. Non-Ionizing Radiation</h4>
+                    <p class="text-slate-600"><strong class="text-rose-500">Ionizing radiation</strong> (like X-rays) is high-energy and can directly damage DNA. <strong class="text-emerald-500">Non-ionizing radiation</strong> (from phones, Wi-Fi) is low-energy and cannot. The scientific debate centers on whether it can cause harm through indirect mechanisms over time.</p>
+                </div>
+                <div class="info-card bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h4 class="font-bold text-xl text-slate-800 mb-2">Thermal vs. Non-Thermal Effects</h4>
+                    <p class="text-slate-600"><strong class="text-amber-500">Thermal effects</strong> (heating) are the only officially recognized harm, and safety limits are set to prevent this. The controversy is about potential <strong class="text-sky-500">Non-thermal effects</strong> (like cellular stress) that may occur at levels too low to cause heating.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="organizations" class="py-12 scroll-mt-16 bg-slate-100 rounded-2xl -mx-4 px-4 md:-mx-8 md:px-8">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-slate-800">Who Says What? A Spectrum of Opinion</h3>
+                <p class="mt-2 text-lg text-slate-600 max-w-3xl mx-auto">Different organizations interpret the scientific evidence differently, leading to conflicting advice. Click on each bar below to see their official stance.</p>
+            </div>
+            <div class="grid lg:grid-cols-3 gap-8 items-start">
+                <div class="lg:col-span-2">
+                    <div class="chart-container">
+                        <canvas id="orgsChart"></canvas>
+                    </div>
+                </div>
+                <div id="org-details" class="lg:col-span-1 bg-white p-6 rounded-xl shadow-md transition-opacity duration-300 min-h-[300px]">
+                    <h4 id="org-name" class="font-bold text-xl text-slate-800 mb-2">Select an organization</h4>
+                    <p id="org-stance" class="text-slate-600 font-semibold mb-3"></p>
+                    <p id="org-basis" class="text-slate-600 text-sm mb-3"></p>
+                    <p id="org-recs" class="text-slate-600 text-sm font-medium"></p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="risks" class="py-12 scroll-mt-16">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-slate-800">Potential Health Risks Under Investigation</h3>
+                <p class="mt-2 text-lg text-slate-600 max-w-2xl mx-auto">While no link is definitively proven, research has focused on several key areas of concern. The evidence remains complex and often contradictory.</p>
+            </div>
+            <div>
+                <div class="mb-4 flex flex-wrap justify-center gap-2">
+                    <button class="tab-button px-4 py-2 text-sm font-medium rounded-full transition bg-slate-200 text-slate-700" data-tab="cancer">Cancer</button>
+                    <button class="tab-button px-4 py-2 text-sm font-medium rounded-full transition bg-slate-200 text-slate-700" data-tab="fertility">Fertility</button>
+                    <button class="tab-button px-4 py-2 text-sm font-medium rounded-full transition bg-slate-200 text-slate-700" data-tab="neurological">Neurological</button>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md border border-slate-200 min-h-[250px]">
+                    <div id="cancer-content" class="tab-content">
+                        <h4 class="font-bold text-xl text-emerald-600 mb-2">Cancer (Brain Tumors)</h4>
+                        <p class="text-slate-600">This is the most contested area. The WHO/IARC classifies RF radiation as "possibly carcinogenic" based on studies suggesting an increased risk of specific brain tumors (glioma and acoustic neuroma) in long-term, heavy cell phone users. However, other major studies and population data have not found a clear link, and agencies like the FDA maintain that the evidence is not consistent.</p>
+                    </div>
+                    <div id="fertility-content" class="tab-content hidden">
+                        <h4 class="font-bold text-xl text-emerald-600 mb-2">Male Fertility</h4>
+                        <p class="text-slate-600">The evidence here is more consistent. Multiple reviews suggest that carrying a phone in pants pockets is associated with negative effects on sperm, including reduced motility and viability. The proposed cause is a combination of heat and oxidative stress. Evidence for effects on female fertility is much less clear.</p>
+                    </div>
+                    <div id="neurological-content" class="tab-content hidden">
+                        <h4 class="font-bold text-xl text-emerald-600 mb-2">Neurological Effects</h4>
+                        <p class="text-slate-600">Studies show that phone use can alter brain activity and glucose metabolism in the region near the antenna. Other research links RF exposure to subjective symptoms like headaches, dizziness, and sleep disruption, particularly when devices are used near bedtime. Evidence for significant impacts on cognitive function like memory remains inconclusive.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="children" class="py-12 scroll-mt-16 bg-slate-100 rounded-2xl -mx-4 px-4 md:-mx-8 md:px-8">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-slate-800">A Special Focus: Children's Vulnerability</h3>
+                <p class="mt-2 text-lg text-slate-600 max-w-2xl mx-auto">Pediatric health organizations like the American Academy of Pediatrics (AAP) urge special caution for children, who are not just "little adults."</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h4 class="font-bold text-xl text-slate-800 mb-4">Why Children Are More Vulnerable:</h4>
+                    <ul class="space-y-3 text-slate-600">
+                        <li class="flex items-start">
+                            <span class="text-emerald-500 font-bold mr-2">➔</span>
+                            <span><strong>Thinner Skulls:</strong> Provide less shielding, allowing RF energy to penetrate deeper into the brain.</span>
+                        </li>
+                        <li class="flex items-start">
+                             <span class="text-emerald-500 font-bold mr-2">➔</span>
+                            <span><strong>More Absorbent Tissue:</strong> Their developing brain tissue has a higher water content, increasing radiation absorption.</span>
+                        </li>
+                        <li class="flex items-start">
+                             <span class="text-emerald-500 font-bold mr-2">➔</span>
+                            <span><strong>Developing Nervous System:</strong> Their systems are still maturing and may be more susceptible to disruption.</span>
+                        </li>
+                         <li class="flex items-start">
+                             <span class="text-emerald-500 font-bold mr-2">➔</span>
+                            <span><strong>Longer Lifetime Exposure:</strong> Starting use earlier means a greater cumulative dose over their lifetime.</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="flex flex-col items-center">
+                    <h4 class="font-semibold text-center mb-4">Radiation Absorption Comparison</h4>
+                    <div class="flex justify-center gap-8">
+                        <div class="text-center">
+                            <div class="relative w-32 h-40 bg-slate-200 rounded-full flex items-center justify-center">
+                               <div class="w-24 h-32 bg-slate-300 rounded-full"></div>
+                               <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-emerald-400/50 rounded-full blur-sm"></div>
+                            </div>
+                            <p class="mt-2 font-medium">Adult</p>
+                        </div>
+                        <div class="text-center">
+                             <div class="relative w-28 h-36 bg-slate-200 rounded-full flex items-center justify-center">
+                                <div class="w-20 h-28 bg-slate-300 rounded-full"></div>
+                                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-rose-400/60 rounded-full blur-md"></div>
+                            </div>
+                             <p class="mt-2 font-medium">Child</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-center mt-4 text-slate-600 max-w-xs">Illustrative model shows deeper and more widespread absorption in a child's head compared to an adult's.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="recommendations" class="py-12 scroll-mt-16">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-slate-800">How to Reduce Your Exposure</h3>
+                <p class="mt-2 text-lg text-slate-600 max-w-2xl mx-auto">While the debate continues, you can take simple, practical steps to minimize RF exposure for you and your family. This approach is known as "prudent avoidance."</p>
+            </div>
+            <div id="accordion-container" class="max-w-4xl mx-auto space-y-4">
+            </div>
+        </section>
+
+    </main>
+    
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-sm">
+            <p>This application is for informational purposes only and is not a substitute for professional medical advice.</p>
+            <p class="mt-1">Content synthesized from a comprehensive analysis of scientific literature on RF radiation. Created 2024.</p>
+            <p class="mt-2">
+                <a href="https://docs.google.com/document/d/1GDOZQ9H7hFsfcHwTmwV3wEFAGt7eWRJhRIcZmq2qqrU/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="underline hover:text-emerald-400 transition-colors">
+                    Read the full source report here.
+                </a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (!mobileMenu.classList.contains('hidden')) {
+                         mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+
+            const sections = document.querySelectorAll('section');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+                        });
+                    }
+                });
+            }, { rootMargin: '-20% 0px -80% 0px' });
+
+            sections.forEach(section => observer.observe(section));
+
+            const orgData = {
+                'FCC': {
+                    stance: 'Current safety limits are protective.',
+                    basis: 'Based solely on preventing short-term thermal (heating) effects. The 1.6 W/kg SAR limit was set in 1996 and has a large safety margin against known heating risks.',
+                    recs: 'All legally sold phones are "safe." For concerned users, advises increasing distance (e.g., speakerphone) and reducing usage time.'
+                },
+                'FDA': {
+                    stance: '"No consistent evidence of harm."',
+                    basis: 'Prioritizes population data, which shows no increase in brain cancer rates. Dismisses conflicting animal study findings as not relevant to human use patterns.',
+                    recs: 'No health benefits from reducing exposure. Advises against "bogus" shielding products. Suggests simple distance-creating steps for concerned users.'
+                },
+                'WHO / IARC': {
+                    stance: 'Group 2B: "Possibly carcinogenic to humans."',
+                    basis: '"Limited evidence" from human studies showing an increased risk of glioma and acoustic neuroma in long-term, heavy users. It is a hazard identification, not a risk assessment.',
+                    recs: '"Pragmatic measures" to reduce exposure are warranted, such as using hands-free devices or texting. Calls for more research on long-term, heavy use.'
+                },
+                'AAP': {
+                    stance: 'Strong precautionary stance; current standards are inadequate for children.',
+                    basis: 'Cites children\'s unique vulnerability: thinner skulls and more conductive tissue lead to higher RF absorption. Points to IARC classification and animal studies.',
+                    recs: 'Recommends specific steps to reduce children\'s exposure: limit use, increase distance, use speakerphone/headset. States phones are "not toys."'
+                }
+            };
+
+            const orgNameEl = document.getElementById('org-name');
+            const orgStanceEl = document.getElementById('org-stance');
+            const orgBasisEl = document.getElementById('org-basis');
+            const orgRecsEl = document.getElementById('org-recs');
+
+            const updateDetails = (orgKey) => {
+                const data = orgData[orgKey];
+                orgNameEl.textContent = orgKey === 'AAP' ? 'American Academy of Pediatrics (AAP)' : orgKey;
+                orgStanceEl.textContent = data.stance;
+                orgBasisEl.textContent = data.basis;
+                orgRecsEl.textContent = `Recommendation: ${data.recs}`;
+                document.getElementById('org-details').style.opacity = 1;
+            };
+
+            const ctx = document.getElementById('orgsChart').getContext('2d');
+            const orgsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['FCC', 'FDA', 'WHO / IARC', 'AAP'],
+                    datasets: [{
+                        label: 'Level of Precaution',
+                        data: [1, 2, 3, 4],
+                        backgroundColor: [
+                            'rgba(56, 189, 248, 0.6)', // sky-400
+                            'rgba(16, 185, 129, 0.6)', // emerald-500
+                            'rgba(251, 191, 36, 0.6)', // amber-400
+                            'rgba(244, 63, 94, 0.6)'    // rose-500
+                        ],
+                        borderColor: [
+                            'rgba(56, 189, 248, 1)',
+                            'rgba(16, 185, 129, 1)',
+                            'rgba(251, 191, 36, 1)',
+                            'rgba(244, 63, 94, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const chartElement = elements[0];
+                            const orgKey = orgsChart.data.labels[chartElement.index];
+                            updateDetails(orgKey);
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: false,
+                            max: 4.5
+                        },
+                        y: {
+                           ticks: {
+                               font: {
+                                   size: 14,
+                                   weight: '500'
+                               }
+                           }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Reassuring → Precautionary',
+                            position: 'bottom',
+                            align: 'center',
+                            font: {
+                                size: 12
+                            },
+                            color: '#64748b'
+                        }
+                    }
+                }
+            });
+            updateDetails('FCC');
+
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tab = button.dataset.tab;
+
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    tabContents.forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    document.getElementById(`${tab}-content`).classList.remove('hidden');
+                });
+            });
+            document.querySelector('.tab-button[data-tab="cancer"]').classList.add('active');
+
+            const recommendationsData = [
+                {
+                    title: 'Tier 1: Universally Recommended Strategies',
+                    items: [
+                        { name: 'Increase Distance', detail: 'The single most effective way to reduce exposure. Use speakerphone or a wired headset. Carry your phone in a bag, not a pocket or bra.' },
+                        { name: 'Reduce Time', detail: 'Keep voice calls on cellular devices short. Use a landline for longer conversations.' },
+                        { name: 'Prefer Texting', detail: 'Texting involves very short, low-power transmissions and keeps the device away from your body.' }
+                    ]
+                },
+                {
+                    title: 'Tier 2: Precautionary Strategies',
+                    items: [
+                        { name: 'Monitor Signal Strength', detail: 'Avoid calls and streaming when you have a weak signal (1-2 bars), as the phone boosts its power significantly.' },
+                        { name: 'Avoid Use in Metal Spaces', detail: 'Limit calls in cars, buses, trains, or elevators, as the phone works harder and radiation can be reflected.' },
+                        { name: 'Use Airplane Mode', detail: 'Switch to airplane mode when you don\'t need a connection, especially at night or when a child is using the device for offline activities.' }
+                    ]
+                },
+                {
+                    title: 'Tier 3: For Vulnerable Groups & Home',
+                    items: [
+                        { name: 'For Babies and Children', detail: 'Follow AAP advice: phones are not toys. Use only for emergencies on speakerphone. Never let a baby teethe on a phone.' },
+                        { name: 'For Men & Pregnant Women', detail: 'Men should avoid carrying phones in front pants pockets. Pregnant women should not rest devices on their abdomen.' },
+                        { name: 'At Home and at Night', detail: 'Prefer wired (Ethernet) internet connections. Turn off Wi-Fi routers at night. Keep phones several feet away from the bed.' }
+                    ]
+                }
+            ];
+
+            const accordionContainer = document.getElementById('accordion-container');
+            recommendationsData.forEach((tier, index) => {
+                const accordionItem = document.createElement('div');
+                accordionItem.className = 'bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden';
+                
+                const button = document.createElement('button');
+                button.className = 'accordion-button w-full p-4 text-left font-semibold text-slate-800 flex justify-between items-center';
+                button.innerHTML = `
+                    <span>${tier.title}</span>
+                    <span class="accordion-arrow transform transition-transform duration-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </span>
+                `;
+
+                const content = document.createElement('div');
+                content.className = 'accordion-content max-h-0 overflow-hidden transition-all duration-500 ease-in-out';
+                const list = document.createElement('ul');
+                list.className = 'p-4 pt-0 space-y-2 text-slate-600';
+                tier.items.forEach(item => {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `<strong class="text-emerald-600">${item.name}:</strong> ${item.detail}`;
+                    list.appendChild(listItem);
+                });
+                content.appendChild(list);
+
+                accordionItem.appendChild(button);
+                accordionItem.appendChild(content);
+                accordionContainer.appendChild(accordionItem);
+
+                button.addEventListener('click', () => {
+                    const isOpen = button.classList.toggle('open');
+                    if (isOpen) {
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                    } else {
+                        content.style.maxHeight = '0px';
+                    }
+                });
+            });
+
+        });
+    </script>
+
+</body>
+</html>

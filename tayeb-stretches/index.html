@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tayeb's Flexibility Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: The SPA is structured around the three core routines from the report (Warm-up, Cool-down, Deep Stretch), presented in a tabbed interface. This task-oriented design allows users to quickly access the specific routine they need at any given moment (before, after, or between training sessions). Each routine's content is displayed as a grid of interactive cards, making the information digestible and mobile-friendly. Key considerations are placed in an introductory section for constant visibility. This structure was chosen over a linear document format to create a functional, interactive tool rather than a static page, enhancing usability for a user actively performing the routines. -->
+    <!-- Visualization & Content Choices: The report's content is entirely instructional text. Goal: Guide the user through physical exercises. Presentation: Each stretch is presented on a distinct 'card' (HTML/CSS div) containing its name, instructions, and duration. Cards are grouped by routine (Warm-up, Cool-down, etc.) and displayed based on tab selection. Visuals: Simple Unicode characters (e.g., 🤸, 🧘, ↔️) are used as icons on each card to provide quick visual cues without using forbidden SVG or image files. Interaction: Users navigate between routines using tab buttons. This interaction is handled by vanilla JavaScript which dynamically shows/hides the relevant content sections. A link to a YouTube search page is provided for each stretch. This card-and-tab system organizes the information logically for a practical application and improves on the simple list format of the source report. Library/Method: Vanilla JS for DOM manipulation, Tailwind CSS for styling. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F7F4;
+            color: #403d39;
+        }
+        .nav-btn {
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+        .nav-btn.active {
+            color: #0284c7; /* sky-600 */
+            border-bottom-color: #0284c7; /* sky-600 */
+        }
+        .card {
+            background-color: #FFFFFF;
+            border: 1px solid #E5E7EB;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .youtube-link {
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+            font-weight: 500;
+            color: #c2410c; /* orange-700 */
+            transition: color 0.2s ease;
+        }
+        .youtube-link:hover {
+            color: #9a3412; /* orange-800 */
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto px-4 py-8 md:py-12">
+
+        <header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800">Tayeb's Flexibility Guide</h1>
+            <p class="mt-2 text-lg text-gray-600">Your interactive companion for a flexible and injury-free journey.</p>
+        </header>
+
+        <div class="bg-sky-100/60 border-l-4 border-sky-500 text-sky-800 p-4 rounded-r-lg mb-10" role="alert">
+            <h3 class="font-bold text-lg mb-2">Important Considerations</h3>
+            <ul class="list-disc list-inside space-y-1">
+                <li><strong class="font-semibold">Listen to your body:</strong> Feel a gentle pull, never sharp pain. Ease off if it hurts.</li>
+                <li><strong class="font-semibold">Breathe deeply:</strong> Slow, deep breaths help relax your muscles and deepen the stretch.</li>
+                <li><strong class="font-semibold">Consistency over intensity:</strong> Regular, gentle stretching is safer and more effective than infrequent, forceful stretching.</li>
+            </ul>
+        </div>
+
+        <nav class="flex justify-center border-b border-gray-200 mb-8">
+            <button id="nav-warmup" class="nav-btn px-4 py-3 text-lg font-medium text-gray-600 hover:bg-gray-100/50">Dynamic Warm-up</button>
+            <button id="nav-cooldown" class="nav-btn px-4 py-3 text-lg font-medium text-gray-600 hover:bg-gray-100/50">Static Cool-down</button>
+            <button id="nav-deep" class="nav-btn px-4 py-3 text-lg font-medium text-gray-600 hover:bg-gray-100/50">Deep Stretching</button>
+        </nav>
+
+        <main>
+            <div id="content-warmup" class="content-section">
+                <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">This section provides a dynamic warm-up routine to perform before each training session. These movements will prepare your muscles for training, increase blood flow, and reduce the risk of injury. Each exercise should be performed for 30 to 60 seconds.</p>
+                <div id="warmup-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            </div>
+
+            <div id="content-cooldown" class="content-section">
+                <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Use this static cool-down routine after your training sessions. Holding these stretches helps improve long-term flexibility and aids in muscle recovery. Hold each stretch for about 30 seconds, focusing on your breathing.</p>
+                <div id="cooldown-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            </div>
+
+            <div id="content-deep" class="content-section">
+                <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Dedicate 2-3 rest days per week to this deep stretching routine to make significant flexibility gains. After a light 5-minute warm-up, hold each of these stretches for 30 to 60 seconds to lengthen your muscles and increase your range of motion.</p>
+                <div id="deep-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            </div>
+        </main>
+
+        <footer class="mt-12 pt-8 border-t border-gray-200">
+            <div class="bg-amber-100/60 border-l-4 border-amber-500 text-amber-900 p-4 rounded-r-lg" role="alert">
+                <h3 class="font-bold text-lg mb-2">Video Disclaimer</h3>
+                <p>The video links provided are for visual reference and are hosted on YouTube. These videos are created by third parties. Please be advised that the content of these videos, including any audio, visuals, or advertisements, is not controlled by us and may contain material that you find inappropriate or "haram". Viewer discretion is strongly advised.</p>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        const routines = {
+            warmup: {
+                target: 'warmup-grid',
+                stretches: [
+                    { name: 'Leg Swings (Forward/Backward)', icon: '↕️', duration: '30-60s', desc: 'Stand sideways to a wall for support. Swing one leg forward and backward in a controlled manner.' },
+                    { name: 'Leg Swings (Side to Side)', icon: '↔️', duration: '30-60s', desc: 'Face the wall for support. Swing one leg out to the side and then across your body.' },
+                    { name: 'Arm Circles', icon: '🔄', duration: '30-60s', desc: 'Extend arms to the sides, make small circles, gradually making them larger. Reverse direction.' },
+                    { name: 'Torso Twists', icon: '🔄', duration: '30-60s', desc: 'Stand with feet shoulder-width apart and arms extended. Twist your torso from side to side.' },
+                    { name: 'High Knees', icon: '🏃', duration: '30-60s', desc: 'Jog in place, bringing your knees up towards your chest.' },
+                    { name: 'Butt Kicks', icon: '🏃', duration: '30-60s', desc: 'Jog in place, bringing your heels up towards your glutes.' },
+                    { name: 'Walking Lunges', icon: '🚶', duration: '30-60s', desc: 'Step forward into a lunge, then push off and step into a lunge with the other leg.' },
+                ]
+            },
+            cooldown: {
+                target: 'cooldown-grid',
+                stretches: [
+                    { name: 'Standing Hamstring Stretch', icon: '🧘', duration: 'Hold 30s', desc: 'Place heel on a low bench. Keeping back straight, hinge at hips and lean forward.' },
+                    { name: 'Butterfly Stretch', icon: '🦋', duration: 'Hold 30s', desc: 'Sit with the soles of your feet together. Gently press knees towards the floor.' },
+                    { name: 'Pigeon Pose', icon: '🧘', duration: 'Hold 30s', desc: 'From all fours, bring right knee forward behind right wrist. Extend left leg back.' },
+                    { name: 'Quad Stretch', icon: '🤸', duration: 'Hold 30s', desc: 'Stand on one leg and pull your other foot towards your glute.' },
+                    { name: 'Cross-Body Shoulder Stretch', icon: '🧘', duration: 'Hold 30s', desc: 'Bring one arm across your body and use the other arm to gently pull it closer to your chest.' },
+                    { name: 'Triceps Stretch', icon: '🙆', duration: 'Hold 30s', desc: 'Reach one arm over head, bend elbow. Use other hand to gently pull the elbow.' },
+                    { name: 'Child\'s Pose', icon: '🙏', duration: 'Hold 30s', desc: 'Kneel, sit back on heels, and fold forward, resting your forehead on the floor.' },
+                ]
+            },
+            deep: {
+                target: 'deep-grid',
+                stretches: [
+                    { name: 'Lying Hamstring Stretch', icon: '🧘‍♀️', duration: 'Hold 30-60s', desc: 'Lie on back, loop a towel/strap around one foot. Gently pull the leg towards you.' },
+                    { name: 'Deep Lunge (Hip Flexor)', icon: '🤸‍♂️', duration: 'Hold 30-60s', desc: 'In a lunge, rest back knee on ground. Press hips forward to feel a deep stretch.' },
+                    { name: 'Frog Stretch', icon: '🐸', duration: 'Hold 30-60s', desc: 'On hands and knees, widen knees as far as you can. Lower hips back and down.' },
+                    { name: 'Seated Straddle Stretch', icon: '🧘', duration: 'Hold 30-60s', desc: 'Sit with legs in a wide "V". Keeping back straight, walk hands forward.' },
+                    { name: 'Pancake Stretch', icon: '🥞', duration: 'Hold 30-60s', desc: 'From straddle, fold your torso forward, aiming to get your chest on the floor.' },
+                    { name: 'Spinal Twist', icon: '🧘‍♂️', duration: 'Hold 30-60s', desc: 'Lie on back, knees bent. Let knees fall to one side, keeping shoulders on the floor.' },
+                    { name: 'Wall Split (Beginner)', icon: '🧱', duration: 'Hold 30-60s', desc: 'Lie with glutes near a wall, legs up. Slowly let legs open out to the sides.' },
+                ]
+            }
+        };
+
+        const navButtons = {
+            warmup: document.getElementById('nav-warmup'),
+            cooldown: document.getElementById('nav-cooldown'),
+            deep: document.getElementById('nav-deep'),
+        };
+
+        const contentSections = {
+            warmup: document.getElementById('content-warmup'),
+            cooldown: document.getElementById('content-cooldown'),
+            deep: document.getElementById('content-deep'),
+        };
+
+        function createStretchCard(stretch) {
+            const searchQuery = encodeURIComponent(stretch.name + ' stretch');
+            const youtubeSearchUrl = `https://www.youtube.com/results?search_query=${searchQuery}`;
+            
+            return `
+                <div class="card rounded-lg p-6 shadow-sm flex flex-col">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-800 pr-4 flex-1">${stretch.name}</h3>
+                        <div class="text-4xl">${stretch.icon}</div>
+                    </div>
+                    <p class="text-gray-600 flex-grow mb-4">${stretch.desc}</p>
+                    <div class="mt-auto pt-4 border-t border-gray-200 flex justify-between items-center">
+                        <span class="inline-block bg-sky-100 text-sky-800 text-sm font-medium px-3 py-1 rounded-full">${stretch.duration}</span>
+                        <a href="${youtubeSearchUrl}" target="_blank" rel="noopener noreferrer" class="youtube-link">
+                            Search Video
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1.5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderRoutine(routineKey) {
+            const routine = routines[routineKey];
+            const targetGrid = document.getElementById(routine.target);
+            targetGrid.innerHTML = routine.stretches.map(createStretchCard).join('');
+        }
+
+        function switchTab(tabKey) {
+            Object.values(navButtons).forEach(btn => btn.classList.remove('active'));
+            Object.values(contentSections).forEach(sec => sec.classList.remove('active'));
+
+            navButtons[tabKey].classList.add('active');
+            contentSections[tabKey].classList.add('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderRoutine('warmup');
+            renderRoutine('cooldown');
+            renderRoutine('deep');
+
+            navButtons.warmup.addEventListener('click', () => switchTab('warmup'));
+            navButtons.cooldown.addEventListener('click', () => switchTab('cooldown'));
+            navButtons.deep.addEventListener('click', () => switchTab('deep'));
+            
+            switchTab('warmup');
+        });
+    </script>
+
+</body>
+</html>

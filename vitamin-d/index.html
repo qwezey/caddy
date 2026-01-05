@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Parent's Guide to Vitamin D & Breastfeeding</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Harmony -->
+    <!-- Application Structure Plan: The SPA is designed as a decision-making tool for parents. It starts with the core question, then immediately presents the two choices ("Standard Care" vs. "Maternal Dose") as a central, interactive toggle. The subsequent sections—How it Works, Efficacy, and Safety—are designed to provide the evidence and context needed to evaluate these two paths. The structure builds a narrative from the problem to a comparison of solutions, ending with an actionable plan for a doctor's consultation. This task-oriented flow is more intuitive for a user seeking answers than the original report's academic structure. -->
+    <!-- Visualization & Content Choices: 
+        - The Two Paths (Toggle): Goal: Compare. Method: HTML/JS toggle. Justification: Provides a direct, user-controlled comparison of the two main strategies, which is the core decision point.
+        - Efficacy Chart (Bar Chart): Goal: Compare. Method: Chart.js Canvas. Justification: Visually demonstrates the key clinical trial result—that a 6400 IU maternal dose is as effective as infant drops, while a 2400 IU dose is not. A static table would be less impactful.
+        - Safety Charts (Horizontal Bar): Goal: Inform/Compare. Method: Chart.js Canvas. Justification: These act as "safety gauges," giving users a quick, visual confirmation that the recommended maternal dose and the resulting dose in milk are well within the official Tolerable Upper Intake Levels (TULs), addressing a primary concern.
+        - How It Works (Diagram): Goal: Organize/Inform. Method: HTML/CSS. Justification: A simple, non-graphical flowchart clarifies the complex physiological reason why high-dose maternal supplementation works, building user confidence without needing complex libraries.
+        - Final Comparison (Table): Goal: Organize/Summarize. Method: HTML table. Justification: A clear, scannable summary of pros and cons to help synthesize all the information before the final recommendation.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8; /* Warm off-white */
+            color: #44403c; /* stone-700 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 640px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nav-link {
+            padding: 8px 16px;
+            border-radius: 9999px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        .nav-link:hover {
+            background-color: #f5f5f4; /* stone-200 */
+        }
+        .nav-link.active {
+            background-color: #a8a29e; /* stone-400 */
+            color: #ffffff;
+        }
+        .pill-toggle {
+            display: inline-flex;
+            background-color: #e7e5e4; /* stone-200 */
+            border-radius: 9999px;
+            padding: 4px;
+            border: 1px solid #d6d3d1; /* stone-300 */
+        }
+        .pill-button {
+            padding: 8px 24px;
+            border-radius: 9999px;
+            font-weight: 500;
+            color: #57534e; /* stone-600 */
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .pill-button.active {
+            background-color: #ffffff;
+            color: #a16207; /* yellow-700 */
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e7e5e4; /* stone-200 */
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+        .card-title {
+            color: #a16207; /* yellow-700 */
+            font-weight: 600;
+        }
+        .accent-bg {
+             background-color: #fefce8; /* yellow-50 */
+        }
+        .accent-border {
+            border-color: #facc15; /* yellow-400 */
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40 border-b border-stone-200">
+        <nav class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <span class="font-bold text-xl text-stone-700">Vitamin D & Breastfeeding</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-2">
+                    <a href="#problem" class="nav-link text-stone-600">The Challenge</a>
+                    <a href="#paths" class="nav-link text-stone-600">The Two Paths</a>
+                    <a href="#evidence" class="nav-link text-stone-600">The Evidence</a>
+                    <a href="#safety" class="nav-link text-stone-600">Is It Safe?</a>
+                    <a href="#action-plan" class="nav-link text-stone-600">Action Plan</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <section id="intro" class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-stone-800 mb-4">A Parent's Guide to Vitamin D</h1>
+            <p class="text-lg md:text-xl text-stone-600 max-w-3xl mx-auto">
+                Can a breastfeeding mother provide enough vitamin D to her baby simply by taking a supplement herself? This guide explores the science behind that question to help you make an informed choice with your doctor.
+            </p>
+        </section>
+
+        <section id="problem" class="mb-20 scroll-mt-20">
+             <div class="card accent-bg">
+                <h2 class="text-3xl font-bold text-stone-800 mb-4 text-center">The Breastfeeding Vitamin D Challenge</h2>
+                <p class="text-stone-700 text-lg mb-6 text-center max-w-3xl mx-auto">This section explains the fundamental issue: while breast milk is the best nutrition for infants, it's naturally low in vitamin D. Modern life, with its necessary precautions against sun exposure for babies, means infants can't make their own vitamin D. This creates a nutritional gap that must be filled to prevent health issues like rickets.</p>
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div class="text-center">
+                        <div class="text-6xl mb-4">🤱</div>
+                        <h3 class="text-xl font-semibold text-stone-800 mb-2">Breast Milk: Nearly Perfect</h3>
+                        <p class="text-stone-600">It provides everything a baby needs... except sufficient Vitamin D. A mother taking a standard 400-600 IU supplement passes less than 80 IU/liter to her baby.</p>
+                    </div>
+                    <div class="text-center">
+                         <div class="text-6xl mb-4">☀️</div>
+                        <h3 class="text-xl font-semibold text-stone-800 mb-2">No Sun for Baby</h3>
+                        <p class="text-stone-600">Doctors rightly advise keeping infants under 6 months out of direct sun. This removes their natural ability to produce Vitamin D, making them dependent on diet.</p>
+                    </div>
+                </div>
+                <div class="text-center mt-8">
+                     <p class="text-xl font-semibold text-stone-800">The Resulting Gap:</p>
+                     <p class="text-stone-600">Infants need 400 IU of Vitamin D daily. Breast milk alone can't provide this. This gap must be bridged.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="paths" class="mb-20 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-stone-800 mb-4 text-center">Bridging the Gap: The Two Paths</h2>
+            <p class="text-stone-700 text-lg mb-8 text-center max-w-3xl mx-auto">There are two evidence-based ways to ensure your baby gets enough vitamin D. The standard approach is to supplement the baby directly. An effective alternative is for the mother to take a high-dose supplement. Use the toggle below to explore and compare these two strategies.</p>
+
+            <div class="flex justify-center mb-8">
+                <div id="path-toggle" class="pill-toggle">
+                    <button class="pill-button active" data-path="infant">Path 1: Infant Drops</button>
+                    <button class="pill-button" data-path="maternal">Path 2: Maternal Dose</button>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <div id="infant-path-card" class="card">
+                    <h3 class="card-title text-2xl mb-4">Path 1: Direct Infant Supplementation</h3>
+                    <div id="infant-content">
+                        <p class="text-stone-600 mb-4">This is the current standard of care recommended by most pediatric authorities.</p>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <span class="text-yellow-600 mr-3 mt-1">✓</span>
+                                <div><strong class="text-stone-700">What is it?</strong> Giving the baby 400 IU of liquid vitamin D drops directly each day.</div>
+                            </li>
+                             <li class="flex items-start">
+                                <span class="text-yellow-600 mr-3 mt-1">✓</span>
+                                <div><strong class="text-stone-700">Efficacy:</strong> Highly effective at preventing deficiency when given consistently.</div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-yellow-600 mr-3 mt-1">✓</span>
+                                <div><strong class="text-stone-700">Challenge:</strong> Remembering to give the drops every single day can be difficult for new parents, leading to poor adherence.</div>
+                            </li>
+                             <li class="flex items-start">
+                                <span class="text-yellow-600 mr-3 mt-1">✓</span>
+                                <div><strong class="text-stone-700">Mother's Health:</strong> This method does not address the mother's own potential vitamin D deficiency.</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                 <div id="maternal-path-card" class="card">
+                    <h3 class="card-title text-2xl mb-4">Path 2: High-Dose Maternal Supplementation</h3>
+                     <div id="maternal-content">
+                        <p class="text-stone-600 mb-4">This evidence-based alternative enriches breast milk to meet the baby's needs.</p>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <span class="text-yellow-600 mr-3 mt-1">✓</span>
+                                <div><strong class="text-stone-700">What is it?</strong> The mother takes a high dose of vitamin D (4,000 to 6,400 IU) daily.</div>
+                            </li>
+                             <li class="flex items-start">
+                                <span class="text-yellow-600 mr-3 mt-1">✓</span>
+                                <div><strong class="text-stone-700">Benefit:</strong> Nourishes both mother and baby, addressing the mother's own needs while making her milk nutritionally complete in vitamin D.</div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-yellow-600 mr-3 mt-1">✓</span>
+                                <div><strong class="text-stone-700">Convenience:</strong> Many mothers find it easier to remember their own supplement than to administer drops to an infant.</div>
+                            </li>
+                             <li class="flex items-start">
+                                <span class="text-yellow-600 mr-3 mt-1">✓</span>
+                                <div><strong class="text-stone-700">Crucial Rule:</strong> This is an ALTERNATIVE. The baby should NOT receive drops if the mother is on a high-dose regimen.</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="how-it-works" class="mb-20 scroll-mt-20">
+            <div class="card accent-bg">
+                <h2 class="text-3xl font-bold text-stone-800 mb-4 text-center">How Does Maternal Supplementation Work?</h2>
+                <p class="text-stone-700 text-lg mb-8 text-center max-w-3xl mx-auto">This section explains the science. The effectiveness of the maternal dose strategy depends on which form of vitamin D passes into breast milk. Only the "parent" form of vitamin D (from supplements) transfers efficiently, which is why a high, consistent maternal dose is necessary to enrich the milk.</p>
+                <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4 text-center">
+                    <div class="p-4 rounded-lg bg-white border border-stone-200 shadow-sm">
+                        <p class="font-bold text-stone-700">Mother takes Vitamin D3 Supplement</p>
+                    </div>
+                    <div class="text-3xl text-yellow-600">→</div>
+                    <div class="p-4 rounded-lg bg-white border border-stone-200 shadow-sm">
+                        <p class="font-semibold text-stone-700">Parent Vitamin D3 in Bloodstream</p>
+                        <p class="text-sm text-stone-500">(Transfers efficiently to milk)</p>
+                    </div>
+                    <div class="text-3xl text-yellow-600">→</div>
+                    <div class="p-4 rounded-lg bg-white border border-stone-200 shadow-sm">
+                        <p class="font-bold text-lime-700">Vitamin D-Rich Breast Milk</p>
+                        <p class="text-sm text-stone-500">(Provides >400 IU to baby)</p>
+                    </div>
+                     <div class="text-3xl text-yellow-600">→</div>
+                     <div class="p-4 rounded-lg bg-white border border-stone-200 shadow-sm">
+                        <p class="font-bold text-stone-700">Healthy, Sufficient Baby</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="evidence" class="mb-20 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-stone-800 mb-4 text-center">Is It Effective? The Clinical Evidence</h2>
+            <p class="text-stone-700 text-lg mb-8 text-center max-w-3xl mx-auto">This chart shows the results of a key study. It compared infants who received the standard 400 IU drops to infants whose mothers took different doses. As you can see, the 6,400 IU maternal dose was just as effective as the infant drops at achieving healthy vitamin D levels, while a lower 2,400 IU dose was not.</p>
+            <div class="card">
+                <div class="chart-container">
+                    <canvas id="efficacyChart"></canvas>
+                </div>
+                <figcaption class="text-center text-sm text-stone-500 mt-4">Data from Hollis et al., 2015. The "Sufficient" line represents the 50 nmol/L blood level considered adequate for infant health.</figcaption>
+            </div>
+        </section>
+
+        <section id="safety" class="mb-20 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-stone-800 mb-4 text-center">Is It Safe? Dose vs. Upper Limits</h2>
+             <p class="text-stone-700 text-lg mb-8 text-center max-w-3xl mx-auto">Safety is paramount. This interactive visualization compares the proposed 4,000 IU maternal dose and the resulting amount transferred to the infant against the official Tolerable Upper Intake Levels (TUL)—the maximum daily amount considered safe. The evidence shows that a 4,000 IU maternal dose is safe for the mother and delivers a safe and effective dose to the baby.</p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="card">
+                    <h3 class="card-title text-xl mb-4">Mother's Safety</h3>
+                    <div class="chart-container h-64 sm:h-auto">
+                        <canvas id="maternalSafetyChart"></canvas>
+                    </div>
+                    <p class="text-center text-sm text-stone-500 mt-4">A 4,000 IU daily dose is at the official safe upper limit set by the National Academy of Medicine.</p>
+                </div>
+                <div class="card">
+                     <h3 class="card-title text-xl mb-4">Infant's Safety</h3>
+                     <div class="chart-container h-64 sm:h-auto">
+                        <canvas id="infantSafetyChart"></canvas>
+                    </div>
+                     <p class="text-center text-sm text-stone-500 mt-4">The amount of Vitamin D an infant receives via milk from a mother taking 4,000-6,400 IU is well below the infant's safe upper limit.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="action-plan" class="scroll-mt-20">
+            <div class="card accent-bg accent-border border-2">
+                <h2 class="text-3xl font-bold text-stone-800 mb-4 text-center">Your Action Plan: Talking to Your Doctor</h2>
+                <p class="text-stone-700 text-lg mb-8 text-center max-w-3xl mx-auto">High-dose maternal supplementation is an evidence-based alternative, but it may not be part of every doctor's standard advice yet. The best approach is a collaborative one. This section gives you a framework for a productive conversation with your pediatrician or OB/GYN, helping you to make a shared, informed decision.</p>
+                <div class="max-w-2xl mx-auto">
+                    <h3 class="text-xl font-semibold text-stone-800 mb-4">Key Points to Discuss:</h3>
+                    <ul class="space-y-4">
+                        <li class="p-4 bg-white rounded-lg border border-stone-200">
+                            <strong class="block text-stone-700">1. Acknowledge the Standard:</strong> "We know the standard recommendation is 400 IU drops for the baby. We've also read research showing maternal supplementation is an effective alternative."
+                        </li>
+                        <li class="p-4 bg-white rounded-lg border border-stone-200">
+                            <strong class="block text-stone-700">2. State Your Preference:</strong> "Given my history of vitamin D deficiency, we're interested in the maternal dose of 4,000 IU per day to benefit both me and the baby."
+                        </li>
+                        <li class="p-4 bg-white rounded-lg border border-stone-200">
+                            <strong class="block text-stone-700">3. Confirm the Safety Rule:</strong> "We understand this is an 'either/or' choice. If I take the high dose, we will not give the baby any drops."
+                        </li>
+                        <li class="p-4 bg-white rounded-lg border border-stone-200">
+                           <strong class="block text-stone-700">4. Propose Monitoring:</strong> "To be sure this is working, would you be open to checking my and/or the baby's vitamin D levels in a few months?"
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="border-t border-stone-200 mt-16">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-sm text-stone-500">
+            <p>This tool is for informational purposes only and does not constitute medical advice. Always consult with a qualified healthcare provider for any health concerns or before making any decisions related to your health or treatment.</p>
+            <p class="mt-2">Based on data from Hollis et al., Wagner et al., and other peer-reviewed studies.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const efficacyData = {
+                labels: ['Infant Drops (400 IU)', 'Maternal Dose (2400 IU)', 'Maternal Dose (6400 IU)'],
+                datasets: [{
+                    label: 'Infant Vitamin D Level (nmol/L)',
+                    data: [107, 76, 115],
+                    backgroundColor: [
+                        'rgba(163, 163, 163, 0.6)', // gray
+                        'rgba(239, 68, 68, 0.6)', // red
+                        'rgba(34, 197, 94, 0.6)' // green
+                    ],
+                    borderColor: [
+                        'rgb(163, 163, 163)',
+                        'rgb(239, 68, 68)',
+                        'rgb(34, 197, 94)'
+                    ],
+                    borderWidth: 2
+                }]
+            };
+
+            const efficacyConfig = {
+                type: 'bar',
+                data: efficacyData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Infant Vitamin D Level (nmol/L)',
+                                font: { size: 14 }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        label += context.parsed.x + ' nmol/L';
+                                    }
+                                    return label;
+                                }
+                            }
+                        },
+                        annotation: {
+                            annotations: {
+                                line1: {
+                                    type: 'line',
+                                    xMin: 50,
+                                    xMax: 50,
+                                    borderColor: 'rgb(202, 138, 4)',
+                                    borderWidth: 2,
+                                    borderDash: [6, 6],
+                                    label: {
+                                        content: 'Sufficient Level',
+                                        display: true,
+                                        position: 'start',
+                                        font: {
+                                           weight: 'bold'
+                                        },
+                                        backgroundColor: 'rgba(255,255,255,0.7)'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                 plugins: [{
+                    id: 'customAnnotationLine',
+                    afterDraw(chart) {
+                        const annotation = chart.options.plugins.annotation.annotations.line1;
+                        if (!annotation) return;
+
+                        const ctx = chart.ctx;
+                        const xScale = chart.scales.x;
+                        const x = xScale.getPixelForValue(annotation.xMin);
+
+                        ctx.save();
+                        
+                        ctx.beginPath();
+                        ctx.moveTo(x, chart.chartArea.top);
+                        ctx.lineTo(x, chart.chartArea.bottom);
+                        ctx.lineWidth = annotation.borderWidth;
+                        ctx.strokeStyle = annotation.borderColor;
+                        ctx.setLineDash(annotation.borderDash);
+                        ctx.stroke();
+                        
+                        ctx.setLineDash([]);
+                        
+                        if(annotation.label && annotation.label.display) {
+                            ctx.textAlign = 'center';
+                            ctx.fillStyle = annotation.label.font.color || 'black';
+                            ctx.font = `${annotation.label.font.weight || 'normal'} ${annotation.label.font.size || 12}px ${annotation.label.font.family || 'sans-serif'}`;
+                            const labelText = 'Sufficient Level (50)';
+                            const textMetrics = ctx.measureText(labelText);
+                            
+                            const labelX = x;
+                            let labelY;
+                            let labelPadding = 6;
+                            
+                            if(annotation.label.position === 'start'){
+                                labelY = chart.chartArea.top + (textMetrics.fontBoundingBoxAscent || 0) + labelPadding;
+                            } else {
+                                labelY = chart.chartArea.bottom - (textMetrics.fontBoundingBoxDescent || 0) - labelPadding;
+                            }
+                            
+                            ctx.fillStyle = annotation.label.backgroundColor || 'rgba(255,255,255,0.7)';
+                            ctx.fillRect(labelX - textMetrics.width / 2 - labelPadding, labelY - (textMetrics.fontBoundingBoxAscent || 0) - labelPadding, textMetrics.width + (labelPadding*2), (textMetrics.fontBoundingBoxAscent || 0) + (textMetrics.fontBoundingBoxDescent || 0) + (labelPadding*2));
+
+                            ctx.fillStyle = annotation.label.color || 'black';
+                            ctx.fillText(labelText, labelX, labelY);
+                        }
+
+                        ctx.restore();
+                    }
+                }]
+            };
+
+            const efficacyChartCtx = document.getElementById('efficacyChart').getContext('2d');
+            new Chart(efficacyChartCtx, efficacyConfig);
+
+            const baseSafetyConfig = {
+                type: 'bar',
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            stacked: true,
+                             title: {
+                                display: true,
+                                text: 'International Units (IU) per Day',
+                                font: { size: 14 }
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                            display: false
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            enabled: false
+                        }
+                    }
+                }
+            };
+
+            const maternalSafetyCtx = document.getElementById('maternalSafetyChart').getContext('2d');
+            new Chart(maternalSafetyCtx, {
+                ...baseSafetyConfig,
+                data: {
+                    labels: ['Maternal Intake'],
+                    datasets: [{
+                        label: 'Proposed Dose',
+                        data: [4000],
+                        backgroundColor: 'rgba(34, 197, 94, 0.6)',
+                        borderColor: 'rgb(34, 197, 94)',
+                        borderWidth: 2
+                    }, {
+                        label: 'Safe Upper Limit (TUL)',
+                        data: [0], // This is a visual trick; the limit is shown by the scale max
+                        backgroundColor: 'rgba(229, 231, 235, 0.6)',
+                    }]
+                },
+                options: {
+                    ...baseSafetyConfig.options,
+                    scales: {
+                        x: {
+                            ...baseSafetyConfig.options.scales.x,
+                            max: 4000,
+                            ticks: {
+                                stepSize: 1000
+                            }
+                        },
+                         y: { ...baseSafetyConfig.options.scales.y }
+                    }
+                }
+            });
+
+            const infantSafetyCtx = document.getElementById('infantSafetyChart').getContext('2d');
+            new Chart(infantSafetyCtx, {
+                ...baseSafetyConfig,
+                data: {
+                    labels: ['Infant Intake'],
+                    datasets: [{
+                        label: 'Dose from Milk',
+                        data: [873],
+                        backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                        borderColor: 'rgb(59, 130, 246)',
+                        borderWidth: 2
+                    }, {
+                        label: 'Safe Upper Limit (TUL)',
+                        data: [127], // 1000 - 873
+                        backgroundColor: 'rgba(229, 231, 235, 0.6)',
+                    }]
+                },
+                 options: {
+                    ...baseSafetyConfig.options,
+                    scales: {
+                        x: {
+                            ...baseSafetyConfig.options.scales.x,
+                            max: 1000,
+                             ticks: {
+                                stepSize: 250
+                            }
+                        },
+                        y: { ...baseSafetyConfig.options.scales.y }
+                    }
+                }
+            });
+
+            const pathToggle = document.getElementById('path-toggle');
+            const infantCard = document.getElementById('infant-path-card');
+            const maternalCard = document.getElementById('maternal-path-card');
+
+            pathToggle.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const selectedPath = e.target.dataset.path;
+                    const buttons = pathToggle.querySelectorAll('button');
+
+                    buttons.forEach(button => {
+                        if (button.dataset.path === selectedPath) {
+                            button.classList.add('active');
+                        } else {
+                            button.classList.remove('active');
+                        }
+                    });
+
+                    if (selectedPath === 'infant') {
+                        infantCard.classList.remove('opacity-50', 'bg-stone-50');
+                        maternalCard.classList.add('opacity-50', 'bg-stone-50');
+                    } else {
+                        maternalCard.classList.remove('opacity-50', 'bg-stone-50');
+                        infantCard.classList.add('opacity-50', 'bg-stone-50');
+                    }
+                }
+            });
+
+             document.querySelectorAll('a.nav-link').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

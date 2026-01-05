@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive 5-Day Workout Planner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Neutrals -->
+    <!-- Application Structure Plan: The application uses a tab-based navigation structure, which is optimal for this content. The user's primary goal is to see a specific day's workout. This design presents a clear navigation bar (Day 1-5, Principles, Warm-Up, Cool-Down) that directly corresponds to distinct content panels. Clicking a tab hides all other panels and displays only the relevant one. This task-oriented approach avoids overwhelming the user with a long, scrollable document and provides immediate access to the desired information. The "Principles" section is separated to serve as a foundational reference, while the "Warm-Up" and "Cool-Down" are also distinct for easy, repeated access before and after any workout. This modular structure is more usable and intuitive than the linear format of the source report. -->
+    <!-- Visualization & Content Choices: Report Info: Weekly workout split (Push, Pull, Legs, HIIT, Full Body). Goal: Provide a quick, visual overview of the week's structure. Viz/Presentation: A Donut Chart from Chart.js. Interaction: Hovering over a segment reveals the day's focus. Justification: A donut chart is excellent for showing parts of a whole, effectively communicating the balanced structure of the weekly plan at a glance. Report Info: Daily exercises, sets, reps, and instructions. Goal: Present workout details clearly and interactively. Presentation: HTML tables for workout structure and an accordion-style list for exercise instructions. Interaction: Clicking an exercise name toggles the visibility of its detailed instructions. Justification: This keeps the main workout table clean while making detailed information instantly accessible without navigating away, enhancing usability during a workout. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .chart-container { position: relative; width: 100%; max-width: 400px; margin-left: auto; margin-right: auto; height: 300px; max-height: 400px; }
+        .nav-button { transition: all 0.3s ease; }
+        .nav-button.active { background-color: #4A5568; color: #F7FAFC; }
+        .nav-button:not(.active):hover { background-color: #E2E8F0; }
+        .content-panel { display: none; }
+        .content-panel.active { display: block; }
+        .exercise-item summary { cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .exercise-item summary::-webkit-details-marker { display: none; }
+        .exercise-item summary::after { content: '+'; font-size: 1.5rem; transition: transform 0.2s; }
+        .exercise-item[open] summary::after { transform: rotate(45deg); }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Your 5-Day At-Home Workout Program</h1>
+            <p class="text-gray-600 mt-2">A balanced, full-body plan for strength, cardio, and flexibility.</p>
+        </header>
+
+        <nav class="flex flex-wrap justify-center gap-2 mb-8" id="nav-container">
+            <button data-target="principles" class="nav-button font-semibold py-2 px-4 rounded-full border border-gray-300">Principles</button>
+            <button data-target="warmup" class="nav-button font-semibold py-2 px-4 rounded-full border border-gray-300">Warm-Up</button>
+            <button data-target="day1" class="nav-button font-semibold py-2 px-4 rounded-full border border-gray-300 active">Day 1</button>
+            <button data-target="day2" class="nav-button font-semibold py-2 px-4 rounded-full border border-gray-300">Day 2</button>
+            <button data-target="day3" class="nav-button font-semibold py-2 px-4 rounded-full border border-gray-300">Day 3</button>
+            <button data-target="day4" class="nav-button font-semibold py-2 px-4 rounded-full border border-gray-300">Day 4</button>
+            <button data-target="day5" class="nav-button font-semibold py-2 px-4 rounded-full border border-gray-300">Day 5</button>
+            <button data-target="cooldown" class="nav-button font-semibold py-2 px-4 rounded-full border border-gray-300">Cool-Down</button>
+        </nav>
+
+        <main id="content-container">
+            
+            <div id="principles" class="content-panel p-6 bg-white rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-4 text-center">Program Principles</h2>
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="font-bold text-lg mb-2">📊 Weekly Structure Overview</h3>
+                        <p class="mb-4">This program uses a "Push, Pull, Legs & Conditioning" split to ensure you train your entire body effectively throughout the week while allowing for adequate recovery. This method is superior to training one muscle group per day, as it increases training frequency and accelerates learning for beginners.</p>
+                        <div class="chart-container">
+                            <canvas id="weeklyFocusChart"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg mb-2"> dumbbell Maximizing 1 lb Dumbbells</h3>
+                        <p>The light dumbbells are not for heavy lifting, but for precision. They help build a strong mind-muscle connection, provide feedback to improve your form (proprioception), and add a slight metabolic challenge to cardio movements without compromising technique.</p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg mb-2">📈 Progressive Overload</h3>
+                        <p>To keep making progress without heavier weights, you can:
+                            <ul class="list-disc list-inside mt-2 space-y-1">
+                                <li><strong>Increase Time Under Tension:</strong> Slow down the lowering phase of each rep.</li>
+                                <li><strong>Increase Density:</strong> Do more work in less time by reducing rest periods.</li>
+                                <li><strong>Increase Volume:</strong> Add more reps or an extra set.</li>
+                                <li><strong>Increase Complexity:</strong> Move to a more challenging version of an exercise.</li>
+                            </ul>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="warmup" class="content-panel p-6 bg-white rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-4 text-center">Dynamic Warm-Up (5-7 Mins)</h2>
+                <p class="text-center mb-6">Perform this routine before every workout to increase blood flow and prepare your muscles and nervous system for the session.</p>
+                <div class="space-y-4">
+                    <div class="p-4 bg-gray-100 rounded-lg"><strong>Jumping Jacks:</strong> 30 seconds. Jump feet out while raising arms overhead.</div>
+                    <div class="p-4 bg-gray-100 rounded-lg"><strong>Arm Circles:</strong> 20 seconds forward, 20 seconds backward.</div>
+                    <div class="p-4 bg-gray-100 rounded-lg"><strong>Torso Twists:</strong> 30 seconds. Twist your upper body side to side.</div>
+                    <div class="p-4 bg-gray-100 rounded-lg"><strong>High Knees:</strong> 30 seconds. Run in place, driving knees toward your chest.</div>
+                    <div class="p-4 bg-gray-100 rounded-lg"><strong>Butt Kicks:</strong> 30 seconds. Run in place, bringing heels toward your glutes.</div>
+                    <div class="p-4 bg-gray-100 rounded-lg"><strong>Bodyweight Squats:</strong> 10 repetitions.</div>
+                    <div class="p-4 bg-gray-100 rounded-lg"><strong>Inchworms:</strong> 5 repetitions. Walk hands out to a plank, then feet in.</div>
+                </div>
+            </div>
+            
+            <div id="day1" class="content-panel active p-6 bg-white rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-1 text-center">Day 1: Upper Body Push & Core</h2>
+                <p class="text-center text-gray-600 mb-6">Focus on chest, shoulders, triceps, and core stability.</p>
+                <div class="overflow-x-auto mb-6">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-200"><tr><th class="p-2">Exercise</th><th class="p-2">Sets</th><th class="p-2">Reps/Time</th><th class="p-2">Rest</th></tr></thead>
+                        <tbody>
+                            <tr class="border-b"><td>Push-Up (or Knee)</td><td>3</td><td>8-12</td><td>60s</td></tr>
+                            <tr class="border-b"><td>Dumbbell Shoulder Press</td><td>3</td><td>10-15</td><td>60s</td></tr>
+                            <tr class="border-b"><td>Triceps Dip (on chair)</td><td>3</td><td>10-15</td><td>60s</td></tr>
+                            <tr class="border-b"><td>Dumbbell Lateral Raise</td><td>3</td><td>12-15</td><td>45s</td></tr>
+                            <tr class="border-b"><td>Plank</td><td>3</td><td>30-60s</td><td>30s</td></tr>
+                            <tr class="border-b"><td>Bicycle Crunch</td><td>3</td><td>20-30 total</td><td>30s</td></tr>
+                            <tr><td>Jump Rope: Regular</td><td>1</td><td>5 min</td><td>Intervals</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <h3 class="text-xl font-bold mb-4">Exercise Instructions</h3>
+                <div class="space-y-2">
+                    <details class="exercise-item bg-gray-100 rounded-lg p-4"><summary class="font-semibold">Push-Up</summary><p class="mt-2">Start in a high plank, hands wider than shoulders. Lower your chest to the floor, then push up. Keep body in a straight line. Modify by placing knees on the floor.</p></details>
+                    <details class="exercise-item bg-gray-100 rounded-lg p-4"><summary class="font-semibold">Dumbbell Shoulder Press</summary><p class="mt-2">Sit or stand holding dumbbells at shoulder height, palms forward. Press weights overhead until arms are extended. Lower with control.</p></details>
+                    <details class="exercise-item bg-gray-100 rounded-lg p-4"><summary class="font-semibold">Triceps Dip</summary><p class="mt-2">Sit on a chair's edge, hands gripping beside hips. Slide hips forward. Lower your body by bending elbows to 90 degrees, then press up.</p></details>
+                    <details class="exercise-item bg-gray-100 rounded-lg p-4"><summary class="font-semibold">Dumbbell Lateral Raise</summary><p class="mt-2">Stand holding dumbbells at sides. With a slight elbow bend, raise arms out to the sides until parallel with the floor. Lower with control.</p></details>
+                    <details class="exercise-item bg-gray-100 rounded-lg p-4"><summary class="font-semibold">Plank</summary><p class="mt-2">Hold a position on forearms and toes, body forming a straight line. Engage core and glutes; don't let hips sag.</p></details>
+                    <details class="exercise-item bg-gray-100 rounded-lg p-4"><summary class="font-semibold">Bicycle Crunch</summary><p class="mt-2">Lie on back, hands behind head. Twist to bring opposite elbow to opposite knee, alternating sides in a pedaling motion.</p></details>
+                    <details class="exercise-item bg-gray-100 rounded-lg p-4"><summary class="font-semibold">Jump Rope: Regular Bounce</summary><p class="mt-2">Jump with both feet, using wrists to turn the rope. Land softly. Try 30s on, 30s off for 5 mins.</p></details>
+                </div>
+            </div>
+
+            <div id="day2" class="content-panel p-6 bg-white rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-1 text-center">Day 2: Lower Body Strength & Power</h2>
+                <p class="text-center text-gray-600 mb-6">Focus on quads, hamstrings, glutes, and calves.</p>
+                <div class="overflow-x-auto mb-6">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-200"><tr><th class="p-2">Exercise</th><th class="p-2">Sets</th><th class="p-2">Reps/Time</th><th class="p-2">Rest</th></tr></thead>
+                        <tbody>
+                            <tr class="border-b"><td>Dumbbell Squat</td><td>3</td><td>10-15</td><td>60s</td></tr>
+                            <tr class="border-b"><td>Reverse Dumbbell Lunge</td><td>3</td><td>10-12 each</td><td>60s</td></tr>
+                            <tr class="border-b"><td>Glute Bridge</td><td>3</td><td>15-20</td><td>45s</td></tr>
+                            <tr class="border-b"><td>Dumbbell Calf Raise</td><td>3</td><td>15-20</td><td>45s</td></tr>
+                            <tr><td>Jump Squat</td><td>3</td><td>8-10</td><td>60s</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <h3 class="text-xl font-bold mb-4">Exercise Instructions</h3>
+                <div class="space-y-2">
+                    <details class="exercise-item bg-gray-100 rounded-lg p-4"><summary class="font-semibold">Dumbbell Squat</summary><p class="mt-2">Stand holding dumbbells at sides. Lower hips back and down as if sitting, keeping chest up. Push through heels to return to start.</p></details>
+                    <details class="exercise-item bg-gray-100 rounded-lg p-4"><summary class="font-semibold">Reverse Dumbbell Lunge</summary><p class="mt-2">Step one foot far back, lowering hips until both knees are at 90-degree angles. Push off back foot to return to start. Alternate legs.</p></details>
+                    <details class="exercise-item bg-gray-100 rounded-lg p-4"><summary class="font-semibold">Glute Bridge</summary><p class="mt-2">Lie on back, knees bent, feet flat. Squeeze glutes to lift hips until your body is in a straight line from shoulders to knees. Lower with control.</p></details>
+                    <details class="exercise-item bg-gray-100 rounded-lg p-4"><summary class="font-semibold">Dumbbell Calf Raise</summary><p class="mt-2">Stand holding dumbbells. Slowly rise onto your tiptoes, squeezing calves at the top. Lower with control.</p></details>
+                    <details class="exercise-item bg-gray-100 rounded-lg p-4"><summary class="font-semibold">Jump Squat</summary><p class="mt-2">From the bottom of a squat, explode upward into a jump. Land softly with bent knees, immediately going into the next squat.</p></details>
+                </div>
+            </div>
+
+            <div id="day3" class="content-panel p-6 bg-white rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-1 text-center">Day 3: Upper Body Pull & Core</h2>
+                <p class="text-center text-gray-600 mb-6">Focus on back, biceps, and rotational core strength.</p>
+                <div class="overflow-x-auto mb-6">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-200"><tr><th class="p-2">Exercise</th><th class="p-2">Sets</th><th class="p-2">Reps/Time</th><th class="p-2">Rest</th></tr></thead>
+                        <tbody>
+                            <tr class="border-b"><td>Dumbbell Renegade Row</td><td>3</td><td>8-10 each</td><td>60s</td></tr>
+                            <tr class="border-b"><td>Dumbbell Bicep Curl</td><td>3</td><td>10-15</td><td>60s</td></tr>
+                            <tr class="border-b"><td>Superman T</td><td>3</td><td>12-15</td><td>45s</td></tr>
+                            <tr class="border-b"><td>Dumbbell Hammer Curl</td><td>3</td><td>10-15</td><td>60s</td></tr>
+                            <tr class="border-b"><td>Bird Dog</td><td>3</td><td>10-12 each</td><td>30s</td></tr>
+                            <tr class="border-b"><td>Russian Twist</td><td>3</td><td>20-30 total</td><td>30s</td></tr>
+                            <tr><td>Jump Rope: Boxer Skip</td><td>1</td><td>5 min</td><td>Intervals</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <h3 class="text-xl font-bold mb-4">Exercise Instructions</h3>
+                <div class="space-y-2">
+                    <details class="exercise-item bg-gray-100 rounded-lg p-4"><summary class="font-semibold">Dumbbell Renegade Row</summary><p class="mt-2">In a plank with hands on dumbbells, pull one dumbbell to your chest, keeping hips square. Lower and repeat on the other side.</p></details>
+                    <details class="exercise-item bg-gray-100 rounded-lg p-4"><summary class="font-semibold">Dumbbell Bicep Curl</summary><p class="mt-2">Stand with palms forward. Keeping elbows at your sides, curl weights toward shoulders. Lower with control.</p></details>
+                    <details class="exercise-item bg-gray-100 rounded-lg p-4"><summary class="font-semibold">Superman T</summary><p class="mt-2">Lie facedown with arms out to sides ('T' shape). Squeeze back and glutes to lift chest and arms off the floor.</p></details>
+                    <details class="exercise-item bg-gray-100 rounded-lg p-4"><summary class="font-semibold">Dumbbell Hammer Curl</summary><p class="mt-2">Perform a bicep curl with palms facing each other (neutral grip).</p></details>
+                    <details class="exercise-item bg-gray-100 rounded-lg p-4"><summary class="font-semibold">Bird Dog</summary><p class="mt-2">On all fours, extend one arm forward and the opposite leg back. Keep back flat. Return and switch sides.</p></details>
+                    <details class="exercise-item bg-gray-100 rounded-lg p-4"><summary class="font-semibold">Russian Twist</summary><p class="mt-2">Sit leaning back with knees bent. Twist your torso to touch your hands to the floor on each side.</p></details>
+                    <details class="exercise-item bg-gray-100 rounded-lg p-4"><summary class="font-semibold">Jump Rope: Boxer Skip</summary><p class="mt-2">Shift weight from foot to foot with each rope turn, like a boxer's shuffle.</p></details>
+                </div>
+            </div>
+
+            <div id="day4" class="content-panel p-6 bg-white rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-1 text-center">Day 4: HIIT & Active Mobility</h2>
+                <p class="text-center text-gray-600 mb-6">Boost your heart rate and improve movement quality.</p>
+                <div class="bg-gray-100 p-4 rounded-lg mb-6">
+                    <h3 class="font-bold text-lg mb-2 text-center">HIIT Circuit</h3>
+                    <p class="text-center mb-4">Perform each exercise for <strong>30 seconds</strong>, followed by <strong>15 seconds</strong> of rest. Complete <strong>5-8 rounds</strong> of the entire circuit.</p>
+                    <ul class="text-center font-semibold space-y-1">
+                        <li>Jump Rope: Run in Place</li>
+                        <li>Bodyweight Burpee</li>
+                        <li>Mountain Climbers</li>
+                        <li>High Knees</li>
+                    </ul>
+                </div>
+                 <div class="bg-gray-100 p-4 rounded-lg">
+                    <h3 class="font-bold text-lg mb-2 text-center">Mobility Flow</h3>
+                    <p class="text-center mb-4">After your HIIT circuit, perform this gentle flow to aid recovery.</p>
+                    <ul class="text-center font-semibold space-y-1">
+                        <li>Cat-Cow (10 reps)</li>
+                        <li>Thoracic Spine Windmills (8 each side)</li>
+                        <li>World's Greatest Stretch (5 each side)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="day5" class="content-panel p-6 bg-white rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-1 text-center">Day 5: Full-Body Metabolic Conditioning</h2>
+                <p class="text-center text-gray-600 mb-6">Challenge your entire body as a single unit.</p>
+                <div class="overflow-x-auto mb-6">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-200"><tr><th class="p-2">Exercise</th><th class="p-2">Sets</th><th class="p-2">Reps/Time</th><th class="p-2">Rest</th></tr></thead>
+                        <tbody>
+                            <tr class="border-b"><td>Dumbbell Thruster</td><td>3</td><td>10-15</td><td>60s</td></tr>
+                            <tr class="border-b"><td>Dumbbell RDL</td><td>3</td><td>12-15</td><td>60s</td></tr>
+                            <tr class="border-b"><td>Plank Up-and-Downs</td><td>3</td><td>8-10 each</td><td>60s</td></tr>
+                            <tr class="border-b"><td>Dumbbell Alt. Punches</td><td>3</td><td>30-45s</td><td>45s</td></tr>
+                            <tr><td>Side-to-Side Hops</td><td>3</td><td>30-45s</td><td>45s</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <h3 class="text-xl font-bold mb-4">Exercise Instructions</h3>
+                <div class="space-y-2">
+                    <details class="exercise-item bg-gray-100 rounded-lg p-4"><summary class="font-semibold">Dumbbell Thruster</summary><p class="mt-2">From a squat, use momentum to press dumbbells overhead as you stand up.</p></details>
+                    <details class="exercise-item bg-gray-100 rounded-lg p-4"><summary class="font-semibold">Dumbbell RDL</summary><p class="mt-2">Hinge at your hips, keeping back straight and knees slightly bent. Lower dumbbells along your legs until you feel a hamstring stretch. Return to standing.</p></details>
+                    <details class="exercise-item bg-gray-100 rounded-lg p-4"><summary class="font-semibold">Plank Up-and-Downs</summary><p class="mt-2">From a high plank, lower to a forearm plank one arm at a time, then push back up to a high plank.</p></details>
+                    <details class="exercise-item bg-gray-100 rounded-lg p-4"><summary class="font-semibold">Dumbbell Alternating Punches</summary><p class="mt-2">In a fighting stance, punch one arm out at a time rapidly but with control.</p></details>
+                    <details class="exercise-item bg-gray-100 rounded-lg p-4"><summary class="font-semibold">Side-to-Side Hops</summary><p class="mt-2">Hop with both feet from side to side over an imaginary line.</p></details>
+                </div>
+            </div>
+
+            <div id="cooldown" class="content-panel p-6 bg-white rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold mb-4 text-center">Static Cool-Down (7-10 Mins)</h2>
+                <p class="text-center mb-6">Perform this routine after every workout to improve flexibility and start the recovery process. Hold each stretch for <strong>30 seconds</strong> per side.</p>
+                <div class="space-y-4">
+                    <div class="p-4 bg-gray-100 rounded-lg"><strong>Doorway Pectoralis Stretch:</strong> Stretch chest in a doorway.</div>
+                    <div class="p-4 bg-gray-100 rounded-lg"><strong>Cross-Body Shoulder Stretch:</strong> Pull one arm across your body.</div>
+                    <div class="p-4 bg-gray-100 rounded-lg"><strong>Overhead Triceps Stretch:</strong> Pull elbow of raised arm with other hand.</div>
+                    <div class="p-4 bg-gray-100 rounded-lg"><strong>Standing Quad Stretch:</strong> Pull heel toward glute.</div>
+                    <div class="p-4 bg-gray-100 rounded-lg"><strong>Seated Hamstring Stretch:</strong> Lean forward over one extended leg.</div>
+                    <div class="p-4 bg-gray-100 rounded-lg"><strong>Kneeling Hip Flexor Stretch:</strong> Lunge forward to stretch hip.</div>
+                    <div class="p-4 bg-gray-100 rounded-lg"><strong>Lying Figure-Four Stretch:</strong> Cross ankle over knee and pull thigh.</div>
+                    <div class="p-4 bg-gray-100 rounded-lg"><strong>Standing Wall Calf Stretch:</strong> Lean against a wall with one foot back.</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const navContainer = document.getElementById('nav-container');
+            const contentContainer = document.getElementById('content-container');
+            const navButtons = navContainer.querySelectorAll('.nav-button');
+            const contentPanels = contentContainer.querySelectorAll('.content-panel');
+
+            navContainer.addEventListener('click', (e) => {
+                const targetButton = e.target.closest('.nav-button');
+                if (!targetButton) return;
+
+                const targetPanelId = targetButton.dataset.target;
+                
+                navButtons.forEach(button => {
+                    button.classList.toggle('active', button === targetButton);
+                });
+
+                contentPanels.forEach(panel => {
+                    panel.classList.toggle('active', panel.id === targetPanelId);
+                });
+            });
+            
+            const ctx = document.getElementById('weeklyFocusChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: [
+                        'Day 1: Push & Core', 
+                        'Day 2: Lower Body', 
+                        'Day 3: Pull & Core', 
+                        'Day 4: HIIT & Mobility', 
+                        'Day 5: Full Body'
+                    ],
+                    datasets: [{
+                        label: 'Workout Focus',
+                        data: [20, 20, 20, 20, 20],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(153, 102, 255, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label || '';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

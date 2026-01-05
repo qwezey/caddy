@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn TypeScript: Your First Language</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .font-mono {
+            font-family: 'Fira Code', monospace;
+        }
+        /* Simple scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-300">
+
+    <div class="flex min-h-screen">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-slate-800/50 backdrop-blur-sm p-6 sticky top-0 h-screen overflow-y-auto hidden md:block border-r border-slate-700">
+            <h1 class="text-2xl font-bold text-white mb-8">Learn <span class="text-blue-400">TypeScript</span></h1>
+            <nav id="nav-menu">
+                <ul class="space-y-2">
+                    <!-- Navigation links will be dynamically inserted here -->
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 md:p-10 lg:p-12 overflow-y-auto">
+            <div class="max-w-4xl mx-auto">
+                
+                <!-- Section 1: Introduction -->
+                <section id="introduction" class="mb-16 space-y-6 scroll-mt-20">
+                    <h2 class="text-4xl font-bold text-white border-b-2 border-blue-400 pb-2">Welcome to Programming!</h2>
+                    <p>Welcome! If you're here, you're about to take your first step into the amazing world of programming. Think of programming as giving instructions to a computer to perform a task. You write these instructions in a special language the computer understands, and that's what we're here to learn.</p>
+                    <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+                        <h3 class="text-2xl font-semibold text-white mb-3">Why TypeScript?</h3>
+                        <p>We're starting with TypeScript, a modern language developed by Microsoft. It's a "superset" of JavaScript, meaning any JavaScript code is also valid TypeScript code. The special thing TypeScript adds is a system of 'types'.</p>
+                        <p class="mt-4">Imagine you have boxes for different kinds of toys. One box is only for LEGOs, another only for toy cars. Types work like that for your data. You tell TypeScript, "This variable should only ever hold a number," or "This one should only hold text." This helps catch mistakes early and makes your code much easier to understand as it grows. It's like having a helpful assistant checking your work as you go!</p>
+                    </div>
+                </section>
+
+                <!-- Section 2: Variables and Data Types -->
+                <section id="variables" class="mb-16 space-y-6 scroll-mt-20">
+                    <h2 class="text-3xl font-bold text-white border-b-2 border-blue-400 pb-2">Variables & Data Types</h2>
+                    <p>A variable is a container with a name where you can store data. Think of it like a labeled box. In TypeScript, we're very clear about what kind of data goes into each box. This is called a 'data type'.</p>
+                    
+                    <h3 class="text-xl font-semibold text-white pt-4">Common Data Types</h3>
+                    
+                    <!-- String Example -->
+                    <div class="code-example" data-title="String: For Text">
+                        <p class="mb-2">The <code class="font-mono text-sm bg-slate-700 text-blue-300 rounded px-1 py-0.5">string</code> type is for text, like names or messages. You wrap the text in quotes.</p>
+                        <pre class="code-block">let greeting: string = "Hello, beginner!";</pre>
+                    </div>
+                    
+                    <!-- Number Example -->
+                    <div class="code-example" data-title="Number: For Numbers">
+                        <p class="mb-2">The <code class="font-mono text-sm bg-slate-700 text-blue-300 rounded px-1 py-0.5">number</code> type is for all kinds of numbers, including decimals.</p>
+                        <pre class="code-block">let userAge: number = 25;</pre>
+                    </div>
+
+                    <!-- Boolean Example -->
+                    <div class="code-example" data-title="Boolean: For True/False">
+                        <p class="mb-2">The <code class="font-mono text-sm bg-slate-700 text-blue-300 rounded px-1 py-0.5">boolean</code> type can only be one of two values: <code class="font-mono text-sm">true</code> or <code class="font-mono text-sm">false</code>. It's great for things that are on/off or yes/no.</p>
+                        <pre class="code-block">let isLoggedIn: boolean = true;</pre>
+                    </div>
+                </section>
+                
+                <!-- Section 3: Operators -->
+                <section id="operators" class="mb-16 space-y-6 scroll-mt-20">
+                    <h2 class="text-3xl font-bold text-white border-b-2 border-blue-400 pb-2">Operators</h2>
+                    <p>Operators are symbols that perform operations on our variables and values. You already know many of these from math class!</p>
+                    
+                    <!-- Arithmetic Operators -->
+                    <div class="code-example" data-title="Arithmetic Operators">
+                        <p class="mb-2">These are for basic math.</p>
+                        <pre class="code-block">let apples: number = 5;
+let oranges: number = 3;
+let totalFruit: number = apples + oranges; // totalFruit is 8</pre>
+                    </div>
+
+                    <!-- Comparison Operators -->
+                    <div class="code-example" data-title="Comparison Operators">
+                        <p class="mb-2">These compare two values and give you a <code class="font-mono text-sm bg-slate-700 text-blue-300 rounded px-1 py-0.5">boolean</code> (true or false) result.</p>
+                        <pre class="code-block">let myAge: number = 30;
+let requiredAge: number = 18;
+let canVote: boolean = myAge >= requiredAge; // canVote is true</pre>
+                    </div>
+                </section>
+
+                <!-- Section 4: Control Flow -->
+                <section id="control-flow" class="mb-16 space-y-6 scroll-mt-20">
+                    <h2 class="text-3xl font-bold text-white border-b-2 border-blue-400 pb-2">Control Flow</h2>
+                    <p>So far, our code runs straight from top to bottom. Control flow lets us make decisions and run code multiple times, making our programs much smarter.</p>
+                    
+                    <!-- If/Else Statement -->
+                    <div class="code-example" data-title="If...Else Statements">
+                        <p class="mb-2">This lets you run code only if a certain condition is true.</p>
+                        <pre class="code-block">let temperature: number = 25;
+let message: string;
+
+if (temperature > 20) {
+    message = "It's a warm day!";
+} else {
+    message = "It's a bit chilly.";
+}
+// message will be "It's a warm day!"</pre>
+                    </div>
+                    
+                    <!-- For Loop -->
+                    <div class="code-example" data-title="For Loops">
+                        <p class="mb-2">Use a 'for loop' when you want to repeat an action a specific number of times.</p>
+                        <pre class="code-block">let result: string = "";
+for (let i: number = 1; i <= 5; i++) {
+    result += "Count: " + i + "\\n";
+}
+// This loop will run 5 times.</pre>
+                    </div>
+                </section>
+
+                <!-- Section 5: Functions -->
+                <section id="functions" class="mb-16 space-y-6 scroll-mt-20">
+                    <h2 class="text-3xl font-bold text-white border-b-2 border-blue-400 pb-2">Functions</h2>
+                    <p>Functions are reusable blocks of code that perform a specific task. They help keep your code organized and prevent you from repeating yourself.</p>
+                    
+                    <div class="code-example" data-title="Defining and Calling a Function">
+                        <p class="mb-2">Here, we define a function called <code class="font-mono text-sm">add</code> that takes two numbers and returns their sum. Then we 'call' it.</p>
+                        <pre class="code-block">// Defining the function
+function add(a: number, b: number): number {
+    return a + b;
+}
+
+// Calling the function
+let sum: number = add(5, 10); // sum will be 15</pre>
+                    </div>
+                </section>
+
+                <!-- Section 6: Arrays and Objects -->
+                <section id="collections" class="mb-16 space-y-6 scroll-mt-20">
+                    <h2 class="text-3xl font-bold text-white border-b-2 border-blue-400 pb-2">Arrays and Objects</h2>
+                    <p>Variables are great for storing one piece of data. But what if you need to store a list of items, or a complex entity like a user?</p>
+
+                    <!-- Array Example -->
+                    <div class="code-example" data-title="Arrays: Ordered Lists">
+                        <p class="mb-2">An <code class="font-mono text-sm bg-slate-700 text-blue-300 rounded px-1 py-0.5">array</code> is a list of items. We use <code class="font-mono text-sm">[]</code> to define them. Note that programming usually counts from 0!</p>
+                        <pre class="code-block">let fruits: string[] = ["Apple", "Banana", "Cherry"];
+let firstFruit: string = fruits[0]; // "Apple"
+let secondFruit: string = fruits[1]; // "Banana"</pre>
+                    </div>
+
+                    <!-- Object Example -->
+                    <div class="code-example" data-title="Objects: Key-Value Pairs">
+                        <p class="mb-2">An <code class="font-mono text-sm bg-slate-700 text-blue-300 rounded px-1 py-0.5">object</code> is a collection of related data with named keys. We use <code class="font-mono text-sm">{}</code> to define them.</p>
+                        <pre class="code-block">let user: { name: string; age: number; isActive: boolean } = {
+    name: "Alex",
+    age: 30,
+    isActive: true
+};
+
+let userName: string = user.name; // "Alex"</pre>
+                    </div>
+                </section>
+
+                <!-- Section 7: DOM Manipulation -->
+                <section id="dom" class="mb-16 space-y-6 scroll-mt-20">
+                    <h2 class="text-3xl font-bold text-white border-b-2 border-blue-400 pb-2">Making Webpages Interactive</h2>
+                    <p>This is where the magic happens! TypeScript (and JavaScript) can interact with the HTML of a webpage. This is called DOM (Document Object Model) manipulation.</p>
+                    
+                    <div class="code-example" data-title="Changing Content on the Page">
+                        <p class="mb-2">Below is a real, interactive example. The code will find the blue message box below and change its text when you click "Run".</p>
+                        <pre class="code-block" data-interactive="true">// Find the HTML element with the id 'message-box'
+const messageBox = document.getElementById('message-box');
+
+// Change its text content
+if (messageBox) {
+    messageBox.innerText = "Wow, the text changed because of TypeScript!";
+}</pre>
+                        <div id="message-box" class="mt-4 p-4 bg-blue-500/10 border border-blue-400 text-blue-300 rounded-lg">
+                            This is a message box. Click "Run" above to change me.
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 8: Next Steps -->
+                <section id="next-steps" class="mb-16 space-y-6 scroll-mt-20">
+                    <h2 class="text-3xl font-bold text-white border-b-2 border-blue-400 pb-2">What's Next?</h2>
+                    <p>Congratulations! You've just learned the absolute basics of programming with TypeScript. You've covered variables, logic, functions, and even how to change a webpage.</p>
+                    <div class="bg-slate-800 p-6 rounded-lg border border-slate-700">
+                        <h3 class="text-2xl font-semibold text-white mb-3">Keep Practicing!</h3>
+                        <p>Programming is a skill that gets better with practice. Try changing the code in the examples on this page. See if you can predict what will happen. Don't be afraid to break things – that's often the best way to learn!</p>
+                        <ul class="list-disc list-inside mt-4 space-y-2">
+                            <li>Try creating a new variable and printing its value.</li>
+                            <li>Change the numbers in the loops and `if` statements.</li>
+                            <li>Write a new function that takes your name and returns a greeting.</li>
+                        </ul>
+                        <p class="mt-4">This foundation is your launchpad. From here, you can explore building full web applications, games, mobile apps, and so much more. Good luck!</p>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('main section');
+            const navMenu = document.getElementById('nav-menu');
+            const navUl = navMenu.querySelector('ul');
+
+            // --- Populate navigation menu from sections ---
+            sections.forEach(section => {
+                const id = section.id;
+                const title = section.querySelector('h2').textContent;
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="#${id}" class="nav-link text-slate-400 hover:text-white transition-colors duration-200 block py-1">${title}</a>`;
+                navUl.appendChild(li);
+            });
+
+            // --- Process and create interactive code examples ---
+            document.querySelectorAll('.code-example').forEach((wrapper, index) => {
+                const title = wrapper.dataset.title;
+                const codeBlock = wrapper.querySelector('pre.code-block');
+                const originalCode = codeBlock.textContent;
+
+                // Create header for the code block
+                const header = document.createElement('div');
+                header.className = 'flex justify-between items-center bg-slate-800 p-3 rounded-t-lg border-b border-slate-700';
+                const h4 = document.createElement('h4');
+                h4.className = 'text-lg font-semibold text-white';
+                h4.textContent = title;
+                header.appendChild(h4);
+
+                // Create and add run button
+                const runButton = document.createElement('button');
+                runButton.textContent = 'Run Code';
+                runButton.className = 'run-btn bg-blue-600 hover:bg-blue-500 text-white font-bold py-1 px-3 rounded-md text-sm transition-colors duration-200';
+                header.appendChild(runButton);
+
+                // Style the code block itself
+                codeBlock.className = 'font-mono text-sm bg-slate-900/70 p-4 rounded-b-lg overflow-x-auto';
+
+                // Create output area
+                const outputArea = document.createElement('pre');
+                outputArea.className = 'output-area font-mono text-sm bg-black p-4 rounded-lg mt-2 text-green-300 hidden';
+                outputArea.textContent = 'Output will appear here...';
+                
+                // Insert header and output area into the wrapper
+                wrapper.insertBefore(header, wrapper.firstChild);
+                wrapper.appendChild(outputArea);
+                
+                // Handle run button click
+                runButton.addEventListener('click', () => {
+                    outputArea.textContent = ''; // Clear previous output
+                    outputArea.classList.remove('hidden');
+
+                    // --- Super simple "TypeScript" runner ---
+                    // It's really just running JavaScript, as TS is a superset.
+                    // This is for educational purposes. We override console.log
+                    // to capture output.
+                    const capturedLogs = [];
+                    const originalConsoleLog = console.log;
+                    console.log = (...args) => {
+                        capturedLogs.push(args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg).join(' '));
+                    };
+                    
+                    try {
+                        // For the interactive DOM example, we run it directly
+                        if (codeBlock.dataset.interactive === 'true') {
+                             eval(originalCode);
+                             capturedLogs.push("DOM manipulation successful! Check the message box below.");
+                        } else {
+                            // We need to find the last expression to display its value.
+                            // This is a simplified approach.
+                            let codeToRun = originalCode.replace(/let |const |var /g, ''); // Remove declarations for eval
+                            const lines = codeToRun.split('\n').filter(line => line.trim() !== '');
+                            const lastLine = lines[lines.length - 1];
+                            
+                            // A crude way to see if the last line is an expression
+                            // that should be displayed.
+                            if (lastLine && !lastLine.includes('=') && !lastLine.includes('}') && !last-line.includes('{') && !lastLine.includes(';') && !lastLine.match(/^\s*for|if|else/)) {
+                                codeToRun += `\nconsole.log(${lastLine.split(';')[0]})`;
+                            } else {
+                                // If not, we find the last declared variable and log it.
+                                const declaredVars = (originalCode.match(/(?:let|const|var)\s+(\w+)/g) || []).map(d => d.split(' ')[1]);
+                                if (declaredVars.length > 0) {
+                                     codeToRun += `\nconsole.log("${declaredVars[declaredVars.length - 1]}:", ${declaredVars[declaredVars.length - 1]})`
+                                } else {
+                                     eval(originalCode); // Run code that has no obvious output
+                                }
+                            }
+                           eval(codeToRun);
+                        }
+
+                        if (capturedLogs.length > 0) {
+                             outputArea.textContent = capturedLogs.join('\n');
+                        } else {
+                            outputArea.textContent = 'Code executed successfully. (No output was printed to the console).';
+                        }
+
+                    } catch (e) {
+                        outputArea.textContent = `Error: ${e.message}`;
+                        outputArea.classList.add('text-red-400');
+                    } finally {
+                        console.log = originalConsoleLog; // Restore original console.log
+                    }
+                });
+            });
+
+            // --- Active nav link highlighting on scroll ---
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        document.querySelectorAll('.nav-link').forEach(link => {
+                            link.classList.remove('text-white', 'font-semibold');
+                            link.classList.add('text-slate-400');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('text-white', 'font-semibold');
+                                link.classList.remove('text-slate-400');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: '-50% 0px -50% 0px', threshold: 0 });
+
+            sections.forEach(section => observer.observe(section));
+
+        });
+    </script>
+</body>
+</html>

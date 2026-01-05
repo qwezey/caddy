@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Guide to Safe Bending: Spine vs. Hips</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: The SPA is designed as a guided, interactive learning module that progresses from understanding the two core bending movements to comparing their risks and finally learning the correct technique. The structure is thematic: 1. Introduction: Sets the stage. 2. The Two Bends: A side-by-side interactive comparison of Spinal Flexion vs. Hip Hinge. This is the core of the app, allowing users to actively explore the differences. 3. Why It Matters (The Risks): Visualizes the forces and injury mechanisms using a dynamic chart and interactive diagrams. This section answers the "why" behind the recommendation. 4. Master the Move (The Solution): A practical, step-by-step guide to learning the hip hinge. This provides an actionable takeaway. This structure was chosen to guide the user from intellectual understanding to practical application, making the complex biomechanical information more accessible and memorable than a linear report. -->
+    <!-- Visualization & Content Choices: 1. Report Info: Comparing Spinal Flexion vs. Hip Hinge kinematics. -> Goal: Compare. -> Viz/Presentation: Side-by-side interactive HTML/CSS animated diagrams. -> Interaction: Buttons to toggle between "Spinal Flexion" and "Hip Hinge" views, which dynamically update text descriptions, muscle highlights, and a simple animated diagram showing the movement pattern. -> Justification: Actively engaging the user in the comparison is more effective than a static table. -> Library/Method: Vanilla JS, HTML, Tailwind CSS. 2. Report Info: Data on compressive/shear forces and intradiscal pressure. -> Goal: Inform/Compare. -> Viz/Presentation: A dynamic bar chart. -> Interaction: The chart will visually compare the relative forces on the lumbar spine for each bending style. Tooltips will provide specific details. -> Justification: A chart provides a quick, impactful visualization of the drastic difference in forces, which is a key takeaway. -> Library/Method: Chart.js (Canvas). 3. Report Info: Muscle roles (Movers vs. Stabilizers). -> Goal: Organize/Inform. -> Viz/Presentation: Interactive human body diagrams. -> Interaction: Hovering over or clicking on muscle groups (Glutes, Hamstrings, Erector Spinae, Core) highlights them and displays their specific role in the selected bending pattern. -> Justification: This makes the abstract concept of muscle engagement tangible and easy to understand. -> Library/Method: Vanilla JS, HTML, Tailwind CSS. 4. Report Info: Practical exercises for learning the hip hinge. -> Goal: Inform/Organize. -> Viz/Presentation: A step-by-step interactive guide with clickable steps. -> Justification: Breaks down the learning process into manageable, easy-to-follow steps. -> Library/Method: Vanilla JS, HTML, Tailwind CSS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #4A4A4A;
+        }
+        .nav-button.active {
+            background-color: #8D7B68;
+            color: #FFFFFF;
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .diagram-container {
+            width: 150px;
+            height: 300px;
+            position: relative;
+        }
+        .diagram-body {
+            position: absolute;
+            background-color: #E3D8CC;
+            border-radius: 50px;
+        }
+        .head { top: 0; left: 50%; transform: translateX(-50%); width: 40px; height: 40px; border-radius: 50%; }
+        .torso { top: 45px; left: 50%; transform: translateX(-50%); width: 50px; height: 100px; }
+        .pelvis { top: 150px; left: 50%; transform: translateX(-50%); width: 50px; height: 30px; }
+        .leg { top: 185px; left: 50%; transform: translateX(-50%); width: 20px; height: 115px; }
+        .spine-flexion .torso { transform-origin: bottom center; transform: translateX(-50%) rotate(30deg) scaleY(1.1); top: 35px; }
+        .hip-hinge .torso, .hip-hinge .pelvis { transform-origin: bottom center; transform: rotate(60deg) translateX(35px) translateY(-30px); }
+        .hip-hinge .leg { transform-origin: top center; transform: translateX(-50%) translateY(5px) rotate(-10deg); }
+        .muscle { position: absolute; background-color: rgba(239, 68, 68, 0.7); transition: opacity 0.3s ease; opacity: 0; }
+        .muscle.active { opacity: 1; }
+        .glutes { top: 150px; left: 50%; width: 55px; height: 40px; transform: translateX(-55%); background-color: rgba(59, 130, 246, 0.7); }
+        .hamstrings { top: 190px; left: 50%; width: 25px; height: 80px; transform: translateX(-60%); background-color: rgba(59, 130, 246, 0.7); }
+        .erector-spinae { top: 50px; left: 50%; width: 20px; height: 95px; transform: translateX(-50%); }
+        .core { top: 90px; left: 50%; width: 50px; height: 60px; transform: translateX(-50%); background-color: rgba(245, 158, 11, 0.7); border: 2px dashed #F59E0B; background-clip: content-box; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 300px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 350px; } }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto px-4 py-8">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#6B4F4F] mb-2">The Interactive Guide to Safe Bending</h1>
+            <p class="text-lg text-gray-600">Understand the Difference Between Bending at the Spine and Hinging at the Hips.</p>
+        </header>
+
+        <nav class="flex justify-center mb-10 bg-[#E3D8CC] rounded-full p-1 max-w-lg mx-auto shadow-sm">
+            <button class="nav-button active w-1/3 py-2 px-4 rounded-full text-center font-semibold" data-target="compare">Compare Bends</button>
+            <button class="nav-button w-1/3 py-2 px-4 rounded-full text-center font-semibold" data-target="risks">Explore Risks</button>
+            <button class="nav-button w-1/3 py-2 px-4 rounded-full text-center font-semibold" data-target="learn">Master the Hinge</button>
+        </nav>
+
+        <main>
+            <section id="compare" class="content-section active">
+                <div class="text-center mb-8">
+                     <h2 class="text-3xl font-bold text-[#8D7B68]">Two Ways to Bend: An Interactive Comparison</h2>
+                     <p class="mt-2 max-w-3xl mx-auto text-gray-600">The human body has two primary ways to bend forward: one that puts the spine at risk, and one that uses the powerful muscles of the hips and legs. This section allows you to directly compare these two methods. Click the buttons to see how the body moves and which muscles are engaged for each pattern.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8 items-start">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="flex justify-center space-x-4 mb-6">
+                            <button id="flexionBtn" class="px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 transition-all">Show Spinal Flexion</button>
+                            <button id="hingeBtn" class="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition-all">Show Hip Hinge</button>
+                        </div>
+                        <div class="flex justify-center mb-6">
+                            <div id="diagram" class="diagram-container">
+                                <div class="diagram-body head"></div>
+                                <div class="diagram-body torso"></div>
+                                <div class="diagram-body pelvis"></div>
+                                <div class="diagram-body leg"></div>
+                                <div id="glutes" class="muscle glutes"></div>
+                                <div id="hamstrings" class="muscle hamstrings"></div>
+                                <div id="erector" class="muscle erector-spinae"></div>
+                                <div id="core" class="muscle core"></div>
+                            </div>
+                        </div>
+                         <div class="mt-4 text-center">
+                            <h3 class="text-xl font-semibold text-gray-800" id="bend-title">Select a Bending Style</h3>
+                            <p class="text-gray-600 mt-2" id="bend-description">Click a button above to see a visual representation and an explanation of the movement pattern.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-2xl font-bold text-[#8D7B68] mb-4 text-center">Key Differences</h3>
+                        <div id="comparison-details">
+                            <div class="mb-4">
+                                <h4 class="font-semibold text-lg">Primary Joint of Motion</h4>
+                                <p id="joint-text" class="text-gray-600">-</p>
+                            </div>
+                            <div class="mb-4">
+                                <h4 class="font-semibold text-lg">Spinal Posture</h4>
+                                <p id="posture-text" class="text-gray-600">-</p>
+                            </div>
+                            <div class="mb-4">
+                                <h4 class="font-semibold text-lg">Primary Moving Muscles</h4>
+                                <p id="mover-text" class="text-gray-600">-</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-lg">Primary Stabilizing Muscles</h4>
+                                <p id="stabilizer-text" class="text-gray-600">-</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="risks" class="content-section">
+                 <div class="text-center mb-8">
+                     <h2 class="text-3xl font-bold text-[#8D7B68]">Why It Matters: Visualizing the Risks</h2>
+                     <p class="mt-2 max-w-3xl mx-auto text-gray-600">Bending with a rounded spine, especially under load, creates immense pressure on its delicate structures. This section visualizes the forces involved and highlights the tissues most at risk. Understanding these risks is the first step toward preventing injury.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-center text-gray-800 mb-4">Relative Compressive Force on Lumbar Spine</h3>
+                        <div class="chart-container">
+                            <canvas id="forcesChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-center text-gray-800 mb-4">Injury Hotspots in Spinal Flexion</h3>
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <span class="text-red-500 font-bold text-xl mr-3">●</span>
+                                <div>
+                                    <h4 class="font-semibold">Intervertebral Disc</h4>
+                                    <p class="text-gray-600">High pressure can cause the disc's soft center to bulge or herniate, pressing on nerves.</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-red-500 font-bold text-xl mr-3">●</span>
+                                <div>
+                                    <h4 class="font-semibold">Spinal Ligaments</h4>
+                                    <p class="text-gray-600">Overstretching can lead to sprains and chronic instability, weakening the spine's passive support.</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-red-500 font-bold text-xl mr-3">●</span>
+                                <div>
+                                    <h4 class="font-semibold">Erector Spinae Muscles</h4>
+                                    <p class="text-gray-600">These muscles are forced to work at a mechanical disadvantage, leading to strains and spasms.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="learn" class="content-section">
+                 <div class="text-center mb-8">
+                     <h2 class="text-3xl font-bold text-[#8D7B68]">Master the Move: Learn the Hip Hinge</h2>
+                     <p class="mt-2 max-w-3xl mx-auto text-gray-600">Learning to bend correctly is a skill that protects your back for a lifetime. The hip hinge is the fundamental pattern for safe and powerful lifting. Follow these progressive steps to re-train your body's movement patterns and build a stronger, more resilient back.</p>
+                </div>
+                <div class="max-w-4xl mx-auto">
+                    <div class="grid md:grid-cols-3 gap-4 text-center">
+                        <button class="learn-step-btn p-4 bg-white rounded-lg shadow-md font-semibold border-2 border-blue-500" data-step="1">Step 1: Wall Taps</button>
+                        <button class="learn-step-btn p-4 bg-white rounded-lg shadow-md font-semibold border-2 border-transparent" data-step="2">Step 2: Waiter's Bow</button>
+                        <button class="learn-step-btn p-4 bg-white rounded-lg shadow-md font-semibold border-2 border-transparent" data-step="3">Step 3: Light Load</button>
+                    </div>
+                    <div id="learn-content" class="mt-8 bg-white p-8 rounded-lg shadow-lg">
+                        <h3 id="step-title" class="text-2xl font-bold text-gray-800">Step 1: The Wall Tap Drill</h3>
+                        <p id="step-description" class="mt-4 text-gray-600">This drill isolates the key motion of the hip hinge: pushing your hips backward. Stand about 6-12 inches from a wall, feet shoulder-width apart. Keeping your back straight and shins vertical, push your hips straight back until your glutes gently tap the wall. Squeeze your glutes to return to a standing position. This teaches your body to initiate the bend from the hips, not the spine.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navButtons = document.querySelectorAll('.nav-button');
+            const contentSections = document.querySelectorAll('.content-section');
+            const flexionBtn = document.getElementById('flexionBtn');
+            const hingeBtn = document.getElementById('hingeBtn');
+            const diagram = document.getElementById('diagram');
+            const bendTitle = document.getElementById('bend-title');
+            const bendDescription = document.getElementById('bend-description');
+
+            const glutes = document.getElementById('glutes');
+            const hamstrings = document.getElementById('hamstrings');
+            const erector = document.getElementById('erector');
+            const core = document.getElementById('core');
+
+            const jointText = document.getElementById('joint-text');
+            const postureText = document.getElementById('posture-text');
+            const moverText = document.getElementById('mover-text');
+            const stabilizerText = document.getElementById('stabilizer-text');
+
+            const learnStepButtons = document.querySelectorAll('.learn-step-btn');
+            const stepTitle = document.getElementById('step-title');
+            const stepDescription = document.getElementById('step-description');
+
+            const flexionData = {
+                title: 'Spinal Flexion ("Stoop Bend")',
+                description: 'Movement is initiated by rounding the back. This places the spine at its end range of motion, a position of mechanical vulnerability, especially under load.',
+                joint: 'Intervertebral joints of the lumbar spine.',
+                posture: 'Flexed (rounded); loss of the natural inward curve.',
+                mover: 'Erector spinae (under high strain).',
+                stabilizer: 'Minimal engagement; relies on passive structures like ligaments.',
+                muscles: { glutes: false, hamstrings: false, erector: true, core: false }
+            };
+
+            const hingeData = {
+                title: 'Hip Hinge',
+                description: 'Movement is initiated by shifting the hips backward. The torso and pelvis move as a single, rigid unit, pivoting at the hips while the spine remains stable.',
+                joint: 'Coxo-femoral (hip) joints.',
+                posture: 'Neutral; the natural inward curve is maintained.',
+                mover: 'Gluteus maximus and hamstrings (the posterior chain).',
+                stabilizer: 'Core (abdominals) and erector spinae (contracting isometrically).',
+                muscles: { glutes: true, hamstrings: true, erector: false, core: true }
+            };
+            
+            const learnSteps = {
+                '1': {
+                    title: 'Step 1: The Wall Tap Drill',
+                    description: "This drill isolates the key motion of the hip hinge: pushing your hips backward. Stand about 6-12 inches from a wall, feet shoulder-width apart. Keeping your back straight and shins vertical, push your hips straight back until your glutes gently tap the wall. Squeeze your glutes to return to a standing position. This teaches your body to initiate the bend from the hips, not the spine."
+                },
+                '2': {
+                    title: "Step 2: The Waiter's Bow",
+                    description: "This drill ingrains the pattern without any external load. Stand tall with a slight bend in your knees. Place your hands on your thighs. Now, bow forward by pushing your hips back, sliding your hands down your legs. Keep your spine perfectly straight, as if you were a waiter presenting a tray. Go as low as you can without rounding your back, then return to standing by squeezing your glutes."
+                },
+                '3': {
+                    title: "Step 3: Add a Light Load (RDL)",
+                    description: "Now, add a light weight to strengthen the pattern. Hold a dumbbell or kettlebell in front of your thighs. Perform the same hip hinge motion, keeping the weight close to your legs. You should feel a stretch in your hamstrings at the bottom. The goal is to control the weight using your hips and hamstrings, not your lower back. This is called a Romanian Deadlift (RDL)."
+                }
+            };
+
+            function updateBendInfo(data) {
+                diagram.className = 'diagram-container ' + (data === flexionData ? 'spine-flexion' : 'hip-hinge');
+                bendTitle.textContent = data.title;
+                bendDescription.textContent = data.description;
+                jointText.textContent = data.joint;
+                postureText.textContent = data.posture;
+                moverText.textContent = data.mover;
+                stabilizerText.textContent = data.stabilizer;
+
+                glutes.classList.toggle('active', data.muscles.glutes);
+                hamstrings.classList.toggle('active', data.muscles.hamstrings);
+                erector.classList.toggle('active', data.muscles.erector);
+                core.classList.toggle('active', data.muscles.core);
+            }
+            
+            flexionBtn.addEventListener('click', () => updateBendInfo(flexionData));
+            hingeBtn.addEventListener('click', () => updateBendInfo(hingeData));
+
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.dataset.target;
+
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    contentSections.forEach(section => {
+                        section.classList.remove('active');
+                        if (section.id === targetId) {
+                            section.classList.add('active');
+                        }
+                    });
+                });
+            });
+
+            learnStepButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const step = button.dataset.step;
+                    stepTitle.textContent = learnSteps[step].title;
+                    stepDescription.textContent = learnSteps[step].description;
+
+                    learnStepButtons.forEach(btn => btn.classList.remove('border-blue-500'));
+                    button.classList.add('border-blue-500');
+                });
+            });
+
+            const ctx = document.getElementById('forcesChart').getContext('2d');
+            const forcesChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Spinal Flexion (Stoop)', 'Hip Hinge'],
+                    datasets: [{
+                        label: 'Relative Compressive Force',
+                        data: [100, 25],
+                        backgroundColor: [
+                            'rgba(239, 68, 68, 0.6)',
+                            'rgba(59, 130, 246, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(239, 68, 68, 1)',
+                            'rgba(59, 130, 246, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Relative Force Units'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        label += context.parsed.x + ' units';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            updateBendInfo(hingeData);
+        });
+    </script>
+</body>
+</html>

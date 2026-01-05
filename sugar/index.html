@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Sugar Spectrum: An Interactive Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: A thematic, non-linear interactive storytelling structure. The app guides the user from foundational concepts to practical comparisons, then to health consequences, and finally to actionable advice. Key interactions include clickable cards for definitions and an interactive chart dashboard for comparing sweeteners. This structure was chosen to make a dense report digestible and engaging, allowing users to explore based on their questions (e.g., "Which sweetener is better?") rather than following the report's linear chapter format. The goal is enhanced user understanding and retention through self-directed exploration. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Sugar Types (Sec 1.2) -> Goal: Inform/Organize -> Viz: Interactive HTML Cards -> Interaction: Click-to-reveal -> Justification: Breaks down complex definitions into engaging, bite-sized pieces.
+        - Report Info: Metabolic Pathways (Sec 3.2) -> Goal: Compare/Explain -> Viz: HTML/CSS side-by-side diagram -> Interaction: Static Visual -> Justification: Simplifies a core, complex biological process for quick understanding.
+        - Report Info: Sweetener Data Table (Sec 4.2) -> Goal: Compare/Explore -> Viz: Chart.js Donut & Bar Charts -> Interaction: Buttons trigger dynamic updates to all charts and text -> Justification: Turns a static data table into the app's central exploratory tool, allowing for direct comparison.
+        - Report Info: Health Risks (Sec 5) -> Goal: Inform/Emphasize -> Viz: Interactive HTML Card Grid -> Interaction: Hover/Click to reveal stats -> Justification: Makes key statistics scannable and impactful.
+        - Report Info: Actionable Hierarchy (Sec 7.2) -> Goal: Guide/Recommend -> Viz: 3-Tier HTML Layout with Icons -> Interaction: Static Visual -> Justification: Provides a clear, memorable framework for making better dietary choices.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF7;
+            color: #333333;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 640px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s ease;
+        }
+        .nav-link:hover {
+            color: #A3B18A;
+        }
+        .interactive-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .interactive-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .btn-active {
+            background-color: #A3B18A !important;
+            color: #FFFFFF !important;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-[#FDFBF7]/80 backdrop-blur-lg sticky top-0 z-50 border-b border-gray-200">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-[#333333]">The Sugar Spectrum</h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="#basics" class="nav-link text-gray-600 font-semibold">The Basics</a>
+                <a href="#response" class="nav-link text-gray-600 font-semibold">Body's Response</a>
+                <a href="#compare" class="nav-link text-gray-600 font-semibold">Compare</a>
+                <a href="#risks" class="nav-link text-gray-600 font-semibold">Health Risks</a>
+                <a href="#choices" class="nav-link text-gray-600 font-semibold">Smarter Choices</a>
+            </div>
+            <div class="md:hidden">
+                <select id="mobile-nav" class="bg-white border border-gray-300 rounded-md py-2 px-3 text-gray-600 font-semibold">
+                    <option value="#home">Menu</option>
+                    <option value="#basics">The Basics</option>
+                    <option value="#response">Body's Response</option>
+                    <option value="#compare">Compare</option>
+                    <option value="#risks">Health Risks</option>
+                    <option value="#choices">Smarter Choices</option>
+                </select>
+            </div>
+        </nav>
+    </header>
+
+    <main id="home">
+        <section class="text-center py-16 md:py-24 px-6 bg-white">
+            <div class="container mx-auto">
+                <h2 class="text-4xl md:text-6xl font-bold mb-4">A Smarter Look at Sweetness.</h2>
+                <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+                    Not all sugars are created equal. This guide explores the science behind refined vs. unrefined sugars, helping you understand their impact on your body and make more informed dietary choices. The key isn't just *less* sugar, but *smarter* sugar.
+                </p>
+            </div>
+        </section>
+
+        <section id="basics" class="py-16 md:py-24 px-6">
+            <div class="container mx-auto text-center">
+                <h3 class="text-3xl md:text-4xl font-bold mb-4">What Are We Eating?</h3>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto mb-12">The terms can be confusing. Let's clarify the four key categories of sugar you encounter. Click on each card to learn more.</p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="interactive-card bg-white p-6 rounded-lg shadow-md cursor-pointer" onclick="toggleDetail('detail-1')">
+                        <h4 class="text-2xl font-bold mb-2 text-[#A3B18A]">Naturally Occurring</h4>
+                        <p>Sugars found within a whole food, like an apple or a carrot.</p>
+                        <p id="detail-1" class="hidden mt-4 text-left text-gray-600">These sugars come packaged with fiber, water, vitamins, and minerals. This "food matrix" slows down digestion, prevents blood sugar spikes, and helps you feel full.</p>
+                    </div>
+                    <div class="interactive-card bg-white p-6 rounded-lg shadow-md cursor-pointer" onclick="toggleDetail('detail-2')">
+                        <h4 class="text-2xl font-bold mb-2 text-[#D4B996]">Unrefined Added</h4>
+                        <p>Sweeteners like honey and maple syrup that are minimally processed.</p>
+                         <p id="detail-2" class="hidden mt-4 text-left text-gray-600">These are extracted from their source but retain some minerals and bioactive compounds (like antioxidants). They are still "added sugars" and should be used in moderation.</p>
+                    </div>
+                    <div class="interactive-card bg-white p-6 rounded-lg shadow-md cursor-pointer" onclick="toggleDetail('detail-3')">
+                        <h4 class="text-2xl font-bold mb-2 text-[#D8A7B1]">Refined Added</h4>
+                        <p>Highly processed sugars like white table sugar and HFCS.</p>
+                         <p id="detail-3" class="hidden mt-4 text-left text-gray-600">These have been stripped of all fiber, minerals, and compounds from the original plant, providing "empty calories" that are rapidly absorbed and linked to negative health effects.</p>
+                    </div>
+                    <div class="interactive-card bg-white p-6 rounded-lg shadow-md cursor-pointer" onclick="toggleDetail('detail-4')">
+                        <h4 class="text-2xl font-bold mb-2 text-gray-500">The "Added Sugar" Label</h4>
+                        <p>The total of all sugars added to a product during processing.</p>
+                        <p id="detail-4" class="hidden mt-4 text-left text-gray-600">On a nutrition label, this crucial number includes both refined (HFCS) and unrefined (honey) sugars. Health authorities recommend limiting your total intake of *all* added sugars.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="response" class="py-16 md:py-24 px-6 bg-white">
+            <div class="container mx-auto">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl md:text-4xl font-bold mb-4">The Body's Response</h3>
+                    <p class="text-lg text-gray-600 max-w-3xl mx-auto">Once inside your body, the two main sugar molecules—glucose and fructose—take vastly different paths with different consequences.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8 items-start">
+                    <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                        <h4 class="text-2xl font-bold mb-4 text-center text-blue-600">Glucose: The Body's Main Fuel</h4>
+                        <div class="flex flex-col items-center space-y-4">
+                            <div class="text-3xl">🚶‍♂️</div>
+                            <p class="text-center">Glucose enters the bloodstream from the gut.</p>
+                            <div class="text-2xl">⬇️</div>
+                            <div class="text-3xl">🔑</div>
+                            <p class="text-center">The pancreas releases insulin, the "key" that lets glucose into cells.</p>
+                            <div class="text-2xl">⬇️</div>
+                            <div class="text-3xl">💪🧠❤️</div>
+                             <p class="text-center">Cells all over the body (muscles, brain, heart) use glucose for immediate energy. Appetite is regulated.</p>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                        <h4 class="text-2xl font-bold mb-4 text-center text-red-600">Fructose: A Burden on the Liver</h4>
+                        <div class="flex flex-col items-center space-y-4">
+                           <div class="text-3xl">🍇</div>
+                           <p class="text-center">Fructose is absorbed from the gut.</p>
+                           <div class="text-2xl">⬇️</div>
+                           <div class="text-3xl">🏭</div>
+                           <p class="text-center">It travels almost exclusively to the liver. Insulin is NOT released.</p>
+                           <div class="text-2xl">⬇️</div>
+                           <div class="text-3xl">🧈</div>
+                           <p class="text-center">The liver can get overwhelmed, converting excess fructose into fat (*de novo lipogenesis*), which can raise health risks.</p>
+                        </div>
+                    </div>
+                </div>
+                 <div class="mt-12 bg-emerald-50 p-6 rounded-lg border border-emerald-200 text-center">
+                    <h4 class="text-2xl font-bold mb-2 text-emerald-700">The Fiber Shield 🛡️</h4>
+                    <p class="text-gray-700">When sugar is eaten in a whole food (like an apple), fiber forms a gel-like "shield" in your gut. This slows down sugar absorption, preventing dangerous spikes and keeping you full longer. This is why sugar from whole fruit is not a major health concern.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="compare" class="py-16 md:py-24 px-6">
+            <div class="container mx-auto">
+                <div class="text-center mb-12">
+                    <h3 class="text-3xl md:text-4xl font-bold mb-4">The Sweetener Showdown</h3>
+                    <p class="text-lg text-gray-600 max-w-3xl mx-auto">How do common sweeteners stack up? Select one to see its nutritional profile. While all are 'added sugars', some offer more than just empty calories.</p>
+                </div>
+
+                <div class="flex justify-center flex-wrap gap-2 mb-8" id="sweetener-selector">
+                    <button data-sweetener="refined" class="sweetener-btn btn-active px-4 py-2 bg-white text-gray-700 rounded-full font-semibold border border-gray-300 transition">Refined Sugar</button>
+                    <button data-sweetener="maple" class="sweetener-btn px-4 py-2 bg-white text-gray-700 rounded-full font-semibold border border-gray-300 transition">Maple Syrup</button>
+                    <button data-sweetener="honey" class="sweetener-btn px-4 py-2 bg-white text-gray-700 rounded-full font-semibold border border-gray-300 transition">Raw Honey</button>
+                    <button data-sweetener="molasses" class="sweetener-btn px-4 py-2 bg-white text-gray-700 rounded-full font-semibold border border-gray-300 transition">Blackstrap Molasses</button>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 items-center">
+                    <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-md">
+                        <h4 class="text-xl font-bold mb-2 text-center">Sugar Composition</h4>
+                        <div class="chart-container" style="height: 250px; max-height: 250px;">
+                            <canvas id="compositionChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
+                        <h4 class="text-xl font-bold mb-2 text-center">Bioactive Compounds & Minerals</h4>
+                        <div class="chart-container" style="height: 250px; max-height: 250px;">
+                            <canvas id="bioactiveChart"></canvas>
+                        </div>
+                    </div>
+                     <div class="md:col-span-2 lg:col-span-3 bg-white p-6 rounded-lg shadow-md">
+                        <h4 id="summary-title" class="text-2xl font-bold mb-2">Summary: Refined Sugar</h4>
+                        <div class="grid md:grid-cols-2 gap-4">
+                             <div>
+                                <p id="summary-text" class="text-gray-600">Refined white sugar is ~99.9% pure sucrose, stripped of all minerals and bioactive compounds. It provides "empty calories" and is rapidly absorbed, placing a significant metabolic load on the body.</p>
+                            </div>
+                            <div class="flex items-center justify-center text-center p-4 bg-gray-50 rounded-lg">
+                                <div>
+                                    <p class="text-lg font-semibold text-gray-500">Glycemic Index (GI)</p>
+                                    <p id="summary-gi" class="text-5xl font-bold text-red-500">65</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="risks" class="py-16 md:py-24 px-6 bg-white">
+            <div class="container mx-auto text-center">
+                <h3 class="text-3xl md:text-4xl font-bold mb-4">The Long-Term Ledger</h3>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto mb-12">A diet high in *added sugars* is strongly linked to a cascade of chronic health problems. These aren't separate risks, but interconnected parts of metabolic dysfunction.</p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="interactive-card bg-gray-50 p-6 rounded-lg border border-gray-200">
+                        <h4 class="text-2xl font-bold mb-2">Heart Disease</h4>
+                        <p class="text-gray-600">Those getting 17-21% of calories from added sugar face a <span class="font-bold text-red-600">38% higher risk of death</span> from cardiovascular disease.</p>
+                    </div>
+                     <div class="interactive-card bg-gray-50 p-6 rounded-lg border border-gray-200">
+                        <h4 class="text-2xl font-bold mb-2">Type 2 Diabetes</h4>
+                        <p class="text-gray-600">Just one to two sugary drinks per day increases the risk of developing Type 2 Diabetes by <span class="font-bold text-red-600">26%</span>.</p>
+                    </div>
+                    <div class="interactive-card bg-gray-50 p-6 rounded-lg border border-gray-200">
+                        <h4 class="text-2xl font-bold mb-2">Fatty Liver Disease</h4>
+                        <p class="text-gray-600">Excess fructose drives fat production in the liver, leading to Non-Alcoholic Fatty Liver Disease (NAFLD), the most common liver disease in the West.</p>
+                    </div>
+                    <div class="interactive-card bg-gray-50 p-6 rounded-lg border border-gray-200">
+                        <h4 class="text-2xl font-bold mb-2">Weight Gain</h4>
+                        <p class="text-gray-600">Liquid sugar calories are poorly satiating, leading to increased overall calorie intake and disrupting appetite-regulating hormones.</p>
+                    </div>
+                    <div class="interactive-card bg-gray-50 p-6 rounded-lg border border-gray-200">
+                        <h4 class="text-2xl font-bold mb-2">Chronic Inflammation</h4>
+                        <p class="text-gray-600">High sugar intake promotes a state of chronic, low-grade inflammation, a root cause of many diseases like arthritis and heart disease.</p>
+                    </div>
+                    <div class="interactive-card bg-gray-50 p-6 rounded-lg border border-gray-200">
+                        <h4 class="text-2xl font-bold mb-2">Cognitive Decline</h4>
+                        <p class="text-gray-600">High-sugar diets are linked to impaired memory, reduced critical brain proteins, and accelerated brain aging.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="choices" class="py-16 md:py-24 px-6">
+            <div class="container mx-auto text-center">
+                <h3 class="text-3xl md:text-4xl font-bold mb-4">Making Smarter Choices</h3>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto mb-12">The goal is to reduce all added sugar, but when you do use a sweetener, you can make a better choice. Follow this simple hierarchy for a healthier diet.</p>
+                <div class="grid md:grid-cols-3 gap-8 text-left">
+                    <div class="bg-emerald-50 p-8 rounded-lg border-2 border-emerald-500">
+                        <div class="text-4xl mb-4">🍎</div>
+                        <h4 class="text-2xl font-bold mb-2 text-emerald-800">Tier 1: Prioritize</h4>
+                        <p class="text-emerald-700">Get your sweetness from **whole foods** like fruits and vegetables. Their fiber matrix is nature's perfect delivery system for sugar, ensuring slow absorption and providing vital nutrients.</p>
+                    </div>
+                    <div class="bg-amber-50 p-8 rounded-lg border-2 border-amber-500">
+                        <div class="text-4xl mb-4">🍯</div>
+                        <h4 class="text-2xl font-bold mb-2 text-amber-800">Tier 2: Use in Moderation</h4>
+                        <p class="text-amber-700">When you need a sweetener, choose **unrefined options** like pure maple syrup or raw honey. Their bioactive compounds may offer some protective metabolic benefits. They are the "smarter" choice.</p>
+                    </div>
+                    <div class="bg-rose-50 p-8 rounded-lg border-2 border-rose-500">
+                        <div class="text-4xl mb-4">🍬</div>
+                        <h4 class="text-2xl font-bold mb-2 text-rose-800">Tier 3: Limit or Avoid</h4>
+                        <p class="text-rose-700">Minimize **refined sugars** like white sugar and HFCS. They provide "empty calories" and are most strongly linked to chronic disease. Check labels for "Added Sugars" and aim for less than 5% DV.</p>
+                    </div>
+                </div>
+                 <div class="mt-12 bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto">
+                    <h4 class="text-2xl font-bold mb-4">Daily Added Sugar Limits</h4>
+                    <p class="text-gray-600 mb-4">The American Heart Association recommends strict limits on *all* added sugars (Tiers 2 & 3 combined):</p>
+                    <div class="flex justify-around">
+                        <div class="text-center">
+                            <p class="text-lg font-semibold">For Most Women</p>
+                            <p class="text-3xl font-bold text-rose-600">≤ 6 tsp</p>
+                            <p class="text-gray-500">(25 grams / 100 calories)</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-lg font-semibold">For Most Men</p>
+                             <p class="text-3xl font-bold text-rose-600">≤ 9 tsp</p>
+                             <p class="text-gray-500">(36 grams / 150 calories)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8 text-center">
+        <p>An interactive visualization based on "The Sugar Spectrum" report.</p>
+        <p class="text-sm text-gray-400 mt-2">Designed to promote understanding of dietary sugars.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sweetenerData = {
+                refined: {
+                    name: "Refined Sugar",
+                    composition: { sucrose: 99.9, fructose: 0, glucose: 0 },
+                    bioactives: { polyphenols: 1.5, manganese: 0, potassium: 2 },
+                    gi: 65,
+                    summary: "Refined white sugar is ~99.9% pure sucrose, stripped of all minerals and bioactive compounds. It provides 'empty calories' and is rapidly absorbed, placing a significant metabolic load on the body.",
+                    giColor: 'text-red-500'
+                },
+                maple: {
+                    name: "Maple Syrup",
+                    composition: { sucrose: 60, fructose: 1, glucose: 3 },
+                    bioactives: { polyphenols: 95, manganese: 2.9, potassium: 212 },
+                    gi: 54,
+                    summary: "Pure maple syrup is rich in minerals, especially manganese, and contains over 67 unique polyphenols. Clinical studies show replacing refined sugar with it can improve blood sugar control and reduce abdominal fat.",
+                    giColor: 'text-orange-500'
+                },
+                honey: {
+                    name: "Raw Honey",
+                    composition: { sucrose: 1.5, fructose: 40, glucose: 31 },
+                    bioactives: { polyphenols: 275, manganese: 0.08, potassium: 52 },
+                    gi: 58,
+                    summary: "Raw honey contains a rich array of antioxidants and has anti-inflammatory properties. It has a more moderate effect on blood sugar than table sugar and may promote a healthy gut microbiome.",
+                    giColor: 'text-yellow-500'
+                },
+                molasses: {
+                    name: "Blackstrap Molasses",
+                    composition: { sucrose: 30, fructose: 12, glucose: 13 },
+                    bioactives: { polyphenols: 1500, manganese: 1.5, potassium: 1464 },
+                    gi: 55,
+                    summary: "Blackstrap molasses is a byproduct of sugar refining and is exceptionally high in minerals like potassium and iron, as well as polyphenols. Its strong flavor limits its use, but it is the most nutrient-dense sweetener.",
+                    giColor: 'text-orange-500'
+                },
+            };
+
+            const compCtx = document.getElementById('compositionChart').getContext('2d');
+            const bioCtx = document.getElementById('bioactiveChart').getContext('2d');
+
+            const compositionChart = new Chart(compCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Sucrose', 'Fructose', 'Glucose'],
+                    datasets: [{
+                        data: [99.9, 0, 0],
+                        backgroundColor: ['#A3B18A', '#D8A7B1', '#D4B996'],
+                        borderColor: '#FDFBF7',
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.raw.toFixed(1)}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const bioactiveChart = new Chart(bioCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Polyphenols (mg/100g)', 'Manganese (mg/100g)', 'Potassium (mg/100g)'],
+                    datasets: [{
+                        label: 'Value',
+                        data: [1.5, 0, 2],
+                        backgroundColor: ['#A3B18A', '#D4B996', '#D8A7B1'],
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'logarithmic',
+                             ticks: {
+                                callback: function(value, index, values) {
+                                    if (value === 10000 || value === 1000 || value === 100 || value === 10 || value === 1 || value === 0) {
+                                        return value.toString();
+                                    }
+                                }
+                             }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            function updateCharts(sweetenerKey) {
+                const data = sweetenerData[sweetenerKey];
+
+                compositionChart.data.datasets[0].data = [data.composition.sucrose, data.composition.fructose, data.composition.glucose];
+                compositionChart.update();
+
+                bioactiveChart.data.datasets[0].data = [data.bioactives.polyphenols, data.bioactives.manganese, data.bioactives.potassium];
+                bioactiveChart.update();
+                
+                document.getElementById('summary-title').textContent = `Summary: ${data.name}`;
+                document.getElementById('summary-text').textContent = data.summary;
+                const giEl = document.getElementById('summary-gi');
+                giEl.textContent = data.gi;
+                giEl.className = `text-5xl font-bold ${data.giColor}`;
+
+                document.querySelectorAll('.sweetener-btn').forEach(btn => {
+                    if (btn.dataset.sweetener === sweetenerKey) {
+                        btn.classList.add('btn-active');
+                    } else {
+                        btn.classList.remove('btn-active');
+                    }
+                });
+            }
+
+            document.getElementById('sweetener-selector').addEventListener('click', function(e) {
+                if (e.target && e.target.matches('button.sweetener-btn')) {
+                    const key = e.target.dataset.sweetener;
+                    updateCharts(key);
+                }
+            });
+
+            updateCharts('refined');
+
+            window.toggleDetail = function(id) {
+                const el = document.getElementById(id);
+                el.classList.toggle('hidden');
+            }
+
+            document.getElementById('mobile-nav').addEventListener('change', function(e) {
+                if (e.target.value) {
+                    window.location.href = e.target.value;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

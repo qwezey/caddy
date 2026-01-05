@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Intense Workout Companion</title>
+
+    <!-- React & ReactDOM -->
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.production.min.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+    ></script>
+
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+      }
+      /* Custom animations for the pulse effect */
+      @keyframes pulse-slow {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.7;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-slate-900 text-white min-h-screen">
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState, useEffect, useCallback, useRef } = React;
+
+      // --- ICONS (Inline SVGs for self-containment) ---
+      const IconPlay = ({ size = 24, className }) => (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={className}
+        >
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+      );
+      const IconPause = ({ size = 24, className, fill }) => (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill={fill || "none"}
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={className}
+        >
+          <rect x="6" y="4" width="4" height="16"></rect>
+          <rect x="14" y="4" width="4" height="16"></rect>
+        </svg>
+      );
+      const IconRotateCcw = ({ size = 24, className }) => (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={className}
+        >
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 12"></path>
+          <path d="M3 3v9h9"></path>
+        </svg>
+      );
+      const IconVolume2 = ({ size = 24, className }) => (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={className}
+        >
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+      );
+      const IconVolumeX = ({ size = 24, className }) => (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={className}
+        >
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <line x1="23" y1="9" x2="17" y2="15"></line>
+          <line x1="17" y1="9" x2="23" y2="15"></line>
+        </svg>
+      );
+      const IconSkipForward = ({ size = 24, className, fill }) => (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill={fill || "none"}
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={className}
+        >
+          <polygon points="5 4 15 12 5 20 5 4"></polygon>
+          <line x1="19" y1="5" x2="19" y2="19"></line>
+        </svg>
+      );
+      const IconFlame = ({ size = 24, className, fill }) => (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill={fill || "none"}
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={className}
+        >
+          <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-2.246-3.646-3-6 2.5 0 6.5 4.5 9 10 2.5 5.5-2.5 11-7.5 11a5 5 0 0 1-5-5 5 5 0 0 1 5-5z"></path>
+          <line x1="13.5" y1="3" x2="13.5" y2="3"></line>
+          <line x1="16.5" y1="4" x2="16.5" y2="4"></line>
+        </svg>
+      );
+      const IconActivity = ({ size = 24, className }) => (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={className}
+        >
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+        </svg>
+      );
+      const IconTimer = ({ size = 24, className }) => (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={className}
+        >
+          <line x1="10" y1="2" x2="14" y2="2"></line>
+          <line x1="12" y1="14" x2="15.3" y2="8.7"></line>
+          <circle cx="12" cy="14" r="8"></circle>
+        </svg>
+      );
+
+      // --- DATA STRUCTURE: THE WORKOUT ---
+      const WORKOUT_PLAN = [
+        // --- PHASE 1: WARM UP ---
+        {
+          phase: "Warm Up",
+          name: "High Knees",
+          duration: 30,
+          type: "warmup",
+          notes: "Drive knees to chest, stay on toes",
+        },
+        {
+          phase: "Warm Up",
+          name: "Butt Kicks",
+          duration: 30,
+          type: "warmup",
+          notes: "Heels to glutes, pump arms",
+        },
+        {
+          phase: "Warm Up",
+          name: "Walkouts to Shoulder Taps",
+          duration: 60,
+          type: "warmup",
+          notes: "Legs straight, walk hands out, tap shoulders, walk back",
+        },
+        {
+          phase: "Warm Up",
+          name: "World's Greatest Stretch",
+          duration: 60,
+          type: "warmup",
+          notes: "Deep lunge, rotate torso, switch sides",
+        },
+
+        // --- PHASE 2: EMOM ROUND 1 ---
+        {
+          phase: "Phase 2: EMOM - Round 1/3",
+          name: "Chest-to-Floor Burpees",
+          duration: 60,
+          type: "work",
+          reps: "12 Reps",
+          notes: "Explode up, rest when done",
+        },
+        {
+          phase: "Phase 2: EMOM - Round 1/3",
+          name: "Plyometric Lunges",
+          duration: 60,
+          type: "work",
+          reps: "20 Reps (Total)",
+          notes: "Jump to switch legs",
+        },
+        {
+          phase: "Phase 2: EMOM - Round 1/3",
+          name: "Spiderman Push-Ups",
+          duration: 60,
+          type: "work",
+          reps: "12 Reps (Total)",
+          notes: "Knee to elbow as you push",
+        },
+        {
+          phase: "Phase 2: EMOM - Round 1/3",
+          name: "Broad Jumps",
+          duration: 60,
+          type: "work",
+          reps: "10 Reps",
+          notes: "Jump far, land soft, turn around",
+        },
+        {
+          phase: "Phase 2: EMOM - Round 1/3",
+          name: "Mountain Climbers",
+          duration: 60,
+          type: "work",
+          reps: "50 Reps (Total)",
+          notes: "Sprint pace, hips low",
+        },
+
+        // --- PHASE 2: EMOM ROUND 2 ---
+        {
+          phase: "Phase 2: EMOM - Round 2/3",
+          name: "Chest-to-Floor Burpees",
+          duration: 60,
+          type: "work",
+          reps: "12 Reps",
+          notes: "Keep the pace!",
+        },
+        {
+          phase: "Phase 2: EMOM - Round 2/3",
+          name: "Plyometric Lunges",
+          duration: 60,
+          type: "work",
+          reps: "20 Reps (Total)",
+          notes: "Fight the burn",
+        },
+        {
+          phase: "Phase 2: EMOM - Round 2/3",
+          name: "Spiderman Push-Ups",
+          duration: 60,
+          type: "work",
+          reps: "12 Reps (Total)",
+          notes: "Core tight",
+        },
+        {
+          phase: "Phase 2: EMOM - Round 2/3",
+          name: "Broad Jumps",
+          duration: 60,
+          type: "work",
+          reps: "10 Reps",
+          notes: "Use your arms for momentum",
+        },
+        {
+          phase: "Phase 2: EMOM - Round 2/3",
+          name: "Mountain Climbers",
+          duration: 60,
+          type: "work",
+          reps: "50 Reps (Total)",
+          notes: "Fast knees",
+        },
+
+        // --- PHASE 2: EMOM ROUND 3 ---
+        {
+          phase: "Phase 2: EMOM - Round 3/3",
+          name: "Chest-to-Floor Burpees",
+          duration: 60,
+          type: "work",
+          reps: "12 Reps",
+          notes: "Last set of burpees!",
+        },
+        {
+          phase: "Phase 2: EMOM - Round 3/3",
+          name: "Plyometric Lunges",
+          duration: 60,
+          type: "work",
+          reps: "20 Reps (Total)",
+          notes: "Explosive power",
+        },
+        {
+          phase: "Phase 2: EMOM - Round 3/3",
+          name: "Spiderman Push-Ups",
+          duration: 60,
+          type: "work",
+          reps: "12 Reps (Total)",
+          notes: "Don't quit now",
+        },
+        {
+          phase: "Phase 2: EMOM - Round 3/3",
+          name: "Broad Jumps",
+          duration: 60,
+          type: "work",
+          reps: "10 Reps",
+          notes: "Max distance",
+        },
+        {
+          phase: "Phase 2: EMOM - Round 3/3",
+          name: "Mountain Climbers",
+          duration: 60,
+          type: "work",
+          reps: "50 Reps (Total)",
+          notes: "Empty the tank",
+        },
+
+        // --- TRANSITION ---
+        {
+          phase: "Transition",
+          name: "Rest & Recover",
+          duration: 60,
+          type: "rest",
+          notes: "Walk around, sip water. Tabata next.",
+        },
+
+        // --- PHASE 3: TABATA (Repeated 4 times = 8 intervals) ---
+        // Set 1
+        {
+          phase: "Phase 3: Tabata",
+          name: "Squat Jumps",
+          duration: 20,
+          type: "work",
+          notes: "Max height",
+        },
+        {
+          phase: "Phase 3: Tabata",
+          name: "Rest",
+          duration: 10,
+          type: "rest",
+          notes: "Breathe",
+        },
+        {
+          phase: "Phase 3: Tabata",
+          name: "Plank Up-Downs",
+          duration: 20,
+          type: "work",
+          notes: "Elbows to hands",
+        },
+        {
+          phase: "Phase 3: Tabata",
+          name: "Rest",
+          duration: 10,
+          type: "rest",
+          notes: "Breathe",
+        },
+        // Set 2
+        {
+          phase: "Phase 3: Tabata",
+          name: "Squat Jumps",
+          duration: 20,
+          type: "work",
+          notes: "Keep moving",
+        },
+        {
+          phase: "Phase 3: Tabata",
+          name: "Rest",
+          duration: 10,
+          type: "rest",
+          notes: "Breathe",
+        },
+        {
+          phase: "Phase 3: Tabata",
+          name: "Plank Up-Downs",
+          duration: 20,
+          type: "work",
+          notes: "Core stable",
+        },
+        {
+          phase: "Phase 3: Tabata",
+          name: "Rest",
+          duration: 10,
+          type: "rest",
+          notes: "Breathe",
+        },
+        // Set 3
+        {
+          phase: "Phase 3: Tabata",
+          name: "Squat Jumps",
+          duration: 20,
+          type: "work",
+          notes: "Almost there",
+        },
+        {
+          phase: "Phase 3: Tabata",
+          name: "Rest",
+          duration: 10,
+          type: "rest",
+          notes: "Breathe",
+        },
+        {
+          phase: "Phase 3: Tabata",
+          name: "Plank Up-Downs",
+          duration: 20,
+          type: "work",
+          notes: "Push through",
+        },
+        {
+          phase: "Phase 3: Tabata",
+          name: "Rest",
+          duration: 10,
+          type: "rest",
+          notes: "Breathe",
+        },
+        // Set 4
+        {
+          phase: "Phase 3: Tabata",
+          name: "Squat Jumps",
+          duration: 20,
+          type: "work",
+          notes: "Last squat jumps!",
+        },
+        {
+          phase: "Phase 3: Tabata",
+          name: "Rest",
+          duration: 10,
+          type: "rest",
+          notes: "Breathe",
+        },
+        {
+          phase: "Phase 3: Tabata",
+          name: "Plank Up-Downs",
+          duration: 20,
+          type: "work",
+          notes: "Last plank set!",
+        },
+        {
+          phase: "Phase 3: Tabata",
+          name: "Rest",
+          duration: 10,
+          type: "rest",
+          notes: "Get ready for Core",
+        },
+
+        // --- PHASE 4: CORE FINISHER (2 Rounds) ---
+        // Round 1
+        {
+          phase: "Phase 4: Core Finisher",
+          name: "V-Ups",
+          duration: 30,
+          type: "core",
+          notes: "Touch toes",
+        },
+        {
+          phase: "Phase 4: Core Finisher",
+          name: "Russian Twists",
+          duration: 30,
+          type: "core",
+          notes: "Feet off floor",
+        },
+        {
+          phase: "Phase 4: Core Finisher",
+          name: "Hollow Body Hold",
+          duration: 30,
+          type: "core",
+          notes: "Lower back glued to floor",
+        },
+        // Round 2
+        {
+          phase: "Phase 4: Core Finisher",
+          name: "V-Ups",
+          duration: 30,
+          type: "core",
+          notes: "Final push",
+        },
+        {
+          phase: "Phase 4: Core Finisher",
+          name: "Russian Twists",
+          duration: 30,
+          type: "core",
+          notes: "Rotate shoulders",
+        },
+        {
+          phase: "Phase 4: Core Finisher",
+          name: "Hollow Body Hold",
+          duration: 30,
+          type: "core",
+          notes: "Hold until the end!",
+        },
+
+        // --- DONE ---
+        {
+          phase: "Complete",
+          name: "Workout Complete",
+          duration: 0,
+          type: "done",
+          notes: "Great job! Time to cool down.",
+        },
+      ];
+
+      // --- SOUND UTILS ---
+      const playBeep = (context, type = "tick") => {
+        if (!context) return;
+        const oscillator = context.createOscillator();
+        const gainNode = context.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(context.destination);
+
+        const now = context.currentTime;
+
+        if (type === "tick") {
+          oscillator.frequency.setValueAtTime(800, now);
+          gainNode.gain.setValueAtTime(0.1, now);
+          oscillator.start(now);
+          oscillator.stop(now + 0.1);
+        } else if (type === "start") {
+          oscillator.frequency.setValueAtTime(1000, now);
+          gainNode.gain.setValueAtTime(0.3, now);
+          oscillator.frequency.exponentialRampToValueAtTime(1500, now + 0.1);
+          oscillator.start(now);
+          oscillator.stop(now + 0.6);
+        } else if (type === "finish") {
+          oscillator.frequency.setValueAtTime(600, now);
+          gainNode.gain.setValueAtTime(0.3, now);
+          oscillator.frequency.linearRampToValueAtTime(300, now + 0.5);
+          oscillator.start(now);
+          oscillator.stop(now + 0.5);
+        }
+      };
+
+      const App = () => {
+        const [isPlaying, setIsPlaying] = useState(false);
+        const [currentStep, setCurrentStep] = useState(0);
+        const [timeLeft, setTimeLeft] = useState(WORKOUT_PLAN[0].duration);
+        const [soundEnabled, setSoundEnabled] = useState(true);
+        const [audioContext, setAudioContext] = useState(null);
+
+        // Initialize Audio Context on first interaction
+        const initAudio = () => {
+          if (!audioContext) {
+            const ctx = new (window.AudioContext ||
+              window.webkitAudioContext)();
+            setAudioContext(ctx);
+          }
+        };
+
+        const currentExercise = WORKOUT_PLAN[currentStep];
+        const nextExercise = WORKOUT_PLAN[currentStep + 1];
+
+        const handleNext = useCallback(() => {
+          if (currentStep < WORKOUT_PLAN.length - 1) {
+            setCurrentStep((prev) => prev + 1);
+            setTimeLeft(WORKOUT_PLAN[currentStep + 1].duration);
+            if (soundEnabled && audioContext) playBeep(audioContext, "start");
+          } else {
+            setIsPlaying(false);
+            if (soundEnabled && audioContext) playBeep(audioContext, "finish");
+          }
+        }, [currentStep, soundEnabled, audioContext]);
+
+        useEffect(() => {
+          let interval = null;
+          if (isPlaying && timeLeft > 0) {
+            interval = setInterval(() => {
+              setTimeLeft((prev) => prev - 1);
+              // Play tick sound for last 3 seconds
+              if (
+                timeLeft <= 4 &&
+                timeLeft > 1 &&
+                soundEnabled &&
+                audioContext
+              ) {
+                playBeep(audioContext, "tick");
+              }
+            }, 1000);
+          } else if (timeLeft === 0 && isPlaying) {
+            handleNext();
+          }
+          return () => clearInterval(interval);
+        }, [isPlaying, timeLeft, handleNext, soundEnabled, audioContext]);
+
+        const togglePlay = () => {
+          initAudio();
+          setIsPlaying(!isPlaying);
+        };
+
+        const resetWorkout = () => {
+          setIsPlaying(false);
+          setCurrentStep(0);
+          setTimeLeft(WORKOUT_PLAN[0].duration);
+        };
+
+        // --- STYLING HELPERS ---
+        const getPhaseColor = (type) => {
+          switch (type) {
+            case "warmup":
+              return "bg-yellow-600";
+            case "work":
+              return "bg-rose-600";
+            case "rest":
+              return "bg-emerald-600";
+            case "core":
+              return "bg-indigo-600";
+            case "done":
+              return "bg-gray-800";
+            default:
+              return "bg-gray-600";
+          }
+        };
+
+        const getPhaseBorder = (type) => {
+          switch (type) {
+            case "warmup":
+              return "border-yellow-500";
+            case "work":
+              return "border-rose-500";
+            case "rest":
+              return "border-emerald-500";
+            case "core":
+              return "border-indigo-500";
+            case "done":
+              return "border-gray-500";
+            default:
+              return "border-gray-500";
+          }
+        };
+
+        const formatTime = (seconds) => {
+          const mins = Math.floor(seconds / 60);
+          const secs = seconds % 60;
+          return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+        };
+
+        const progress =
+          ((WORKOUT_PLAN[currentStep].duration - timeLeft) /
+            WORKOUT_PLAN[currentStep].duration) *
+          100;
+        const totalProgress = (currentStep / WORKOUT_PLAN.length) * 100;
+
+        return (
+          <div className="flex flex-col items-center justify-center p-4">
+            {/* HEADER */}
+            <div className="w-full max-w-md flex justify-between items-center mb-6 opacity-75">
+              <h1 className="text-sm font-bold tracking-wider uppercase text-slate-400">
+                Intense HIIT v1.0
+              </h1>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setSoundEnabled(!soundEnabled)}
+                  className="p-2 hover:bg-slate-800 rounded-full transition-colors text-white"
+                >
+                  {soundEnabled ? (
+                    <IconVolume2 size={20} />
+                  ) : (
+                    <IconVolumeX size={20} />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* MAIN CARD */}
+            <div
+              className={`w-full max-w-md bg-slate-800 rounded-3xl shadow-2xl border-4 ${getPhaseBorder(
+                currentExercise.type
+              )} overflow-hidden relative transition-colors duration-500`}
+            >
+              {/* PROGRESS BAR */}
+              <div className="absolute top-0 left-0 w-full h-2 bg-slate-700">
+                <div
+                  className={`h-full transition-all duration-1000 ease-linear ${getPhaseColor(
+                    currentExercise.type
+                  )}`}
+                  style={{ width: `${totalProgress}%` }}
+                />
+              </div>
+
+              <div className="p-8 flex flex-col items-center text-center space-y-6 relative z-10">
+                {/* PHASE BADGE */}
+                <div
+                  className={`px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest ${getPhaseColor(
+                    currentExercise.type
+                  )} bg-opacity-20 text-white border border-white/20 shadow-inner`}
+                >
+                  {currentExercise.phase}
+                </div>
+
+                {/* TIMER */}
+                <div className="relative">
+                  <div className="text-8xl font-black tabular-nums tracking-tighter leading-none drop-shadow-xl text-white">
+                    {formatTime(timeLeft)}
+                  </div>
+                  {currentExercise.type === "work" && (
+                    <div className="absolute -right-4 top-2 text-rose-500 animate-pulse">
+                      <IconFlame size={24} fill="currentColor" />
+                    </div>
+                  )}
+                </div>
+
+                {/* EXERCISE INFO */}
+                <div className="space-y-2 min-h-[120px]">
+                  <h2 className="text-3xl font-bold leading-tight break-words text-slate-100">
+                    {currentExercise.name}
+                  </h2>
+                  {currentExercise.reps && (
+                    <div className="text-2xl font-bold text-rose-400">
+                      Target: {currentExercise.reps}
+                    </div>
+                  )}
+                  <p className="text-slate-400 text-lg font-medium animate-pulse">
+                    {currentExercise.notes}
+                  </p>
+                </div>
+
+                {/* NEXT UP PREVIEW */}
+                {nextExercise && (
+                  <div className="w-full bg-slate-900/50 rounded-xl p-4 mt-4 border border-slate-700/50 flex items-center justify-between">
+                    <span className="text-xs text-slate-500 uppercase font-bold tracking-wider">
+                      Up Next
+                    </span>
+                    <span className="text-sm font-semibold text-slate-300 truncate ml-2">
+                      {nextExercise.name}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* CONTROLS */}
+              <div className="bg-slate-900/50 p-6 flex justify-center items-center gap-6 backdrop-blur-sm">
+                <button
+                  onClick={resetWorkout}
+                  className="p-4 rounded-full bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white transition-all transform hover:scale-105 active:scale-95"
+                  title="Reset"
+                >
+                  <IconRotateCcw size={24} />
+                </button>
+
+                <button
+                  onClick={togglePlay}
+                  className={`p-8 rounded-full shadow-xl transition-all transform hover:scale-105 active:scale-95 ${
+                    isPlaying
+                      ? "bg-slate-700 text-white"
+                      : "bg-rose-500 text-white hover:bg-rose-600"
+                  }`}
+                >
+                  {isPlaying ? (
+                    <IconPause size={40} fill="currentColor" />
+                  ) : (
+                    <IconPlay size={40} fill="currentColor" className="ml-1" />
+                  )}
+                </button>
+
+                <button
+                  onClick={handleNext}
+                  className="p-4 rounded-full bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white transition-all transform hover:scale-105 active:scale-95"
+                  title="Skip"
+                >
+                  <IconSkipForward size={24} fill="currentColor" />
+                </button>
+              </div>
+
+              {/* PROGRESS RING BACKDROP (Visual Flourish) */}
+              <div
+                className="absolute bottom-0 left-0 h-full bg-current opacity-5 pointer-events-none transition-all duration-1000 ease-linear"
+                style={{
+                  width: `${progress}%`,
+                  backgroundColor:
+                    currentExercise.type === "work" ? "#e11d48" : "#10b981",
+                }}
+              />
+            </div>
+
+            {/* FOOTER STATS */}
+            <div className="mt-8 grid grid-cols-2 gap-4 w-full max-w-md">
+              <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700 flex flex-col items-center">
+                <IconTimer size={20} className="text-slate-400 mb-1" />
+                <span className="text-xs text-slate-500 uppercase">
+                  Total Time
+                </span>
+                <span className="text-xl font-bold">~25 Min</span>
+              </div>
+              <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700 flex flex-col items-center">
+                <IconActivity size={20} className="text-slate-400 mb-1" />
+                <span className="text-xs text-slate-500 uppercase">
+                  Intensity
+                </span>
+                <span className="text-xl font-bold text-rose-500">High</span>
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<App />);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prayer Times</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* By default, show long date and hide short date on screen */
+        .date-short { display: none; }
+        .date-long { display: inline; }
+
+        /* Styles for printing */
+        @media print {
+            body {
+                background-color: white;
+                font-size: 9pt;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-container {
+                box-shadow: none !important;
+                border: none !important;
+            }
+            /* Re-style the main table for printing */
+            #prayer-times-table {
+                font-size: 8pt;
+            }
+            #prayer-times-table th, #prayer-times-table td {
+                border: 1px solid #ccc;
+                padding: 3px 2px; /* Compact padding */
+            }
+            #prayer-times-table thead {
+                background-color: #f2f2f2 !important;
+            }
+            /* Swap date formats for printing */
+            .date-long { display: none; }
+            .date-short { display: inline; }
+
+            /* Adjust titles for printing */
+            #main-title {
+                font-size: 14pt;
+                text-align: center;
+                margin-bottom: 2px;
+            }
+            #subtitle {
+                font-size: 11pt;
+                text-align: center;
+                margin-top: 0;
+                margin-bottom: 8px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden print-container">
+            <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                <h1 id="main-title" class="text-2xl font-bold text-gray-700">Prayer Times</h1>
+                <p id="subtitle" class="text-sm text-gray-500">Select a location, month, and year</p>
+                <!-- Controls -->
+                <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 no-print">
+                    <div class="sm:col-span-2 lg:col-span-1">
+                        <label for="zipcode-input" class="block text-sm font-medium text-gray-700">Zipcode</label>
+                        <div class="mt-1 flex rounded-md shadow-sm">
+                            <input type="text" id="zipcode-input" placeholder="e.g., 08873" class="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full rounded-none rounded-l-md sm:text-sm border-gray-300">
+                            <button id="location-button" type="button" class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border border-gray-300 text-sm font-medium rounded-r-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500" title="Use Current Location">
+                                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" /></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="month-select" class="block text-sm font-medium text-gray-700">Month</label>
+                        <select id="month-select" name="month" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"></select>
+                    </div>
+                    <div>
+                        <label for="year-select" class="block text-sm font-medium text-gray-700">Year</label>
+                        <select id="year-select" name="year" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"></select>
+                    </div>
+                    <div class="flex items-end space-x-2">
+                        <button id="fetch-button" class="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700">Get Times</button>
+                        <button id="print-button" class="w-full inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50">Print</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- On-screen table container -->
+            <div class="overflow-x-auto" id="table-container">
+                <table class="min-w-full divide-y divide-gray-200" id="prayer-times-table">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fajr</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sunrise</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dhuhr</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asr</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Maghrib</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Isha</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200"></tbody>
+                </table>
+            </div>
+             <!-- Info/Error message container -->
+             <div id="message-container" class="hidden text-center p-8"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tableBody = document.querySelector('#prayer-times-table tbody');
+            const tableContainer = document.getElementById('table-container');
+            const messageContainer = document.getElementById('message-container');
+            const monthSelect = document.getElementById('month-select');
+            const yearSelect = document.getElementById('year-select');
+            const fetchButton = document.getElementById('fetch-button');
+            const printButton = document.getElementById('print-button');
+            const locationButton = document.getElementById('location-button');
+            const zipcodeInput = document.getElementById('zipcode-input');
+            const mainTitle = document.getElementById('main-title');
+            const subtitle = document.getElementById('subtitle');
+
+            let currentPrayerData = []; // Store fetched data
+
+            const populateDateSelectors = () => {
+                const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                monthSelect.innerHTML = months.map((month, i) => `<option value="${i + 1}">${month}</option>`).join('');
+                
+                const currentYear = new Date().getFullYear();
+                let yearOptions = '';
+                for (let i = currentYear - 2; i <= currentYear + 5; i++) {
+                    yearOptions += `<option>${i}</option>`;
+                }
+                yearSelect.innerHTML = yearOptions;
+            };
+
+            const getDaysInMonth = (year, month) => new Date(year, month, 0).getDate();
+
+            const fetchPrayerTime = async (date, zipcode) => {
+                const { year, month, day } = date;
+                const url = `https://islamicservicesportal.org/api/namaztimes/getprayertimes?zipcode=${zipcode}&year=${year}&month=${month}&day=${day}`;
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    const prayerData = await response.json();
+                    return { date, prayerData };
+                } catch (error) {
+                    console.error(`Failed to fetch data for ${year}-${month}-${day}:`, error);
+                    return null;
+                }
+            };
+
+            const showMessage = (text, isError = false) => {
+                tableContainer.classList.add('hidden');
+                messageContainer.classList.remove('hidden');
+                messageContainer.textContent = text;
+                messageContainer.className = `text-center p-8 ${isError ? 'text-red-500' : 'text-gray-500'}`;
+            };
+
+            const showSkeletonLoader = (numRows) => {
+                tableBody.innerHTML = '';
+                const skeletonRowHtml = `<tr>${'<td class="px-6 py-4"><div class="h-4 bg-gray-200 rounded animate-pulse"></div></td>'.repeat(7)}</tr>`;
+                for (let i = 0; i < numRows; i++) tableBody.innerHTML += skeletonRowHtml;
+            };
+
+            const displayPrayerTimes = async () => {
+                currentPrayerData = []; // Reset data
+                const year = yearSelect.value;
+                const month = monthSelect.value;
+                const zipcode = zipcodeInput.value.trim();
+
+                if (!zipcode) {
+                    showMessage("Please enter a zipcode or use current location.", true);
+                    return;
+                }
+
+                messageContainer.classList.add('hidden');
+                tableContainer.classList.remove('hidden');
+                const numDays = getDaysInMonth(year, month);
+                showSkeletonLoader(numDays);
+
+                const monthName = new Date(year, month - 1).toLocaleString('default', { month: 'long' });
+                mainTitle.textContent = `Prayer Times for ${zipcode}`;
+                subtitle.textContent = `${monthName} ${year}`;
+
+                const datesToFetch = Array.from({ length: numDays }, (_, i) => ({ year, month, day: i + 1 }));
+                
+                try {
+                    const results = await Promise.all(datesToFetch.map(date => fetchPrayerTime(date, zipcode)));
+                    currentPrayerData = results.filter(r => r);
+
+                    if (currentPrayerData.length === 0) throw new Error("Could not fetch any prayer times. The zipcode may be invalid or the API is unavailable.");
+                    
+                    tableBody.innerHTML = ''; // Clear skeleton
+                    currentPrayerData.forEach(({ date, prayerData }) => {
+                        const row = document.createElement('tr');
+                        const monthAbbr = new Date(date.year, date.month - 1).toLocaleString('default', { month: 'short' });
+                        
+                        // FIX: Removed the 'hidden' class from the short date span. Visibility is now controlled purely by CSS.
+                        row.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                <span class="date-long">${monthName} ${date.day}, ${date.year}</span>
+                                <span class="date-short">${monthAbbr} ${date.day}</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${prayerData.fajr}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${prayerData.sunrise}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${prayerData.zuhr}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${prayerData.asr}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${prayerData.maghrib}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${prayerData.isha}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                } catch (error) {
+                    console.error("Error fetching prayer times:", error);
+                    showMessage(error.message, true);
+                }
+            };
+
+            const handleLocation = () => {
+                if (!navigator.geolocation) {
+                    showMessage("Geolocation is not supported by your browser.", true);
+                    return;
+                }
+                showMessage("Getting your location...");
+                navigator.geolocation.getCurrentPosition(async (position) => {
+                    const { latitude, longitude } = position.coords;
+                    const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`;
+                    try {
+                        const response = await fetch(url);
+                        if (!response.ok) throw new Error("Failed to get zipcode from location.");
+                        const data = await response.json();
+                        if (data.postcode) {
+                            zipcodeInput.value = data.postcode;
+                            displayPrayerTimes();
+                        } else {
+                            throw new Error("Could not determine zipcode from your location.");
+                        }
+                    } catch (error) {
+                        showMessage(error.message, true);
+                    }
+                }, () => {
+                    showMessage("Unable to retrieve your location. Please grant permission or enter a zipcode manually.", true);
+                });
+            };
+
+            const setDefaultDateTime = () => {
+                const now = new Date();
+                monthSelect.value = now.getMonth() + 1;
+                yearSelect.value = now.getFullYear();
+                zipcodeInput.value = '08873'; // Default zipcode
+            };
+
+            // --- Event Listeners ---
+            fetchButton.addEventListener('click', displayPrayerTimes);
+            printButton.addEventListener('click', () => {
+                if (currentPrayerData.length === 0) {
+                    alert("No data available to print.");
+                    return;
+                }
+                window.print();
+            });
+            locationButton.addEventListener('click', handleLocation);
+
+            // --- Initial Page Load ---
+            populateDateSelectors();
+            setDefaultDateTime();
+            displayPrayerTimes();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+vitamin-d.crib.qwezey.com {
+	root * /etc/caddy/vitamin-d
+	file_server
+}
+
+baby-insurance.crib.qwezey.com {
+	root * /etc/caddy/baby-insurance
+	file_server
+}
+
+sugar.crib.qwezey.com {
+	root * /etc/caddy/sugar
+	file_server
+}
+
+tayeb-stretches.crib.qwezey.com {
+	root * /etc/caddy/tayeb-stretches
+	file_server
+}
+
+work-stability.crib.qwezey.com {
+	root * /etc/caddy/work-stability
+	file_server
+}
+
+ev-lease.crib.qwezey.com {
+	root * /etc/caddy/ev-lease
+	file_server
+}
+
+tesla-lease.crib.qwezey.com {
+	root * /etc/caddy/tesla-lease
+	file_server
+}
+
+sabaq-functions-price.crib.qwezey.com {
+	root * /etc/caddy/sabaq-functions-price
+	file_server
+}
+
+wireless.crib.qwezey.com {
+	root * /etc/caddy/wireless
+	file_server
+}
+
+fa-workout.crib.qwezey.com {
+	root * /etc/caddy/fa-workout
+	file_server
+}
+
+prayer-times.crib.qwezey.com {
+	root * /etc/caddy/prayer-times
+	file_server
+}
+
+move.crib.qwezey.com {
+	root * /etc/caddy/move
+	file_server
+}
+
+bending.crib.qwezey.com {
+	root * /etc/caddy/bending
+	file_server
+}
+
+diaper.crib.qwezey.com {
+	root * /etc/caddy/diaper
+	file_server
+}
+
+ammee-workout.crib.qwezey.com {
+	root * /etc/caddy/ammee-workout
+	file_server
+}
+
+google-os.crib.qwezey.com {
+	root * /etc/caddy/google-os
+	file_server
+}
+
+android-desktop.crib.qwezey.com {
+	root * /etc/caddy/android-desktop
+	file_server
+}
+
+typescript.crib.qwezey.com {
+	root * /etc/caddy/typescript
+	file_server
+}
+
+bulking-smoothies.crib.qwezey.com {
+	root * /etc/caddy/bulking-smoothies
+	file_server
+}
+
+workout.crib.qwezey.com {
+	root * /etc/caddy/workout
+	file_server
+}

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Strategic Relocation Guide</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React Libraries -->
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    
+    <!-- Babel to transpile JSX in the browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Lucide Icons Library -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Using Inter font from Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- Data based on the Executive Summary and 90-Day Countdown ---
+        const executiveSummary = {
+          leaseExtension: "6 months",
+          vacateDate: "February 28, 2026",
+          newLeaseStartDate: "February 13-15, 2026",
+          searchLocations: [
+            "North Brunswick",
+            "New Brunswick",
+            "East Brunswick",
+            "Somerset (Franklin Township)",
+          ],
+          keyActions: [
+            {
+              title: "Prioritize Concessions",
+              description: "During your search, actively look for and negotiate for listings that offer financial incentives like 'one month free rent' or 'no broker fee,' as these provide the greatest overall value.",
+              icon: "sparkles"
+            },
+            {
+              title: "Verify the Commute",
+              description: "Before signing any lease, physically drive the route from the prospective apartment to the UFC Gym (1846 US-1, North Brunswick) during your typical commute time. This is the only way to verify the 30-minute travel time is realistic.",
+              icon: "map-pin"
+            }
+          ],
+          timeline: [
+            {
+              date: "Right Now",
+              title: "Sign Your Lease Extension",
+              description: "The first and most critical step is to lock in your winter move-out date. This action sets the entire cost-saving strategy in motion.",
+              action: "Contact your landlord and sign a 6-month lease extension, setting your new vacate date to February 28, 2026.",
+              icon: "file-text",
+              bgColor: "bg-blue-50",
+              iconColor: "text-blue-600",
+            },
+            {
+              date: "Mid-November 2025 (90 Days Out)",
+              title: "The Research and Planning Phase",
+              description: "Finalize your budget and begin high-level online research. Identify large, professionally managed apartment communities in your target towns.",
+              action: "Proactively contact the leasing offices of your selected communities. Inquire about February availability and ask to be placed on a notification list or waitlist.",
+              icon: "search",
+              bgColor: "bg-indigo-50",
+              iconColor: "text-indigo-600",
+            },
+            {
+              date: "Mid-December 2025 (60 Days Out)",
+              title: "The Active Search Phase Begins",
+              description: "This marks the official start of the intensive search. Landlords are now receiving notice from tenants vacating at the end of January, so new listings for February will start to appear.",
+              action: "Begin daily monitoring of Zillow, Realtor.com, etc. Immediately schedule tours for promising units. The period between Christmas and New Year's is often slow, meaning less competition.",
+              icon: "target",
+              bgColor: "bg-green-50",
+              iconColor: "text-green-600",
+            },
+            {
+              date: "Early to Mid-January 2026 (30-45 Days Out)",
+              title: "The Prime Decision Window",
+              description: "This is the most critical period. The majority of listings for a mid-February move-in will become available. The search must be a daily activity.",
+              action: "Conduct all remaining tours. Have your documents ready to apply quickly. Negotiate! Confirm a mid-month start date and ask about concessions like 'one month free rent'.",
+              icon: "home",
+              bgColor: "bg-green-50",
+              iconColor: "text-green-600",
+            },
+            {
+              date: "Late Jan to Feb 13, 2026 (0-30 Days Out)",
+              title: "The Finalization and Logistics Phase",
+              description: "Upon approval, thoroughly review the lease agreement before signing. This is the time to handle all the move-in logistics.",
+              action: "Provide official written notice to your current landlord. Schedule movers, transfer utilities (gas, electric, internet), and finalize payment of your security deposit and first month's rent.",
+              icon: "box",
+              bgColor: "bg-purple-50",
+              iconColor: "text-purple-600",
+            },
+            {
+              date: "February 13-15, 2026",
+              title: "New Lease Starts & Overlap Begins",
+              description: "You have the keys! Your 15-day overlap period starts now, allowing for a low-stress, gradual move.",
+              action: "Pick up your new keys, do a walkthrough, and begin moving your belongings. Your new utility services should be active as of today.",
+              icon: "key-round",
+              bgColor: "bg-purple-50",
+              iconColor: "text-purple-600",
+            },
+            {
+              date: "By February 28, 2026",
+              title: "Old Lease Ends - Move Complete!",
+              description: "Congratulations! You've successfully executed your strategic relocation.",
+              action: "Hand over the keys to your old apartment after completing your move-out cleaning. Enjoy your new home!",
+              icon: "check-circle",
+              bgColor: "bg-gray-800",
+              iconColor: "text-white",
+            }
+          ]
+        };
+
+        // --- Icon Component ---
+        const Icon = ({ name, className }) => {
+            return <i data-lucide={name} className={className}></i>;
+        };
+
+        // --- Timeline Card Component ---
+        const TimelineCard = ({ step, isLast }) => {
+          return (
+            <div className="flex">
+              <div className="flex flex-col items-center mr-6">
+                <div>
+                  <div className={`flex items-center justify-center w-14 h-14 rounded-full ${step.bgColor} border-2 border-white shadow-md`}>
+                    <Icon name={step.icon} className={`w-7 h-7 ${step.iconColor}`} />
+                  </div>
+                </div>
+                {!isLast && <div className="w-px h-full bg-gray-300"></div>}
+              </div>
+              <div className="pb-12 w-full">
+                <p className="mb-1 text-sm font-semibold text-blue-600 tracking-wide uppercase">{step.date}</p>
+                <p className="text-xl font-bold text-gray-800">{step.title}</p>
+                <p className="mt-2 text-gray-600">{step.description}</p>
+                <div className="mt-4 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
+                    <p className="font-semibold text-gray-700">Your Action Item:</p>
+                    <p className="text-gray-600 mt-1">{step.action}</p>
+                </div>
+              </div>
+            </div>
+          );
+        };
+
+        // --- Main App Component ---
+        function App() {
+            useEffect(() => {
+                // This function finds all icon placeholders and renders the actual SVG icons
+                lucide.createIcons();
+            }, []);
+
+            return (
+                <div className="bg-gray-50 min-h-screen">
+                  <div className="container mx-auto p-4 md:p-8">
+                    
+                    <header className="text-center mb-12">
+                      <h1 className="text-4xl md:text-5xl font-extrabold text-gray-800 mb-2">Your Strategic Relocation Guide</h1>
+                      <p className="text-lg text-gray-600 max-w-3xl mx-auto">Follow this plan to find the best apartment deal by moving in the off-season.</p>
+                    </header>
+
+                    {/* Core Recommendation Section */}
+                    <div className="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200 mb-12">
+                        <div className="flex items-center mb-4">
+                            <Icon name="target" className="w-8 h-8 text-blue-600 mr-4" />
+                            <h2 className="text-2xl font-bold text-gray-800">Your Recommended Plan</h2>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                            <div className="bg-blue-50 p-4 rounded-lg">
+                                <p className="text-sm font-semibold text-blue-800">Lease Extension</p>
+                                <p className="text-2xl font-bold text-blue-600">{executiveSummary.leaseExtension}</p>
+                            </div>
+                            <div className="bg-blue-50 p-4 rounded-lg">
+                                <p className="text-sm font-semibold text-blue-800">New Vacate Date</p>
+                                <p className="text-2xl font-bold text-blue-600">{executiveSummary.vacateDate}</p>
+                            </div>
+                            <div className="bg-blue-50 p-4 rounded-lg">
+                                <p className="text-sm font-semibold text-blue-800">Target Move-In Date</p>
+                                <p className="text-2xl font-bold text-blue-600">{executiveSummary.newLeaseStartDate}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Main Content Grid */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                      {/* Timeline Column */}
+                      <div className="lg:col-span-2">
+                        <h3 className="text-3xl font-bold text-gray-800 mb-8">Action Timeline</h3>
+                         <div className="max-w-4xl">
+                            {executiveSummary.timeline.map((step, index) => (
+                              <TimelineCard 
+                                key={index} 
+                                step={step}
+                                isLast={index === executiveSummary.timeline.length - 1}
+                              />
+                            ))}
+                        </div>
+                      </div>
+
+                      {/* Sidebar Column */}
+                      <div className="lg:col-span-1">
+                        <div className="sticky top-8">
+                          {/* Search Locations */}
+                          <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 mb-8">
+                            <h4 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                                <Icon name="map-pin" className="w-6 h-6 mr-3 text-green-600"/>Primary Search Locations
+                            </h4>
+                            <p className="text-sm text-gray-500 mb-4">Focus your search on these towns for the most reliable sub-30-minute commute.</p>
+                            <ul className="space-y-3">
+                              {executiveSummary.searchLocations.map((loc, index) => (
+                                 <li key={loc} className="flex items-center text-gray-700 font-medium">
+                                    <span className="flex items-center justify-center w-6 h-6 bg-green-100 text-green-800 rounded-full font-bold text-sm mr-3">{index + 1}</span>
+                                    {loc}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+
+                          {/* Key Actions */}
+                          <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
+                            <h4 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                                <Icon name="sparkles" className="w-6 h-6 mr-3 text-yellow-500"/>Key Action Items
+                            </h4>
+                            <div className="space-y-5">
+                              {executiveSummary.keyActions.map(action => {
+                                return (
+                                  <div key={action.title}>
+                                    <div className="flex items-center mb-1">
+                                       <Icon name={action.icon} className="w-5 h-5 mr-2 text-blue-600"/>
+                                       <h5 className="font-bold text-gray-700">{action.title}</h5>
+                                    </div>
+                                    <p className="text-gray-600 text-sm ml-7">{action.description}</p>
+                                  </div>
+                                )
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                   <footer className="text-center p-4 mt-12 text-gray-500 text-sm">
+                        <p>This guide is based on the strategic analysis. Stick to the plan for the best results!</p>
+                    </footer>
+                  </div>
+                </div>
+            );
+        }
+
+        // Render the App component to the DOM
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+
+</body>
+</html>

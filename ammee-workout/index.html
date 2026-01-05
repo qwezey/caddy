@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Workout Schedule</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .tab-active {
+            background-color: #4f46e5;
+            color: white;
+        }
+        .tab-inactive {
+            background-color: #e0e7ff;
+            color: #4f46e5;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-5xl">
+        <!-- Header -->
+        <header class="text-center mb-6">
+            <h1 class="text-4xl font-bold text-indigo-700">Your Weekly Workout Plan</h1>
+            <p class="mt-2 text-lg text-gray-600">A balanced plan for a healthier, stronger you.</p>
+        </header>
+
+        <!-- Disclaimer -->
+        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg mb-8" role="alert">
+            <p class="font-bold">Important Disclaimer</p>
+            <p>The workout plan below links to YouTube for exercise demonstrations. Please be aware that I am not responsible for any content on external websites. Some content on YouTube may not align with certain religious or cultural beliefs (e.g., may be considered haram). Viewer discretion is advised. Always consult with your doctor before beginning any new exercise program, especially with a history of high blood pressure.</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="mb-8">
+            <div class="flex flex-wrap justify-center gap-2 sm:gap-3" id="tab-buttons">
+                <button data-tab="day1" class="tab-btn tab-active px-4 py-2 rounded-md font-semibold transition-colors duration-300">Day 1</button>
+                <button data-tab="day2" class="tab-btn tab-inactive px-4 py-2 rounded-md font-semibold transition-colors duration-300">Day 2</button>
+                <button data-tab="day3" class="tab-btn tab-inactive px-4 py-2 rounded-md font-semibold transition-colors duration-300">Day 3</button>
+                <button data-tab="day4" class="tab-btn tab-inactive px-4 py-2 rounded-md font-semibold transition-colors duration-300">Day 4</button>
+                <button data-tab="day5" class="tab-btn tab-inactive px-4 py-2 rounded-md font-semibold transition-colors duration-300">Day 5</button>
+                <button data-tab="rest" class="tab-btn tab-inactive px-4 py-2 rounded-md font-semibold transition-colors duration-300">Rest Days</button>
+            </div>
+        </nav>
+
+        <!-- Workout Content -->
+        <main id="tab-content">
+            <!-- Day 1: Full Body Strength A & Light Cardio -->
+            <div id="day1" class="space-y-6">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold text-indigo-600 mb-1">Day 1: Full Body Strength & Light Cardio</h2>
+                    <p class="text-gray-500 mb-4">Focus on controlled movements to build a strong foundation.</p>
+                    
+                    <div class="space-y-4">
+                        <!-- Warm-up -->
+                        <h3 class="text-xl font-semibold text-gray-700 border-b pb-2">Warm-up (5-7 minutes)</h3>
+                        <div class="exercise-card">
+                            <h4 class="exercise-title">Marching in Place</h4>
+                            <p class="exercise-instructions">Stand tall and march in place, lifting your knees high and swinging your arms naturally. Do this for 2 minutes to gently raise your heart rate.</p>
+                            <a href="https://www.youtube.com/results?search_query=marching+in+place+warm+up" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+                        <div class="exercise-card">
+                            <h4 class="exercise-title">Arm Circles</h4>
+                            <p class="exercise-instructions">Stand with feet shoulder-width apart and extend your arms out to the sides. Make 15 small circles forward, then 15 backward. This warms up the shoulder joints.</p>
+                            <a href="https://www.youtube.com/results?search_query=arm+circles+warm+up" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+                         <div class="exercise-card">
+                            <h4 class="exercise-title">Leg Swings</h4>
+                            <p class="exercise-instructions">Hold onto a wall or chair for balance. Swing one leg forward and backward 10 times, then side to side 10 times. Repeat with the other leg to open up the hips.</p>
+                            <a href="https://www.youtube.com/results?search_query=leg+swings+warm+up" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+
+                        <!-- Main Workout -->
+                        <h3 class="text-xl font-semibold text-gray-700 border-b pb-2 pt-4">Main Workout (20-30 minutes)</h3>
+                        <div class="exercise-card">
+                            <h4 class="exercise-title">Bodyweight Squats</h4>
+                            <p class="exercise-instructions"><strong>Sets: 3, Reps: 10-12.</strong> Stand with feet shoulder-width apart. Lower your hips back and down as if sitting in a chair, keeping your chest up and back straight. Go as low as is comfortable, then push through your heels to return to the start. Rest 60 seconds between sets.</p>
+                            <a href="https://www.youtube.com/results?search_query=bodyweight+squats+tutorial" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+                        <div class="exercise-card">
+                            <h4 class="exercise-title">Wall Push-ups</h4>
+                            <p class="exercise-instructions"><strong>Sets: 3, Reps: 8-10.</strong> Stand facing a wall, about arm's length away. Place your hands on the wall slightly wider than your shoulders. Bend your elbows to bring your chest towards the wall, keeping your body in a straight line. Push back to the starting position. Rest 60 seconds between sets.</p>
+                            <a href="https://www.youtube.com/results?search_query=wall+push+ups+tutorial" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+                        <div class="exercise-card">
+                            <h4 class="exercise-title">Glute Bridges</h4>
+                            <p class="exercise-instructions"><strong>Sets: 3, Reps: 12-15.</strong> Lie on your back with your knees bent and feet flat on the floor, hip-width apart. Lift your hips off the floor until your body forms a straight line from your shoulders to your knees. Squeeze your glutes at the top, then lower back down. Rest 60 seconds between sets.</p>
+                            <a href="https://www.youtube.com/results?search_query=glute+bridges+tutorial" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+                         <div class="exercise-card">
+                            <h4 class="exercise-title">Bent-Over Dumbbell Rows (or use water bottles)</h4>
+                            <p class="exercise-instructions"><strong>Sets: 3, Reps: 10-12 per arm.</strong> Hold a light weight in each hand. Hinge at your hips, keeping your back straight. Pull the weights up towards your chest, squeezing your shoulder blades together. Lower with control. Rest 60 seconds between sets.</p>
+                            <a href="https://www.youtube.com/results?search_query=bent+over+dumbbell+rows+tutorial" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+                        <div class="exercise-card">
+                            <h4 class="exercise-title">Brisk Walking or Stationary Cycling</h4>
+                            <p class="exercise-instructions"><strong>Duration: 10 minutes.</strong> Finish with 10 minutes of brisk walking (faster than a stroll) or cycling on a stationary bike at a moderate pace. You should be able to hold a conversation but feel your heart rate is elevated.</p>
+                            <a href="https://www.youtube.com/results?search_query=brisk+walking+technique" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+
+
+                        <!-- Cool-down -->
+                        <h3 class="text-xl font-semibold text-gray-700 border-b pb-2 pt-4">Cool-down & Flexibility (5-10 minutes)</h3>
+                        <div class="exercise-card">
+                            <h4 class="exercise-title">Hamstring Stretch</h4>
+                            <p class="exercise-instructions">Sit on the floor with one leg straight, the other bent with the sole of your foot against your inner thigh. Gently lean forward over the straight leg until you feel a stretch. Hold for 30 seconds, then switch sides.</p>
+                            <a href="https://www.youtube.com/results?search_query=seated+hamstring+stretch" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+                        <div class="exercise-card">
+                            <h4 class="exercise-title">Chest Stretch</h4>
+                            <p class="exercise-instructions">Stand in a doorway and place your forearms on the frame, with your elbows slightly below shoulder height. Step forward gently until you feel a stretch across your chest. Hold for 30 seconds.</p>
+                            <a href="https://www.youtube.com/results?search_query=doorway+chest+stretch" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+                        <div class="exercise-card">
+                            <h4 class="exercise-title">Cat-Cow Stretch</h4>
+                            <p class="exercise-instructions">Start on your hands and knees. Inhale as you drop your belly and look up (Cow). Exhale as you round your spine and tuck your chin (Cat). Repeat for 10 slow breaths.</p>
+                            <a href="https://www.youtube.com/results?search_query=cat+cow+stretch" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Day 2: Cardiovascular Focus -->
+            <div id="day2" class="space-y-6 hidden">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold text-indigo-600 mb-1">Day 2: Cardiovascular Focus</h2>
+                    <p class="text-gray-500 mb-4">Improving heart health and endurance.</p>
+                    <div class="space-y-4">
+                        <!-- Warm-up -->
+                        <h3 class="text-xl font-semibold text-gray-700 border-b pb-2">Warm-up (5 minutes)</h3>
+                        <div class="exercise-card">
+                            <h4 class="exercise-title">Light Jogging in Place</h4>
+                            <p class="exercise-instructions">Start with a gentle jog in place for 2-3 minutes to get your body moving and heart rate up.</p>
+                            <a href="https://www.youtube.com/results?search_query=jogging+in+place+warm+up" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+                        <div class="exercise-card">
+                            <h4 class="exercise-title">High Knees & Butt Kicks</h4>
+                            <p class="exercise-instructions">Perform 30 seconds of high knees (bringing knees towards your chest) followed by 30 seconds of butt kicks (bringing heels towards your glutes). Repeat twice.</p>
+                            <a href="https://www.youtube.com/results?search_query=high+knees+butt+kicks" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+
+                        <!-- Main Workout -->
+                        <h3 class="text-xl font-semibold text-gray-700 border-b pb-2 pt-4">Main Workout (30-40 minutes)</h3>
+                        <div class="exercise-card">
+                            <h4 class="exercise-title">Interval Walking/Cycling</h4>
+                            <p class="exercise-instructions">This can be done walking outdoors, on a treadmill, or on a stationary bike.
+                            <br><strong>- 5 minutes:</strong> Warm-up pace (easy).
+                            <br><strong>- 20 minutes:</strong> Alternate between 2 minutes of brisk pace (you can still talk, but it's an effort) and 2 minutes of moderate pace (recovery). Repeat this 5 times.
+                            <br><strong>- 5 minutes:</strong> Cool-down pace (easy).</p>
+                             <a href="https://www.youtube.com/results?search_query=interval+walking+for+beginners" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+                        <div class="exercise-card">
+                            <h4 class="exercise-title">Bodyweight Core Work</h4>
+                            <p class="exercise-instructions">After your cardio, perform 2 sets of the following:
+                             <br>- <strong>Plank:</strong> Hold for 20-30 seconds.
+                             <br>- <strong>Bird-Dog:</strong> 10 reps per side.
+                             <br>Rest for 30-60 seconds between sets.
+                            </p>
+                             <a href="https://www.youtube.com/results?search_query=beginner+plank+and+bird+dog" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+
+                        <!-- Cool-down -->
+                        <h3 class="text-xl font-semibold text-gray-700 border-b pb-2 pt-4">Cool-down & Flexibility (5 minutes)</h3>
+                        <div class="exercise-card">
+                            <h4 class="exercise-title">Quadriceps Stretch</h4>
+                            <p class="exercise-instructions">Stand holding onto something for balance. Grab your right foot and gently pull your heel towards your glute, feeling a stretch in the front of your thigh. Hold for 30 seconds. Repeat on the left side.</p>
+                            <a href="https://www.youtube.com/results?search_query=standing+quadriceps+stretch" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+                        <div class="exercise-card">
+                            <h4 class="exercise-title">Calf Stretch</h4>
+                            <p class="exercise-instructions">Stand facing a wall with your hands on it for support. Step one foot back, keeping the leg straight and the heel on the floor. Gently lean forward until you feel a stretch in your calf. Hold for 30 seconds. Repeat on the other side.</p>
+                            <a href="https://www.youtube.com/results?search_query=standing+calf+stretch" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Day 3: Full Body Strength B & Flexibility -->
+            <div id="day3" class="space-y-6 hidden">
+                 <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold text-indigo-600 mb-1">Day 3: Full Body Strength & Flexibility</h2>
+                    <p class="text-gray-500 mb-4">Using different exercises to challenge your muscles in new ways.</p>
+                    
+                    <div class="space-y-4">
+                        <!-- Warm-up -->
+                        <h3 class="text-xl font-semibold text-gray-700 border-b pb-2">Warm-up (5-7 minutes)</h3>
+                        <div class="exercise-card">
+                            <h4 class="exercise-title">Marching in Place with a Twist</h4>
+                            <p class="exercise-instructions">March in place for 2 minutes. As you lift your knee, gently twist your torso towards that knee to warm up your core.</p>
+                            <a href="https://www.youtube.com/results?search_query=marching+in+place+with+twist" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+                        <div class="exercise-card">
+                            <h4 class="exercise-title">Torso Twists</h4>
+                            <p class="exercise-instructions">Stand with feet shoulder-width apart, knees slightly bent. Gently twist your upper body from side to side for 30 seconds. Keep your hips facing forward.</p>
+                            <a href="https://www.youtube.com/results?search_query=standing+torso+twists" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+                         <div class="exercise-card">
+                            <h4 class="exercise-title">Walking Hip Flexor Stretch</h4>
+                            <p class="exercise-instructions">Take a large step forward and drop your back knee towards the ground, feeling a stretch in the front of your back hip. Hold for a moment, then step forward and switch legs. Repeat for 10 reps per leg.</p>
+                            <a href="https://www.youtube.com/results?search_query=walking+hip+flexor+stretch" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+
+                        <!-- Main Workout -->
+                        <h3 class="text-xl font-semibold text-gray-700 border-b pb-2 pt-4">Main Workout (20-30 minutes)</h3>
+                        <div class="exercise-card">
+                            <h4 class="exercise-title">Alternating Lunges</h4>
+                            <p class="exercise-instructions"><strong>Sets: 3, Reps: 8-10 per leg.</strong> Step forward with one leg, lowering your hips until both knees are bent at a 90-degree angle. Your front knee should be above your ankle. Push off your front foot to return to the start, and repeat with the other leg. Hold onto a chair for balance if needed. Rest 60 seconds between sets.</p>
+                            <a href="https://www.youtube.com/results?search_query=alternating+lunges+tutorial" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+                        <div class="exercise-card">
+                            <h4 class="exercise-title">Seated Overhead Press (Dumbbells or water bottles)</h4>
+                            <p class="exercise-instructions"><strong>Sets: 3, Reps: 10-12.</strong> Sit tall on a sturdy chair. Hold light weights at shoulder height, palms facing forward. Press the weights overhead until your arms are fully extended but not locked. Lower back down with control. Rest 60 seconds between sets.</p>
+                            <a href="https://www.youtube.com/results?search_query=seated+dumbbell+overhead+press+tutorial" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+                        <div class="exercise-card">
+                            <h4 class="exercise-title">Step-Ups</h4>
+                            <p class="exercise-instructions"><strong>Sets: 3, Reps: 10 per leg.</strong> Use a sturdy, low step or the bottom stair. Step up with your right foot, then your left. Step down with your right foot, then your left. Complete all reps on one side before switching the lead leg. Rest 60 seconds between sets.</p>
+                            <a href="https://www.youtube.com/results?search_query=step+ups+exercise+tutorial" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+                         <div class="exercise-card">
+                            <h4 class="exercise-title">Plank</h4>
+                            <p class="exercise-instructions"><strong>Sets: 3, Hold: 20-40 seconds.</strong> Lie on your stomach and prop yourself up on your forearms and toes. Keep your body in a straight line from head to heels. Engage your core and glutes. Rest 60 seconds between sets.</p>
+                            <a href="https://www.youtube.com/results?search_query=plank+for+beginners" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+
+                        <!-- Cool-down -->
+                        <h3 class="text-xl font-semibold text-gray-700 border-b pb-2 pt-4">Cool-down & Flexibility (10 minutes)</h3>
+                        <div class="exercise-card">
+                            <h4 class="exercise-title">Pigeon Pose (Modified)</h4>
+                            <p class="exercise-instructions">Start on all fours. Bring your right knee forward towards your right wrist. Slide your left leg back. If this is too intense, place a cushion under your right hip for support. You should feel a deep stretch in your right glute. Hold for 30-45 seconds, then switch.</p>
+                            <a href="https://www.youtube.com/results?search_query=modified+pigeon+pose+for+beginners" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+                        <div class="exercise-card">
+                            <h4 class="exercise-title">Child's Pose</h4>
+                            <p class="exercise-instructions">From all fours, sit back on your heels and fold forward, resting your forehead on the floor. Extend your arms forward or rest them alongside your body. Breathe deeply into your back. Hold for 60 seconds.</p>
+                            <a href="https://www.youtube.com/results?search_query=childs+pose+yoga" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+                        <div class="exercise-card">
+                            <h4 class="exercise-title">Spinal Twist</h4>
+                            <p class="exercise-instructions">Lie on your back with knees bent. Gently let both knees fall to one side, keeping your shoulders on the floor. Turn your head to the opposite side. Hold for 30 seconds and repeat on the other side.</p>
+                            <a href="https://www.youtube.com/results?search_query=lying+spinal+twist" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Day 4: Active Recovery & Core -->
+            <div id="day4" class="space-y-6 hidden">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold text-indigo-600 mb-1">Day 4: Active Recovery & Core</h2>
+                    <p class="text-gray-500 mb-4">A lighter day to help muscles recover while still staying active.</p>
+                     <div class="space-y-4">
+                        <!-- Main Workout -->
+                        <h3 class="text-xl font-semibold text-gray-700 border-b pb-2 pt-4">Main Session (30-45 minutes)</h3>
+                        <div class="exercise-card">
+                            <h4 class="exercise-title">Leisurely Walk or Gentle Gardening</h4>
+                            <p class="exercise-instructions"><strong>Duration: 20-30 minutes.</strong> Engage in light, continuous movement. This could be a relaxed walk in a park or spending time in your garden. The goal is to move your body without causing strain, promoting blood flow and recovery.</p>
+                            <a href="https://www.youtube.com/results?search_query=benefits+of+leisurely+walking" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+                        <div class="exercise-card">
+                            <h4 class="exercise-title">Core & Stability Work</h4>
+                            <p class="exercise-instructions"><strong>Perform 2-3 rounds.</strong>
+                            <br>- <strong>Dead Bug:</strong> 10 reps per side. Lie on your back, knees bent at 90 degrees over hips. Slowly lower opposite arm and leg towards the floor.
+                            <br>- <strong>Bird-Dog:</strong> 10 reps per side. On all fours, extend opposite arm and leg.
+                            <br>- <strong>Side Plank (from knees):</strong> Hold 20 seconds per side.
+                            </p>
+                            <a href="https://www.youtube.com/results?search_query=dead+bug+bird+dog+beginner" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+
+                        <!-- Flexibility -->
+                        <h3 class="text-xl font-semibold text-gray-700 border-b pb-2 pt-4">Full Body Stretching (10 minutes)</h3>
+                        <div class="exercise-card">
+                            <h4 class="exercise-title">Gentle Full Body Stretch Routine</h4>
+                            <p class="exercise-instructions">Spend 10 minutes performing the stretches from Day 1 and Day 3 cool-downs. Hold each stretch for 30-45 seconds, breathing deeply and avoiding any pain. Focus on areas that feel tight.</p>
+                            <a href="https://www.youtube.com/results?search_query=10+minute+full+body+stretch+for+beginners" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Day 5: Full Body Circuit -->
+            <div id="day5" class="space-y-6 hidden">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold text-indigo-600 mb-1">Day 5: Full Body Circuit</h2>
+                    <p class="text-gray-500 mb-4">Combining strength and cardio by moving from one exercise to the next with minimal rest.</p>
+                    
+                    <div class="space-y-4">
+                        <!-- Warm-up -->
+                        <h3 class="text-xl font-semibold text-gray-700 border-b pb-2">Warm-up (5-7 minutes)</h3>
+                         <div class="exercise-card">
+                            <h4 class="exercise-title">Dynamic Warm-up Medley</h4>
+                            <p class="exercise-instructions">Perform each of the following for 1 minute:
+                            <br>- Marching in Place
+                            <br>- Arm Circles (30s forward, 30s back)
+                            <br>- Leg Swings (30s per leg)
+                            <br>- Torso Twists
+                            </p>
+                            <a href="https://www.youtube.com/results?search_query=5+minute+dynamic+warm+up" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+
+                        <!-- Main Workout -->
+                        <h3 class="text-xl font-semibold text-gray-700 border-b pb-2 pt-4">Main Circuit (20-25 minutes)</h3>
+                        <p class="text-gray-600">Perform each exercise for the prescribed reps, then move to the next with little to no rest. After completing all exercises, rest for 90-120 seconds. Repeat the entire circuit 2-3 times.</p>
+                        <div class="exercise-card">
+                            <h4 class="exercise-title">1. Bodyweight Squats</h4>
+                            <p class="exercise-instructions"><strong>Reps: 12-15.</strong> Focus on good form, keeping your chest up.</p>
+                            <a href="https://www.youtube.com/results?search_query=bodyweight+squats+tutorial" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+                         <div class="exercise-card">
+                            <h4 class="exercise-title">2. Wall Push-ups</h4>
+                            <p class="exercise-instructions"><strong>Reps: 10-12.</strong> Keep your body in a straight line.</p>
+                            <a href="https://www.youtube.com/results?search_query=wall+push+ups+tutorial" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+                         <div class="exercise-card">
+                            <h4 class="exercise-title">3. Alternating Lunges</h4>
+                            <p class="exercise-instructions"><strong>Reps: 8-10 per leg.</strong> Move with control.</p>
+                            <a href="https://www.youtube.com/results?search_query=alternating+lunges+tutorial" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+                         <div class="exercise-card">
+                            <h4 class="exercise-title">4. Glute Bridges</h4>
+                            <p class="exercise-instructions"><strong>Reps: 15.</strong> Squeeze your glutes at the top.</p>
+                            <a href="https://www.youtube.com/results?search_query=glute+bridges+tutorial" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+                         <div class="exercise-card">
+                            <h4 class="exercise-title">5. Marching or Jogging in Place</h4>
+                            <p class="exercise-instructions"><strong>Duration: 60 seconds.</strong> Keep your heart rate up.</p>
+                            <a href="https://www.youtube.com/results?search_query=jogging+in+place" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+
+
+                        <!-- Cool-down -->
+                        <h3 class="text-xl font-semibold text-gray-700 border-b pb-2 pt-4">Cool-down & Flexibility (5-10 minutes)</h3>
+                        <div class="exercise-card">
+                            <h4 class="exercise-title">Full Body Stretch</h4>
+                            <p class="exercise-instructions">Repeat the cool-down stretches from Day 1 (Hamstring, Chest, Cat-Cow). Hold each stretch for 30 seconds, focusing on deep, relaxing breaths.</p>
+                            <a href="https://www.youtube.com/results?search_query=5+minute+cool+down+stretch" target="_blank" class="exercise-link">Watch Video</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rest Days -->
+            <div id="rest" class="space-y-6 hidden">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold text-indigo-600 mb-1">Rest Days (2 days a week)</h2>
+                    <p class="text-gray-500 mb-4">Rest is just as important as exercise. It's when your body repairs and gets stronger.</p>
+                    <div class="space-y-4 text-gray-700">
+                       <p>On your two rest days, focus on recovery. This doesn't mean you have to be completely sedentary.</p>
+                       <ul class="list-disc list-inside space-y-2">
+                           <li><strong>Stay Hydrated:</strong> Drink plenty of water throughout the day.</li>
+                           <li><strong>Nourish Your Body:</strong> Eat wholesome foods that support recovery.</li>
+                           <li><strong>Light Activity:</strong> Gentle activities like a short, leisurely walk, light gardening, or stretching can be beneficial. Avoid anything strenuous.</li>
+                           <li><strong>Listen to Your Body:</strong> If you are feeling particularly sore or tired, allow yourself to fully rest. Quality sleep is crucial for recovery.</li>
+                       </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <style>
+        .exercise-card {
+            background-color: #f9fafb;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border-left: 4px solid #6366f1;
+        }
+        .exercise-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #374151;
+        }
+        .exercise-instructions {
+            margin-top: 0.5rem;
+            color: #4b5563;
+        }
+        .exercise-link {
+            display: inline-block;
+            margin-top: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            background-color: #4f46e5;
+            color: white;
+            border-radius: 0.375rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        .exercise-link:hover {
+            background-color: #4338ca;
+        }
+    </style>
+
+    <script>
+        const tabButtons = document.getElementById('tab-buttons');
+        const tabContent = document.getElementById('tab-content');
+
+        tabButtons.addEventListener('click', (event) => {
+            if (event.target.tagName === 'BUTTON') {
+                const tab = event.target.dataset.tab;
+
+                // Update button styles
+                for (const btn of tabButtons.children) {
+                    btn.classList.remove('tab-active');
+                    btn.classList.add('tab-inactive');
+                }
+                event.target.classList.add('tab-active');
+                event.target.classList.remove('tab-inactive');
+
+                // Update content visibility
+                for (const content of tabContent.children) {
+                    if (content.id === tab) {
+                        content.classList.remove('hidden');
+                    } else {
+                        content.classList.add('hidden');
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

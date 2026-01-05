@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Liquid Gold: High-Calorie Smoothie Plan</title>
+    <style>
+      :root {
+        --primary: #2e7d32; /* Leaf Green */
+        --accent: #f9a825; /* Honey/Banana */
+        --bg: #fafafa;
+        --card-bg: #ffffff;
+        --text: #333333;
+        --subtext: #666666;
+        --border-radius: 12px;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+        padding-bottom: 60px;
+      }
+
+      /* Header */
+      header {
+        background: var(--primary);
+        color: white;
+        padding: 2rem 1rem;
+        text-align: center;
+      }
+
+      header h1 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+      }
+
+      header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+      }
+
+      /* Navigation Container */
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 1rem;
+      }
+
+      /* Section Styles */
+      section {
+        margin-bottom: 3rem;
+        background: var(--card-bg);
+        padding: 1.5rem;
+        border-radius: var(--border-radius);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      h2 {
+        color: var(--primary);
+        border-bottom: 2px solid #eee;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 1.5rem;
+      }
+
+      /* Schedule Table */
+      .schedule-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .schedule-table th,
+      .schedule-table td {
+        text-align: left;
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .schedule-table th {
+        background-color: #f0fdf4;
+        color: var(--primary);
+      }
+
+      .day-col {
+        font-weight: bold;
+      }
+
+      /* Recipe Cards */
+      .recipe-card {
+        border: 1px solid #eee;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        background: #fff;
+      }
+
+      .recipe-title {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #222;
+        margin-bottom: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .recipe-tag {
+        font-size: 0.8rem;
+        background: var(--accent);
+        color: #fff;
+        padding: 4px 8px;
+        border-radius: 20px;
+        font-weight: normal;
+      }
+
+      .ingredients-list {
+        list-style: none;
+        margin: 1rem 0;
+      }
+
+      .ingredients-list li {
+        padding: 6px 0;
+        border-bottom: 1px dashed #eee;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .ingredients-list li span:first-child {
+        font-weight: 500;
+      }
+
+      /* Shopping List */
+      .shopping-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+      }
+
+      .shopping-category h3 {
+        font-size: 1.1rem;
+        color: var(--subtext);
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .checklist label {
+        display: block;
+        padding: 5px 0;
+        cursor: pointer;
+      }
+
+      .checklist input[type="checkbox"] {
+        margin-right: 10px;
+        transform: scale(1.2);
+      }
+
+      /* NutriBullet Tip Box */
+      .tip-box {
+        background-color: #e3f2fd;
+        border-left: 5px solid #2196f3;
+        padding: 1rem;
+        margin-top: 1rem;
+        border-radius: 4px;
+      }
+
+      /* Responsive Tweaks */
+      @media (max-width: 600px) {
+        .shopping-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .recipe-title {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 5px;
+        }
+
+        header h1 {
+          font-size: 1.5rem;
+        }
+
+        .schedule-table th:nth-child(3),
+        .schedule-table td:nth-child(3) {
+          display: none; /* Hide benefit column on very small screens */
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Liquid Gold Plan</h1>
+      <p>High Calorie • Whole Foods • Low Effort</p>
+    </header>
+
+    <div class="container">
+      <div style="text-align: center; margin-bottom: 2rem; color: #555">
+        <p>
+          Designed for breastfeeding energy. No chewing fatigue. No powders.
+          <br /><strong
+            >Goal: 1 Smoothie per day (approx. 600 calories).</strong
+          >
+        </p>
+      </div>
+
+      <section id="schedule">
+        <h2>Weekly Schedule</h2>
+        <table class="schedule-table">
+          <thead>
+            <tr>
+              <th>Day</th>
+              <th>Drink This</th>
+              <th>Benefit</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="day-col">Monday</td>
+              <td>Choco-Peanut Power</td>
+              <td>Protein & Energy</td>
+            </tr>
+            <tr>
+              <td class="day-col">Tuesday</td>
+              <td>Strawberry Dahi Cream</td>
+              <td>Probiotics & Vitamin C</td>
+            </tr>
+            <tr>
+              <td class="day-col">Wednesday</td>
+              <td>Tropical Oat Breeze</td>
+              <td>Milk Supply (Oats)</td>
+            </tr>
+            <tr>
+              <td class="day-col">Thursday</td>
+              <td>The Green Avocado</td>
+              <td>Healthy Fats & Iron</td>
+            </tr>
+            <tr>
+              <td class="day-col">Friday</td>
+              <td>Blueberry Walnut Lassi</td>
+              <td>Omega-3s (Brain)</td>
+            </tr>
+            <tr>
+              <td class="day-col">Saturday</td>
+              <td>Choco-Peanut Power</td>
+              <td>Protein & Energy</td>
+            </tr>
+            <tr>
+              <td class="day-col">Sunday</td>
+              <td>Strawberry Dahi Cream</td>
+              <td>Probiotics & Vitamin C</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="recipes">
+        <h2>The Recipes</h2>
+        <p style="margin-bottom: 1rem; font-size: 0.9rem; color: #666">
+          <em
+            >Note: These use whole food protein (nuts, seeds, yogurt) instead of
+            powder.</em
+          >
+        </p>
+
+        <div class="recipe-card">
+          <div class="recipe-title">
+            1. Choco-Peanut Power
+            <span class="recipe-tag">Rich & Sweet</span>
+          </div>
+          <ul class="ingredients-list">
+            <li><span>Whole Milk</span> <span>1 cup</span></li>
+            <li><span>Frozen Banana</span> <span>1 large</span></li>
+            <li><span>Peanut Butter</span> <span>3 tbsp</span></li>
+            <li><span>Hemp Hearts</span> <span>2 tbsp</span></li>
+            <li><span>Cocoa Powder</span> <span>1 tbsp</span></li>
+            <li><span>Honey/Dates</span> <span>1 tbsp</span></li>
+          </ul>
+        </div>
+
+        <div class="recipe-card">
+          <div class="recipe-title">
+            2. Strawberry Dahi Cream
+            <span class="recipe-tag">Tart & Fruity</span>
+          </div>
+          <ul class="ingredients-list">
+            <li><span>Noga Dahi Yogurt</span> <span>1 cup</span></li>
+            <li><span>Whole Milk</span> <span>¼ cup</span></li>
+            <li><span>Frozen Strawberries</span> <span>1½ cups</span></li>
+            <li><span>Cashew Butter</span> <span>2 tbsp</span></li>
+            <li><span>Hemp Hearts</span> <span>2 tbsp</span></li>
+            <li><span>Vanilla & Honey</span> <span>To taste</span></li>
+          </ul>
+        </div>
+
+        <div class="recipe-card">
+          <div class="recipe-title">
+            3. Tropical Oat Breeze
+            <span class="recipe-tag">Fresh & Sweet</span>
+          </div>
+          <ul class="ingredients-list">
+            <li><span>Whole Milk</span> <span>1 cup</span></li>
+            <li><span>Rolled Oats</span> <span>½ cup</span></li>
+            <li><span>Frozen Mango/Pineapple</span> <span>1 cup</span></li>
+            <li><span>Coconut Cream</span> <span>2 tbsp</span></li>
+            <li><span>Hemp Hearts</span> <span>3 tbsp</span></li>
+          </ul>
+          <small style="color: #666"
+            >*Tip: Blend oats dry first for smoother texture.</small
+          >
+        </div>
+
+        <div class="recipe-card">
+          <div class="recipe-title">
+            4. The Green Avocado
+            <span class="recipe-tag">Creamy & Mild</span>
+          </div>
+          <ul class="ingredients-list">
+            <li><span>Whole Milk</span> <span>1 cup</span></li>
+            <li><span>Frozen Banana</span> <span>1 large</span></li>
+            <li><span>Spinach</span> <span>1 large handful</span></li>
+            <li><span>Avocado</span> <span>½ ripe</span></li>
+            <li><span>Almond Butter</span> <span>2 tbsp</span></li>
+            <li><span>Chia Seeds</span> <span>1 tbsp</span></li>
+          </ul>
+        </div>
+
+        <div class="recipe-card">
+          <div class="recipe-title">
+            5. Blueberry Walnut Lassi
+            <span class="recipe-tag">Earthy & Berry</span>
+          </div>
+          <ul class="ingredients-list">
+            <li><span>Noga Dahi Yogurt</span> <span>¾ cup</span></li>
+            <li><span>Whole Milk</span> <span>½ cup</span></li>
+            <li><span>Frozen Blueberries</span> <span>1 cup</span></li>
+            <li><span>Walnuts</span> <span>¼ cup</span></li>
+            <li><span>Rolled Oats</span> <span>¼ cup</span></li>
+            <li><span>Cinnamon & Maple</span> <span>To taste</span></li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="shopping">
+        <h2>Weekly Shopping List</h2>
+        <div class="shopping-grid">
+          <div class="shopping-category">
+            <h3>Produce</h3>
+            <div class="checklist">
+              <label><input type="checkbox" /> Bananas (5)</label>
+              <label><input type="checkbox" /> Avocado (1)</label>
+              <label><input type="checkbox" /> Spinach (Fresh or Frozen)</label>
+            </div>
+          </div>
+
+          <div class="shopping-category">
+            <h3>Dairy</h3>
+            <div class="checklist">
+              <label
+                ><input type="checkbox" /> Noga Dahi Whole Milk Yogurt (Large
+                Tub)</label
+              >
+              <label><input type="checkbox" /> Whole Milk (1 Gallon)</label>
+            </div>
+          </div>
+
+          <div class="shopping-category">
+            <h3>Frozen Aisle</h3>
+            <div class="checklist">
+              <label><input type="checkbox" /> Strawberries</label>
+              <label><input type="checkbox" /> Blueberries</label>
+              <label><input type="checkbox" /> Mango/Pineapple Mix</label>
+            </div>
+          </div>
+
+          <div class="shopping-category">
+            <h3>Pantry (Natural Protein)</h3>
+            <div class="checklist">
+              <label
+                ><input type="checkbox" /> Hemp Hearts (Shelled Hemp
+                Seeds)</label
+              >
+              <label><input type="checkbox" /> Rolled Oats</label>
+              <label><input type="checkbox" /> Peanut Butter</label>
+              <label
+                ><input type="checkbox" /> Cashew Butter (or raw cashews)</label
+              >
+              <label><input type="checkbox" /> Almond Butter</label>
+              <label><input type="checkbox" /> Walnuts</label>
+              <label><input type="checkbox" /> Chia Seeds</label>
+              <label><input type="checkbox" /> Honey / Maple Syrup</label>
+              <label><input type="checkbox" /> Cocoa Powder</label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tips">
+        <h2>NutriBullet Success Tips</h2>
+        <p>The order you put ingredients in matters for smooth blending!</p>
+
+        <div class="tip-box">
+          <strong>Load the cup in this order:</strong>
+          <ol style="margin-left: 1.5rem; margin-top: 0.5rem">
+            <li><strong>Bottom:</strong> Greens, Oats, Nuts, Hemp Hearts</li>
+            <li>
+              <strong>Middle:</strong> Frozen Fruit & Banana (Break banana into
+              chunks)
+            </li>
+            <li><strong>Top:</strong> Yogurt, Avocado, Nut Butters</li>
+            <li><strong>Last:</strong> Pour Milk to the MAX line</li>
+          </ol>
+        </div>
+        <p style="margin-top: 1rem; font-size: 0.9rem">
+          <strong>Is it stuck?</strong> If the blade spins but nothing moves,
+          stop it. Take the cup off the base and give it a hard shake to force
+          ingredients down, then try again.
+        </p>
+      </section>
+    </div>
+  </body>
+</html>

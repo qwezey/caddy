@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025 Honda Prologue: Interactive Lease Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals (Stone/Slate) -->
+    <!-- Application Structure Plan: A task-oriented SPA centered on an interactive lease calculator. The structure guides the user from the primary value proposition to personalized cost calculation, then provides contextual information (trims, incentives) and actionable advice on demand. This is chosen over a linear report structure to empower users to get their key answer ("What's my payment?") immediately and explore details as needed, enhancing usability and engagement. -->
+    <!-- Visualization & Content Choices: Main interaction is an HTML/JS lease calculator (Goal: Personalize Cost). A Chart.js doughnut chart visualizes the payment breakdown (Goal: Inform). An interactive HTML/Tailwind table compares trims (Goal: Compare). Accordions detail incentives (Goal: Organize). An HTML list presents the negotiation strategy (Goal: Inform). All choices prioritize direct interaction and clarity, using standard libraries and avoiding SVG/Mermaid as required. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F5F5F4; /* stone-100 */
+            color: #374151; /* gray-700 */
+        }
+        .nav-link {
+            transition: color 0.2s, border-bottom-color 0.2s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #1F2937; /* gray-800 */
+            border-bottom-color: #3B82F6; /* blue-500 */
+        }
+        .section-title {
+            color: #111827; /* gray-900 */
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+        .calculator-label {
+            color: #4B5563; /* gray-600 */
+            font-weight: 500;
+        }
+        .calculator-input {
+            background-color: #F3F4F6; /* gray-100 */
+            border: 1px solid #D1D5DB; /* gray-300 */
+        }
+        .calculator-output-value {
+            color: #1F2937; /* gray-800 */
+            font-weight: 700;
+        }
+        .accordion-button::after {
+            content: '\25BC';
+            float: right;
+            transform: scale(0.8);
+            transition: transform 0.2s;
+        }
+        .accordion-button.open::after {
+            transform: scale(0.8) rotate(180deg);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <span class="font-bold text-xl text-gray-800">PrologueLease.com</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#calculator" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-600">Calculator</a>
+                        <a href="#trims" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-600">Compare Trims</a>
+                        <a href="#incentives" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-600">Incentives</a>
+                        <a href="#playbook" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-600">Playbook</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            <!-- Hero Section -->
+            <section class="text-center mb-16">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight mb-4">Your Guide to the 2025 Honda Prologue Lease</h1>
+                <p class="max-w-3xl mx-auto text-lg text-gray-600">
+                    The Prologue offers one of the best EV lease deals available, thanks to a powerful stack of incentives. This interactive tool helps you deconstruct the offers, calculate your personalized payment, and negotiate with confidence.
+                </p>
+            </section>
+
+            <!-- Key Value Prop -->
+            <section class="mb-16">
+                 <div class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-lg card">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <span class="text-3xl">💡</span>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-lg font-bold text-blue-900">The Core Advantage: The $7,500 Lease Credit</h3>
+                            <p class="text-blue-800 mt-1">
+                                The most important factor making the Prologue lease so attractive is the **$7,500 Federal Clean Vehicle Credit**. Because of its assembly location, you can't get this credit if you buy the car. However, when you lease, Honda Financial Services claims a commercial credit and passes the full $7,500 directly to you as a capitalized cost reduction. This single incentive is the foundation of the exceptional lease value.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Calculator Section -->
+            <section id="calculator" class="mb-16 scroll-mt-16">
+                <h2 class="text-3xl font-bold section-title mb-2 text-center">Interactive Lease Calculator</h2>
+                <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
+                    Adjust the parameters below to estimate your monthly lease payment. This calculator is pre-configured with data for a New Jersey lessee to show the maximum potential savings, including state-level rebates and taxes.
+                </p>
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                    <!-- Inputs -->
+                    <div class="lg:col-span-3 card p-6 md:p-8">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Column 1 -->
+                            <div class="space-y-6">
+                                <div>
+                                    <label for="trim" class="block text-sm calculator-label mb-1">Vehicle Trim</label>
+                                    <select id="trim" class="w-full p-2 rounded-md calculator-input">
+                                        <option value="EX_2WD">EX 2WD</option>
+                                        <option value="EX_AWD" selected>EX AWD</option>
+                                        <option value="Touring_2WD">Touring 2WD</option>
+                                        <option value="Touring_AWD">Touring AWD</option>
+                                        <option value="Elite_AWD">Elite AWD</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="term" class="block text-sm calculator-label mb-1">Lease Term: <span id="termValue" class="font-bold">36</span> months</label>
+                                    <input id="term" type="range" min="24" max="36" step="12" value="36" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                </div>
+                                 <div>
+                                    <label for="mileage" class="block text-sm calculator-label mb-1">Annual Mileage: <span id="mileageValue" class="font-bold">10,000</span></label>
+                                    <input id="mileage" type="range" min="10000" max="12000" step="2000" value="10000" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                </div>
+                            </div>
+                            <!-- Column 2 -->
+                            <div class="space-y-6">
+                                <div>
+                                    <label for="downPayment" class="block text-sm calculator-label mb-1">Down Payment (Cap Cost Reduction): $<span id="downPaymentValue" class="font-bold">0</span></label>
+                                    <input id="downPayment" type="range" min="0" max="5000" step="250" value="0" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                </div>
+                               <div>
+                                    <label for="negotiatedDiscount" class="block text-sm calculator-label mb-1">Discount off MSRP: $<span id="negotiatedDiscountValue" class="font-bold">1500</span></label>
+                                    <input id="negotiatedDiscount" type="range" min="0" max="4000" step="100" value="1500" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                </div>
+                                <div>
+                                    <h4 class="text-sm calculator-label mb-2">Available Incentives</h4>
+                                    <div class="space-y-2">
+                                        <div class="flex items-center">
+                                            <input id="incentive-federal" type="checkbox" checked disabled class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                            <label for="incentive-federal" class="ml-2 block text-sm text-gray-700">$7,500 Federal Lease Credit (Standard)</label>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <input id="incentive-loyalty" type="checkbox" checked class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                            <label for="incentive-loyalty" class="ml-2 block text-sm text-gray-700">$1,000 Loyalty/Conquest Cash</label>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <input id="incentive-nj" type="checkbox" checked class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                            <label for="incentive-nj" class="ml-2 block text-sm text-gray-700">$2,000 Charge Up NJ Rebate</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Outputs -->
+                    <div class="lg:col-span-2 card p-6 md:p-8 flex flex-col justify-center items-center text-center">
+                        <h3 class="text-lg font-medium text-gray-500">Your Estimated Monthly Payment</h3>
+                        <p class="text-5xl md:text-6xl font-extrabold calculator-output-value my-2" id="monthlyPayment">$0</p>
+                        <p class="text-gray-500 text-sm mb-4">(Includes NJ 3.3125% ZEV Sales Tax)</p>
+                        <div class="chart-container">
+                            <canvas id="paymentChart"></canvas>
+                        </div>
+                         <div class="w-full text-left mt-4 text-sm space-y-1">
+                             <div class="flex justify-between">
+                                <span class="text-gray-600">Total Due at Signing:</span>
+                                <span id="dueAtSigning" class="font-semibold text-gray-800">$0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Effective Monthly Cost:</span>
+                                <span id="effectiveCost" class="font-semibold text-gray-800">$0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Trims Section -->
+            <section id="trims" class="mb-16 scroll-mt-16">
+                <h2 class="text-3xl font-bold section-title mb-2 text-center">Compare Trim Levels</h2>
+                 <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
+                    The Prologue comes in three distinct trims. While the EX is a great value, the Touring is often considered the "sweet spot" for its premium features like a panoramic moonroof, Bose audio, and leather seats, making it a popular choice for leasing.
+                </p>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr>
+                                <th class="py-4 px-6 bg-gray-50 font-bold uppercase text-sm text-gray-600 border-b">Feature</th>
+                                <th class="py-4 px-6 bg-gray-50 font-bold uppercase text-sm text-gray-600 border-b text-center">EX</th>
+                                <th class="py-4 px-6 bg-gray-50 font-bold uppercase text-sm text-gray-600 border-b text-center">Touring</th>
+                                <th class="py-4 px-6 bg-gray-50 font-bold uppercase text-sm text-gray-600 border-b text-center">Elite</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white">
+                            <tr class="hover:bg-gray-50">
+                                <td class="py-4 px-6 border-b border-gray-200 font-medium">Starting MSRP (incl. Dest.)</td>
+                                <td class="py-4 px-6 border-b border-gray-200 text-center">$48,850</td>
+                                <td class="py-4 px-6 border-b border-gray-200 text-center">$53,150</td>
+                                <td class="py-4 px-6 border-b border-gray-200 text-center">$59,350</td>
+                            </tr>
+                             <tr class="hover:bg-gray-50">
+                                <td class="py-4 px-6 border-b border-gray-200 font-medium">Upholstery</td>
+                                <td class="py-4 px-6 border-b border-gray-200 text-center">Cloth</td>
+                                <td class="py-4 px-6 border-b border-gray-200 text-center">Leather-Trimmed</td>
+                                <td class="py-4 px-6 border-b border-gray-200 text-center">Leather-Trimmed</td>
+                            </tr>
+                             <tr class="hover:bg-gray-50">
+                                <td class="py-4 px-6 border-b border-gray-200 font-medium">Audio System</td>
+                                <td class="py-4 px-6 border-b border-gray-200 text-center">6 Speakers</td>
+                                <td class="py-4 px-6 border-b border-gray-200 text-center">Bose Premium (12 Speakers)</td>
+                                <td class="py-4 px-6 border-b border-gray-200 text-center">Bose Premium (12 Speakers)</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="py-4 px-6 border-b border-gray-200 font-medium">Panoramic Moonroof</td>
+                                <td class="py-4 px-6 border-b border-gray-200 text-center text-red-500">❌</td>
+                                <td class="py-4 px-6 border-b border-gray-200 text-center text-green-500">✔️</td>
+                                <td class="py-4 px-6 border-b border-gray-200 text-center text-green-500">✔️</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="py-4 px-6 border-b border-gray-200 font-medium">Heated & Ventilated Front Seats</td>
+                                <td class="py-4 px-6 border-b border-gray-200 text-center text-red-500">❌</td>
+                                <td class="py-4 px-6 border-b border-gray-200 text-center text-red-500">❌</td>
+                                <td class="py-4 px-6 border-b border-gray-200 text-center text-green-500">✔️</td>
+                            </tr>
+                             <tr class="hover:bg-gray-50">
+                                <td class="py-4 px-6 border-b border-gray-200 font-medium">Head-Up Display (HUD)</td>
+                                <td class="py-4 px-6 border-b border-gray-200 text-center text-red-500">❌</td>
+                                <td class="py-4 px-6 border-b border-gray-200 text-center text-red-500">❌</td>
+                                <td class="py-4 px-6 border-b border-gray-200 text-center text-green-500">✔️</td>
+                            </tr>
+                             <tr class="hover:bg-gray-50">
+                                <td class="py-4 px-6 border-b border-gray-200 font-medium">Wheel Size</td>
+                                <td class="py-4 px-6 border-b border-gray-200 text-center">19-inch Alloy</td>
+                                <td class="py-4 px-6 border-b border-gray-200 text-center">19-inch Alloy</td>
+                                <td class="py-4 px-6 border-b border-gray-200 text-center">21-inch Alloy</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <!-- Incentives Section -->
+            <section id="incentives" class="mb-16 scroll-mt-16">
+                 <h2 class="text-3xl font-bold section-title mb-2 text-center">Understanding the Incentive Stack</h2>
+                <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
+                   Your final lease price is heavily influenced by stacking multiple incentives. Here’s a breakdown of the most common offers. Your eligibility for each will determine your total savings.
+                </p>
+                <div class="space-y-4 max-w-4xl mx-auto">
+                    <div class="accordion-item bg-white rounded-lg shadow-sm">
+                        <button class="accordion-button w-full text-left p-4 font-semibold text-lg focus:outline-none">
+                            Federal & Manufacturer Incentives
+                        </button>
+                        <div class="accordion-content overflow-hidden max-h-0 transition-all duration-500 ease-in-out p-4 pt-0">
+                            <ul class="list-disc list-inside space-y-2 text-gray-700">
+                                <li><strong>$7,500 Clean Vehicle Lease Credit:</strong> The foundational, non-negotiable credit applied to all Prologue leases through Honda Financial Services (HFS).</li>
+                                <li><strong>$1,000 - $3,500 Loyalty/Conquest Cash:</strong> An offer for current Honda owners (loyalty) or owners of competing brands (conquest). The amount varies by region and time.</li>
+                                <li><strong>$500 Military & Graduate Bonuses:</strong> HFS offers a $500 bonus for eligible military personnel and recent college graduates, which can be stacked with other offers.</li>
+                            </ul>
+                        </div>
+                    </div>
+                     <div class="accordion-item bg-white rounded-lg shadow-sm">
+                        <button class="accordion-button w-full text-left p-4 font-semibold text-lg focus:outline-none">
+                            State-Level Incentives (New Jersey Example)
+                        </button>
+                        <div class="accordion-content overflow-hidden max-h-0 transition-all duration-500 ease-in-out p-4 pt-0">
+                            <ul class="list-disc list-inside space-y-2 text-gray-700">
+                                <li><strong>Up to $2,000 Charge Up NJ Rebate:</strong> A point-of-sale rebate for NJ residents leasing from a participating NJ dealer. The amount is based on the vehicle's MSRP.</li>
+                                <li><strong>NJ ZEV Sales Tax Reduction:</strong> A major benefit where ZEVs are taxed at a reduced rate. This program is being phased out, making now a crucial time to act. As of late 2024, the rate is half the standard rate, but it is set to return to the full rate in July 2025.</li>
+                                <li><strong>Charger Rebates:</strong> NJ residents can also claim up to $250 for a Level 2 home charger, and utility companies like PSE&G offer additional credits.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Playbook Section -->
+            <section id="playbook" class="scroll-mt-16">
+                 <h2 class="text-3xl font-bold section-title mb-2 text-center">Your Negotiation Playbook</h2>
+                 <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
+                    Getting a great deal isn't automatic. Follow this proven strategy to ensure you secure the best possible terms on your Prologue lease.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Step 1 -->
+                    <div class="card p-6">
+                        <div class="text-blue-500 font-bold text-lg mb-2">Step 1</div>
+                        <h3 class="font-bold text-xl mb-2">Do Your Homework</h3>
+                        <p class="text-gray-600">Before contacting a dealer, use online forums (like Edmunds) to find the current Residual Value (RV) and buy-rate Money Factor (MF) for your specific trim and term. Know all available incentives.</p>
+                    </div>
+                     <!-- Step 2 -->
+                    <div class="card p-6">
+                        <div class="text-blue-500 font-bold text-lg mb-2">Step 2</div>
+                        <h3 class="font-bold text-xl mb-2">Negotiate Price First</h3>
+                        <p class="text-gray-600">Focus only on the selling price (gross capitalized cost) of the vehicle, as if you were paying cash. Agree on this number *before* discussing lease payments or incentives.</p>
+                    </div>
+                     <!-- Step 3 -->
+                    <div class="card p-6">
+                        <div class="text-blue-500 font-bold text-lg mb-2">Step 3</div>
+                        <h3 class="font-bold text-xl mb-2">Verify the Worksheet</h3>
+                        <p class="text-gray-600">Get an itemized lease worksheet. Check that the RV and MF match your research. If the MF is higher, it's marked up—negotiate it down to the buy-rate. Confirm all incentives are applied.</p>
+                    </div>
+                     <!-- Step 4 -->
+                    <div class="card p-6">
+                        <div class="text-blue-500 font-bold text-lg mb-2">Step 4</div>
+                        <h3 class="font-bold text-xl mb-2">Scrutinize Fees</h3>
+                        <p class="text-gray-600">Question every fee. The Acquisition Fee should be the standard HFS rate. Politely decline any optional add-ons like nitrogen tires or protection packages you don't want.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-400">
+            <p>&copy; 2025 PrologueLease.com. All calculations are estimates for informational purposes only.</p>
+            <p>Data is based on the "Expert Report on Leasing the 2025 Honda Prologue" and assumes a New Jersey lessee. Actual prices, incentives, and terms will vary. Always consult with an authorized Honda dealer for official figures.</p>
+        </div>
+    </footer>
+
+<script>
+    const leaseData = {
+        trims: {
+            'EX_2WD': { msrp: 48850 },
+            'EX_AWD': { msrp: 51850 },
+            'Touring_2WD': { msrp: 53150 },
+            'Touring_AWD': { msrp: 56150 },
+            'Elite_AWD': { msrp: 59350 },
+        },
+        residuals: {
+            '24': {
+                '10000': { 'EX_2WD': 55, 'EX_AWD': 55, 'Touring_2WD': 54, 'Touring_AWD': 54, 'Elite_AWD': 53 },
+                '12000': { 'EX_2WD': 54, 'EX_AWD': 54, 'Touring_2WD': 53, 'Touring_AWD': 53, 'Elite_AWD': 52 },
+            },
+            '36': {
+                '10000': { 'EX_2WD': 50, 'EX_AWD': 50, 'Touring_2WD': 49, 'Touring_AWD': 49, 'Elite_AWD': 48 },
+                '12000': { 'EX_2WD': 49, 'EX_AWD': 49, 'Touring_2WD': 48, 'Touring_AWD': 48, 'Elite_AWD': 47 },
+            }
+        },
+        moneyFactor: 0.00181,
+        incentives: {
+            federal: 7500,
+            loyalty: 1000,
+            nj: 2000,
+        },
+        fees: {
+            acquisition: 595,
+            doc: 999,
+        },
+        taxRate: 0.033125 
+    };
+
+    const trimSelect = document.getElementById('trim');
+    const termSlider = document.getElementById('term');
+    const mileageSlider = document.getElementById('mileage');
+    const downPaymentSlider = document.getElementById('downPayment');
+    const negotiatedDiscountSlider = document.getElementById('negotiatedDiscount');
+    
+    const federalIncentiveCheckbox = document.getElementById('incentive-federal');
+    const loyaltyIncentiveCheckbox = document.getElementById('incentive-loyalty');
+    const njIncentiveCheckbox = document.getElementById('incentive-nj');
+
+    const termValueSpan = document.getElementById('termValue');
+    const mileageValueSpan = document.getElementById('mileageValue');
+    const downPaymentValueSpan = document.getElementById('downPaymentValue');
+    const negotiatedDiscountValueSpan = document.getElementById('negotiatedDiscountValue');
+    
+    const monthlyPaymentEl = document.getElementById('monthlyPayment');
+    const dueAtSigningEl = document.getElementById('dueAtSigning');
+    const effectiveCostEl = document.getElementById('effectiveCost');
+
+    let paymentChart;
+
+    function formatCurrency(value) {
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+    }
+    
+    function calculateLease() {
+        const selectedTrim = trimSelect.value;
+        const term = parseInt(termSlider.value);
+        const mileage = parseInt(mileageSlider.value);
+        const downPayment = parseFloat(downPaymentSlider.value);
+        const negotiatedDiscount = parseFloat(negotiatedDiscountSlider.value);
+
+        const msrp = leaseData.trims[selectedTrim].msrp;
+        const rvPercentage = leaseData.residuals[term.toString()][mileage.toString()][selectedTrim];
+        const residualValue = msrp * (rvPercentage / 100);
+
+        const grossCapCost = msrp - negotiatedDiscount;
+        
+        let totalIncentives = 0;
+        if (federalIncentiveCheckbox.checked) totalIncentives += leaseData.incentives.federal;
+        if (loyaltyIncentiveCheckbox.checked) totalIncentives += leaseData.incentives.loyalty;
+        if (njIncentiveCheckbox.checked) totalIncentives += leaseData.incentives.nj;
+        
+        const netCapCost = grossCapCost - totalIncentives - downPayment;
+        
+        const totalDepreciation = netCapCost - residualValue;
+        const baseMonthlyDepreciation = totalDepreciation / term;
+
+        const monthlyFinanceCharge = (netCapCost + residualValue) * leaseData.moneyFactor;
+        
+        const preTaxMonthlyPayment = baseMonthlyDepreciation + monthlyFinanceCharge;
+        const monthlyTax = preTaxMonthlyPayment * leaseData.taxRate;
+        
+        const finalMonthlyPayment = preTaxMonthlyPayment + monthlyTax;
+
+        const totalDueAtSigning = downPayment + leaseData.fees.acquisition + leaseData.fees.doc + finalMonthlyPayment;
+        
+        const effectiveMonthlyCost = (downPayment / term) + finalMonthlyPayment;
+
+        monthlyPaymentEl.textContent = formatCurrency(finalMonthlyPayment).replace('.00', '');
+        dueAtSigningEl.textContent = formatCurrency(totalDueAtSigning);
+        effectiveCostEl.textContent = formatCurrency(effectiveMonthlyCost);
+
+        updateChart(baseMonthlyDepreciation, monthlyFinanceCharge, monthlyTax);
+    }
+
+    function updateChart(depreciation, finance, tax) {
+        if (paymentChart) {
+            paymentChart.data.datasets[0].data = [depreciation, finance, tax];
+            paymentChart.update();
+        }
+    }
+
+    function setupEventListeners() {
+        const inputs = [trimSelect, termSlider, mileageSlider, downPaymentSlider, negotiatedDiscountSlider, loyaltyIncentiveCheckbox, njIncentiveCheckbox];
+        inputs.forEach(input => input.addEventListener('input', () => {
+            if (termValueSpan) termValueSpan.textContent = termSlider.value;
+            if (mileageValueSpan) mileageValueSpan.textContent = parseInt(mileageSlider.value).toLocaleString();
+            if (downPaymentValueSpan) downPaymentValueSpan.textContent = parseFloat(downPaymentSlider.value).toLocaleString();
+            if (negotiatedDiscountValueSpan) negotiatedDiscountValueSpan.textContent = parseFloat(negotiatedDiscountSlider.value).toLocaleString();
+            calculateLease();
+        }));
+    }
+
+    function initializeChart() {
+        const ctx = document.getElementById('paymentChart').getContext('2d');
+        paymentChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Depreciation', 'Finance Charge', 'Tax'],
+                datasets: [{
+                    data: [0, 0, 0],
+                    backgroundColor: ['#3B82F6', '#60A5FA', '#93C5FD'],
+                    borderColor: '#F5F5F4',
+                    borderWidth: 4,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '60%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                           boxWidth: 12,
+                           padding: 15,
+                           font: {
+                               size: 12,
+                           }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed !== null) {
+                                    label += formatCurrency(context.parsed);
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        initializeChart();
+        setupEventListeners();
+
+        termValueSpan.textContent = termSlider.value;
+        mileageValueSpan.textContent = parseInt(mileageSlider.value).toLocaleString();
+        downPaymentValueSpan.textContent = parseFloat(downPaymentSlider.value).toLocaleString();
+        negotiatedDiscountValueSpan.textContent = parseFloat(negotiatedDiscountSlider.value).toLocaleString();
+        calculateLease();
+
+        const accordionButtons = document.querySelectorAll('.accordion-button');
+        accordionButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const content = button.nextElementSibling;
+                button.classList.toggle('open');
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                }
+            });
+        });
+    });
+
+</script>
+</body>
+</html>

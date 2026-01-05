@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NJ Newborn Insurance Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chosen Palette: Calm Harmony Neutrals -->
+    <!-- Application Structure Plan: A task-oriented dashboard design is used to immediately address the user's primary need: "What do I do now?". The top section provides a clear, actionable checklist. Below, a tabbed navigation system breaks down the dense report information into manageable, non-linear sections (Program Comparison, Eligibility Check, Application Steps, Bill Resolution, Contacts). This structure was chosen to reduce overwhelm, empower the user to explore information as needed, and guide them from immediate action to deeper understanding, which is more effective for a user under stress than a long, linear document. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: 48-Hour Action Checklist -> Goal: Guide Immediate Action -> Viz/Method: Interactive HTML/Tailwind checklist with icons. -> Interaction: Clear, numbered steps that are easy to follow. -> Justification: Addresses the most urgent user need first in a scannable format. -> Library/Method: HTML/Tailwind.
+        - Report Info: Program Comparison (Table 2) -> Goal: Compare Options -> Viz/Method: Interactive card-based layout using Tailwind Grid. -> Interaction: Hovering over cards or features can provide visual cues (though kept simple here to avoid complexity). -> Justification: More engaging and easier to digest than a dense data table. -> Library/Method: HTML/Tailwind/JS.
+        - Report Info: Income Thresholds (Table 1) -> Goal: Inform & Reassure -> Viz/Method: Dynamic Bar Chart via Chart.js. -> Interaction: The chart visually confirms the user's eligibility by showing their $0 income against the high thresholds. -> Justification: A visual representation is more reassuring and impactful than a table of numbers. It provides an instant "you qualify" confirmation. -> Library/Method: Chart.js/Canvas.
+        - Report Info: Application & Retroactive Processes -> Goal: Organize & Guide -> Viz/Method: Accordion-style expandable sections. -> Interaction: Users click a step to reveal details. -> Justification: Breaks complex processes into digestible steps, preventing information overload. -> Library/Method: HTML/Tailwind/JS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            background-color: #FDFBF7;
+            color: #374151;
+            font-family: 'Inter', sans-serif;
+        }
+        .tab-button {
+            transition: all 0.3s ease;
+            border-bottom: 4px solid transparent;
+        }
+        .tab-button.active {
+            border-bottom-color: #3B82F6;
+            color: #1E40AF;
+            font-weight: 600;
+        }
+        .accordion-header {
+            transition: background-color 0.3s ease;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, padding 0.5s ease-out;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+         @media (min-width: 768px) { .chart-container { height: 400px; } }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800">A Clear Path to Your Newborn's Health Insurance</h1>
+            <p class="mt-2 text-lg text-gray-600 max-w-3xl mx-auto">This guide simplifies the process of getting free, retroactive health coverage for your baby in New Jersey and resolving hospital bills.</p>
+        </header>
+
+        <main>
+            <section id="action-plan" class="mb-12 p-6 bg-white rounded-lg shadow-lg border-l-4 border-blue-500">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Your Immediate 4-Step Action Plan</h2>
+                <p class="text-gray-600 mb-6">Start here. Completing these steps simultaneously is the most effective strategy to secure coverage and financial assistance for your newborn.</p>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-blue-50 p-4 rounded-lg flex items-start space-x-4">
+                        <div class="flex-shrink-0 bg-blue-500 text-white rounded-full h-8 w-8 flex items-center justify-center font-bold text-lg">1</div>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Contact the Hospital</h3>
+                            <p class="text-gray-600">Call Saint Peter's Hospital financial counselors at <strong class="font-semibold">(732) 745-8600, ext. 5019</strong>. Ask for immediate <strong class="font-semibold">Presumptive Eligibility (PE)</strong> coverage for the baby and a <strong class="font-semibold">Charity Care</strong> application packet.</p>
+                        </div>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-lg flex items-start space-x-4">
+                        <div class="flex-shrink-0 bg-blue-500 text-white rounded-full h-8 w-8 flex items-center justify-center font-bold text-lg">2</div>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Start the NJ FamilyCare Application</h3>
+                            <p class="text-gray-600">Go to <strong class="font-semibold">njfamilycare.org</strong> to apply online. This is the main application for long-term, free insurance. Create an account to track your status. Apply for the newborn only.</p>
+                        </div>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-lg flex items-start space-x-4">
+                        <div class="flex-shrink-0 bg-blue-500 text-white rounded-full h-8 w-8 flex items-center justify-center font-bold text-lg">3</div>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Gather Your Information</h3>
+                            <p class="text-gray-600">You'll need proof of NJ residency, household details (3 people: you, mother, baby), and current income info (unemployment). Your savings do not count. An SSN for the baby is helpful but not required to apply.</p>
+                        </div>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-lg flex items-start space-x-4">
+                        <div class="flex-shrink-0 bg-blue-500 text-white rounded-full h-8 w-8 flex items-center justify-center font-bold text-lg">4</div>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Add Baby to Mother's Insurance</h3>
+                            <p class="text-gray-600">The baby's mother must contact her insurance administrator to add the newborn to her policy. This is a crucial step for coordinating benefits, even though NJ FamilyCare will likely be the primary insurer.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="bg-white rounded-lg shadow-md">
+                <div class="border-b border-gray-200">
+                    <nav class="flex flex-wrap -mb-px px-4" aria-label="Tabs">
+                        <button class="tab-button active text-gray-600 py-4 px-1 text-center font-medium text-sm sm:text-base flex-grow sm:flex-grow-0" data-tab="tab-compare">Compare Programs</button>
+                        <button class="tab-button text-gray-600 py-4 px-1 text-center font-medium text-sm sm:text-base flex-grow sm:flex-grow-0" data-tab="tab-eligibility">Check Eligibility</button>
+                        <button class="tab-button text-gray-600 py-4 px-1 text-center font-medium text-sm sm:text-base flex-grow sm:flex-grow-0" data-tab="tab-apply">Application Steps</button>
+                        <button class="tab-button text-gray-600 py-4 px-1 text-center font-medium text-sm sm:text-base flex-grow sm:flex-grow-0" data-tab="tab-bills">Resolve Bills</button>
+                        <button class="tab-button text-gray-600 py-4 px-1 text-center font-medium text-sm sm:text-base flex-grow sm:flex-grow-0" data-tab="tab-contacts">Contacts</button>
+                    </nav>
+                </div>
+
+                <div class="p-6 md:p-8">
+                    <div id="tab-compare" class="tab-content">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Understanding Your Options</h3>
+                        <p class="text-gray-600 mb-6">This section helps you compare the three key programs you will be engaging with. Your primary goal is NJ FamilyCare, with the other two providing immediate and backup support.</p>
+                        <div class="grid md:grid-cols-3 gap-6">
+                            <div class="border border-blue-200 rounded-lg p-4 bg-blue-50">
+                                <h4 class="font-bold text-lg text-blue-800">NJ FamilyCare (Plan A)</h4>
+                                <p class="text-sm text-blue-700 font-semibold mb-2">Primary Goal</p>
+                                <ul class="space-y-2 text-sm text-gray-700">
+                                    <li><strong class="font-semibold">Purpose:</strong> Long-term, comprehensive health insurance.</li>
+                                    <li><strong class="font-semibold">Coverage:</strong> All medical needs (doctors, hospital, etc.).</li>
+                                    <li><strong class="font-semibold">Key Requirement:</strong> Based on current monthly income.</li>
+                                    <li><strong class="font-semibold">Asset Test:</strong> <span class="font-bold text-green-700">No</span></li>
+                                    <li><strong class="font-semibold">Administered by:</strong> State of New Jersey</li>
+                                </ul>
+                            </div>
+                             <div class="border border-green-200 rounded-lg p-4 bg-green-50">
+                                <h4 class="font-bold text-lg text-green-800">Presumptive Eligibility (PE)</h4>
+                                <p class="text-sm text-green-700 font-semibold mb-2">Immediate Bridge</p>
+                                <ul class="space-y-2 text-sm text-gray-700">
+                                     <li><strong class="font-semibold">Purpose:</strong> Temporary NJ FamilyCare coverage while you apply.</li>
+                                    <li><strong class="font-semibold">Coverage:</strong> Comprehensive, but for a limited time (~60 days).</li>
+                                    <li><strong class="font-semibold">Key Requirement:</strong> Based on your statement of income.</li>
+                                    <li><strong class="font-semibold">Asset Test:</strong> <span class="font-bold text-green-700">No</span></li>
+                                    <li><strong class="font-semibold">Administered by:</strong> The Hospital (as a certified provider)</li>
+                                </ul>
+                            </div>
+                            <div class="border border-yellow-200 rounded-lg p-4 bg-yellow-50">
+                                <h4 class="font-bold text-lg text-yellow-800">NJ Charity Care</h4>
+                                <p class="text-sm text-yellow-700 font-semibold mb-2">Safety Net</p>
+                                <ul class="space-y-2 text-sm text-gray-700">
+                                    <li><strong class="font-semibold">Purpose:</strong> Hospital bill assistance (forgives or reduces costs).</li>
+                                    <li><strong class="font-semibold">Coverage:</strong> Hospital services only.</li>
+                                    <li><strong class="font-semibold">Key Requirement:</strong> Based on income AND assets.</li>
+                                    <li><strong class="font-semibold">Asset Test:</strong> <span class="font-bold text-red-700">Yes</span> (under $15,000)</li>
+                                    <li><strong class="font-semibold">Administered by:</strong> The Hospital Itself</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tab-eligibility" class="tab-content hidden">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Will My Baby Qualify for Free Insurance?</h3>
+                         <p class="text-gray-600 mb-6">This section explains the eligibility requirements for NJ FamilyCare. Based on your situation, the answer is unequivocally yes. The program is designed to cover children in families just like yours.</p>
+                        <div class="space-y-4 mb-8 text-gray-700">
+                           <p><strong>Household Size:</strong> Your household is <strong>3 people</strong> (you, the mother, the newborn).</p>
+                           <p><strong>Income:</strong> Eligibility is based on your <strong class="text-green-700 font-semibold">current monthly income (near $0)</strong>, not past earnings. Your savings are not counted as income.</p>
+                           <p><strong>Asset Test:</strong> There is <strong class="text-green-700 font-semibold">NO asset test</strong> for children applying for NJ FamilyCare. Your savings will not disqualify your baby.</p>
+                        </div>
+                        <h4 class="text-lg font-bold text-gray-800 text-center mb-2">NJ FamilyCare Income Limits (Household of 3)</h4>
+                        <p class="text-center text-gray-600 mb-4">The income limits are very high to ensure all children get coverage. Your current income is well within the limit for free coverage.</p>
+                        <div class="chart-container">
+                            <canvas id="incomeChart"></canvas>
+                        </div>
+                    </div>
+                    <div id="tab-apply" class="tab-content hidden">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">How to Apply: The NJ FamilyCare Playbook</h3>
+                        <p class="text-gray-600 mb-6">This section details the application process. The recommended method is online, as it's the fastest and allows you to track your application's status. Follow these steps carefully to avoid delays.</p>
+                         <div id="accordion-container" class="space-y-3">
+                            <div class="accordion-item">
+                                <button class="accordion-header w-full text-left p-4 bg-gray-100 hover:bg-gray-200 rounded-lg font-semibold flex justify-between items-center">
+                                    Step 1: Choose Your Method & Start
+                                    <span>&#9662;</span>
+                                </button>
+                                <div class="accordion-content px-4">
+                                    <p class="py-4 text-gray-700">The fastest and easiest way is to apply online at <strong class="font-semibold">njfamilycare.org</strong>. Create a user account so you can save your progress and check the status later. You can also apply by phone at 1-800-701-0710.</p>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <button class="accordion-header w-full text-left p-4 bg-gray-100 hover:bg-gray-200 rounded-lg font-semibold flex justify-between items-center">
+                                    Step 2: Complete the Application
+                                    <span>&#9662;</span>
+                                </button>
+                                <div class="accordion-content px-4">
+                                    <ul class="list-disc list-inside py-4 text-gray-700 space-y-2">
+                                        <li><strong>Define Household:</strong> List all 3 members (father, mother, newborn).</li>
+                                        <li><strong>Who Needs Coverage:</strong> Select "Yes" ONLY for the newborn.</li>
+                                        <li><strong>Report Income:</strong> Report your current monthly household income (e.g., $0 from employment).</li>
+                                        <li><strong>Disclose Other Insurance:</strong> Report the mother's insurance plan. This is required and will not disqualify your baby.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                             <div class="accordion-item">
+                                <button class="accordion-header w-full text-left p-4 bg-gray-100 hover:bg-gray-200 rounded-lg font-semibold flex justify-between items-center">
+                                    Step 3: CRITICAL - Select a Health Plan
+                                    <span>&#9662;</span>
+                                </button>
+                                <div class="accordion-content px-4">
+                                    <p class="py-4 text-gray-700">You MUST select a Health Plan (also called an HMO or MCO) on the application. <strong class="text-red-600">Failing to do this will significantly delay processing.</strong> Research which plans (e.g., Horizon NJ Health, Aetna, etc.) are accepted by Saint Peter's Hospital and your preferred pediatrician before you apply.</p>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <button class="accordion-header w-full text-left p-4 bg-gray-100 hover:bg-gray-200 rounded-lg font-semibold flex justify-between items-center">
+                                    Step 4: Submit and Wait
+                                    <span>&#9662;</span>
+                                </button>
+                                <div class="accordion-content px-4">
+                                    <p class="py-4 text-gray-700">After reviewing and signing, submit the application. Processing takes approximately <strong class="font-semibold">30-45 days</strong>. You will receive an official approval letter by mail. Use your online account to check the status. Make sure your mailing address is always correct.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tab-bills" class="tab-content hidden">
+                         <h3 class="text-xl font-bold text-gray-800 mb-2">How to Eliminate Existing Hospital Bills</h3>
+                         <p class="text-gray-600 mb-6">The most powerful feature of NJ FamilyCare Plan A is <strong class="font-semibold">retroactive coverage</strong>. This is your legal right and it is the key to paying the bills from your baby's birth. This section explains how to activate it.</p>
+                        <div class="space-y-4">
+                            <div class="p-4 bg-gray-50 rounded-lg">
+                               <h4 class="font-semibold text-gray-800">What is Retroactive Coverage?</h4>
+                               <p class="text-gray-700">The state can backdate your baby's insurance for up to <strong class="font-semibold">3 months BEFORE the month you apply</strong>. Since your baby qualifies for Plan A, this will cover all hospital bills from birth, making them the state's responsibility.</p>
+                            </div>
+                             <div class="p-4 bg-gray-50 rounded-lg">
+                               <h4 class="font-semibold text-gray-800">How to Request It: A 3-Step Process</h4>
+                               <ol class="list-decimal list-inside text-gray-700 space-y-2 mt-2">
+                                   <li><strong>Inform the hospital:</strong> Tell the Saint Peter's billing department immediately that you have applied for NJ FamilyCare and will be seeking retroactive coverage. This should put a hold on your account.</li>
+                                   <li><strong>Get the form:</strong> After your baby is approved for NJ FamilyCare, you must get and submit a specific form: <strong class="font-semibold">FD-74, Application for Payment of Unpaid Medical Bills</strong>. The hospital's financial counselors can help you get this.</li>
+                                   <li><strong>Submit the form:</strong> This form must be sent to the state's Retroactive Eligibility Unit within 6 months of your NJ FamilyCare application date.</li>
+                               </ol>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tab-contacts" class="tab-content hidden">
+                         <h3 class="text-xl font-bold text-gray-800 mb-2">Key Contacts & Resources</h3>
+                         <p class="text-gray-600 mb-6">Keep this information handy. These are the primary contacts you will need throughout this process.</p>
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="font-bold text-lg text-gray-800">NJ FamilyCare Program</h4>
+                                <p class="text-gray-600">For applications, questions, status updates, and reporting changes.</p>
+                                <p class="mt-2"><strong class="font-semibold">Phone:</strong> 1-800-701-0710 (TTY: 711)</p>
+                                <p><strong class="font-semibold">Website:</strong> <a href="https://njfamilycare.org" target="_blank" class="text-blue-600 hover:underline">njfamilycare.org</a></p>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg text-gray-800">Saint Peter's University Hospital</h4>
+                                <p class="text-gray-600">For Presumptive Eligibility, Charity Care, and help with retroactive billing.</p>
+                                <p class="mt-2"><strong class="font-semibold">Resource Services / Financial Counselors:</strong> 732-745-8600, extension 5019</p>
+                            </div>
+                             <div>
+                                <h4 class="font-bold text-lg text-gray-800">Family Connects NJ</h4>
+                                <p class="text-gray-600">A free program that provides in-home nurse visits for all families with newborns, regardless of income.</p>
+                                <p class="mt-2"><strong class="font-semibold">Learn More:</strong> This is a valuable support service for you, the mother, and the baby.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="text-center mt-12 text-sm text-gray-500">
+            <p>This is an informational guide based on the provided report. Always confirm details with the official state and hospital resources.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabs = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(item => item.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    const targetTab = tab.getAttribute('data-tab');
+                    
+                    tabContents.forEach(content => {
+                        if (content.id === targetTab) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            const accordionItems = document.querySelectorAll('.accordion-item');
+
+            accordionItems.forEach(item => {
+                const header = item.querySelector('.accordion-header');
+                const content = item.querySelector('.accordion-content');
+                const icon = header.querySelector('span');
+
+                header.addEventListener('click', () => {
+                    const isExpanded = content.style.maxHeight && content.style.maxHeight !== '0px';
+
+                    if (isExpanded) {
+                        content.style.maxHeight = '0px';
+                        content.style.paddingTop = '0';
+                        content.style.paddingBottom = '0';
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                        content.style.paddingTop = '1rem';
+                        content.style.paddingBottom = '1rem';
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                });
+            });
+
+            const incomeData = {
+                labels: ['Plan A (Medicaid)', 'CHIP', 'CHIP'],
+                datasets: [{
+                    label: 'Max Monthly Income for Household of 3',
+                    data: [3265, 4442, 7884],
+                    backgroundColor: [
+                        'rgba(59, 130, 246, 0.6)',
+                        'rgba(16, 185, 129, 0.6)',
+                        'rgba(245, 158, 11, 0.6)',
+                    ],
+                    borderColor: [
+                        'rgba(59, 130, 246, 1)',
+                        'rgba(16, 185, 129, 1)',
+                        'rgba(245, 158, 11, 1)',
+                    ],
+                    borderWidth: 1
+                },
+                {
+                    label: 'Your Household Income',
+                    data: [0, 0, 0],
+                    backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                    borderColor: 'rgba(239, 68, 68, 1)',
+                    borderWidth: 2,
+                    type: 'line',
+                    pointRadius: 5,
+                    pointBackgroundColor: 'rgba(239, 68, 68, 1)'
+                }]
+            };
+
+            const incomeChartCtx = document.getElementById('incomeChart').getContext('2d');
+            new Chart(incomeChartCtx, {
+                type: 'bar',
+                data: incomeData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                callback: function(value) {
+                                    const label = this.getLabelForValue(value);
+                                    if (label.length > 16) {
+                                       return label.split(' ');
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                           position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+                                    }
+                                    return label;
+                                }
+                            }
+                        },
+                         title: {
+                            display: true,
+                            text: 'Your current income qualifies you for Plan A (free coverage).'
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

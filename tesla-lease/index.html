@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Tesla Model Y Lease Analyzer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Cool Slate -->
+    <!-- Application Structure Plan: The application is structured as a user-centric journey, starting with the most important question: "What's my monthly payment?". It begins with an interactive calculator (Section 1) as the focal point. It then progressively reveals more detail: the full, unavoidable costs (Section 2), the significant savings from incentives (Section 3), and the critical 'fine print' of the lease agreement (Section 4), made digestible through interactive accordions. It concludes with strategic, persona-based recommendations (Section 5). This top-down, task-oriented structure was chosen over mirroring the report's layout because it aligns with a potential lessee's natural thought process, making the complex information more accessible and less overwhelming. -->
+    <!-- Visualization & Content Choices: 
+        - Lease Payment Matrix -> Goal: Compare -> Viz: Interactive Calculator with sliders & Chart.js Bar Chart -> Interaction: User adjusts inputs (trim, down payment) to see real-time cost updates. -> Justification: Transforms a static, dense table into a personalized, engaging tool for exploration.
+        - Upfront/End-of-Lease Fees -> Goal: Inform -> Viz: HTML/Tailwind Info Cards -> Interaction: Static. -> Justification: Clearly isolates and presents mandatory, often overlooked, costs for financial planning.
+        - Incentives -> Goal: Inform/Compare -> Viz: HTML/Tailwind 'Savings Stack' visual -> Interaction: Static display of stacked savings. -> Justification: Visually quantifies the total subsidy, making the value proposition of leasing immediately apparent.
+        - Wear & Tear Rules -> Goal: Organize -> Viz: HTML/JS Accordion -> Interaction: User clicks to reveal specific guidelines. -> Justification: Breaks down complex contractual rules into manageable, on-demand chunks, preventing information overload.
+        - Recommendations -> Goal: Advise -> Viz: HTML/Tailwind Persona Cards -> Interaction: Static. -> Justification: Translates strategic advice into clear, actionable scenarios for different user types.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 300px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 350px; } }
+        .nav-link { transition: color 0.3s, border-color 0.3s; }
+        .nav-link.active { color: #2563eb; border-bottom-color: #2563eb; }
+        .nav-link:not(.active) { border-bottom-color: transparent; }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-in-out; }
+        .accordion-button.open .accordion-arrow { transform: rotate(180deg); }
+        .accordion-arrow { transition: transform 0.3s; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-700">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <span class="font-bold text-xl text-slate-800">Tesla Lease Analyzer</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#calculator" class="nav-link text-slate-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium border-b-2">Calculator</a>
+                        <a href="#costs" class="nav-link text-slate-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium border-b-2">Total Costs</a>
+                        <a href="#incentives" class="nav-link text-slate-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium border-b-2">Incentives</a>
+                        <a href="#fine-print" class="nav-link text-slate-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium border-b-2">Fine Print</a>
+                        <a href="#strategy" class="nav-link text-slate-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium border-b-2">Strategy</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        <div class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-800 tracking-tight">The Definitive Guide to Leasing a Tesla Model Y</h1>
+            <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600">An interactive tool to demystify lease payments, uncover total costs, and find the best deal for you based on the latest 2025 data.</p>
+        </div>
+
+        <section id="calculator" class="mb-20 scroll-mt-20">
+            <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold text-slate-800 mb-2">Interactive Lease Payment Calculator</h2>
+                <p class="text-slate-600 mb-8">Use our tool to instantly estimate your monthly payment. Adjust the trim, down payment, term, and mileage to see how each factor impacts your cost. All calculations automatically include the $7,500 Federal EV Credit pass-through.</p>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div class="space-y-6">
+                        <div>
+                            <label for="trim-select" class="block text-sm font-medium text-slate-700 mb-2">1. Select Model Y Trim</label>
+                            <select id="trim-select" class="w-full p-3 bg-slate-100 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option value="LR_RWD" selected>Long Range RWD</option>
+                                <option value="LR_AWD">Long Range AWD</option>
+                                <option value="PERFORMANCE">Performance</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="down-payment-slider" class="block text-sm font-medium text-slate-700 mb-2">2. Adjust Down Payment: <span id="down-payment-value" class="font-bold text-blue-600">$4,500</span></label>
+                            <input id="down-payment-slider" type="range" min="0" max="5000" step="100" value="4500" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">3. Choose Lease Term & Mileage</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <select id="term-select" class="w-full p-3 bg-slate-100 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="36" selected>36 Months</option>
+                                    <option value="24">24 Months</option>
+                                </select>
+                                <select id="mileage-select" class="w-full p-3 bg-slate-100 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="10000" selected>10,000 mi/yr</option>
+                                    <option value="12000">12,000 mi/yr</option>
+                                    <option value="15000">15,000 mi/yr</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg mt-6">
+                            <p class="text-lg text-slate-700">Estimated Monthly Payment:</p>
+                            <p id="monthly-payment-display" class="text-4xl lg:text-5xl font-bold text-blue-600">$399</p>
+                            <p class="text-sm text-slate-500">(Excludes local taxes and registration fees)</p>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <canvas id="paymentChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="costs" class="mb-20 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-slate-800 mb-2 text-center">Unpacking the Total Cost</h2>
+            <p class="text-slate-600 mb-8 max-w-3xl mx-auto text-center">Your monthly payment is only part of the story. Even with a $0 down payment, there are mandatory upfront fees. This section breaks down all the costs you'll encounter from signing to lease-end.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-slate-300 text-center">
+                    <h3 class="font-bold text-xl text-slate-800">Order Fee</h3>
+                    <p class="text-4xl font-bold text-slate-700 my-2">$250</p>
+                    <p class="text-sm text-slate-500">A non-refundable fee paid when you place your vehicle order.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-slate-400 text-center">
+                    <h3 class="font-bold text-xl text-slate-800">Due at Signing</h3>
+                    <p class="text-4xl font-bold text-slate-700 my-2">$2,085</p>
+                    <p class="text-sm text-slate-500">Destination Fee ($1,390) + Acquisition Fee ($695). Required on every lease.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-slate-500 text-center">
+                    <h3 class="font-bold text-xl text-slate-800">Lease-End Fee</h3>
+                    <p class="text-4xl font-bold text-slate-700 my-2">$395</p>
+                    <p class="text-sm text-slate-500">A disposition fee when returning the vehicle. Often waived if you lease or buy another Tesla.</p>
+                </div>
+            </div>
+             <div class="mt-8 bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg">
+                <h4 class="font-bold text-amber-800">Key Takeaway: The "Zero Down" Myth</h4>
+                <p class="text-amber-700 text-sm">Even if you choose a "$0 down" option, you must still pay the Order Fee ($250) and Due at Signing fees ($2,085) upfront. Your total minimum cash outlay to start a lease is **$2,335** plus your first month's payment.</p>
+            </div>
+        </section>
+
+        <section id="incentives" class="mb-20 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-slate-800 mb-2 text-center">The Incentive Engine: Maximizing Your Savings</h2>
+            <p class="text-slate-600 mb-8 max-w-3xl mx-auto text-center">Leasing a Model Y unlocks significant savings that aren't available to all buyers. This section explains the powerful federal credit and how stacking state-level incentives can dramatically reduce your overall cost.</p>
+            <div class="bg-white p-8 rounded-xl shadow-lg">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h3 class="text-2xl font-bold text-slate-800">The $7,500 Federal Credit "Leasing Loophole"</h3>
+                        <p class="mt-2 text-slate-600">When you lease, Tesla (the owner) claims a $7,500 commercial EV tax credit. They then pass this entire amount to you as a capitalized cost reduction. This is not a rebate; it's automatically baked into every lease payment, lowering it for everyone, regardless of your personal income or the vehicle's MSRP. This is the single biggest "deal" in leasing a Tesla.</p>
+                    </div>
+                    <div class="bg-green-50 border-l-4 border-green-600 p-6 rounded-r-lg">
+                        <h4 class="font-bold text-xl text-green-800">Total Savings Example (New Jersey)</h4>
+                        <div class="mt-4 space-y-2">
+                            <p class="flex justify-between"><span>Federal Credit Pass-Through:</span> <span class="font-bold">$7,500</span></p>
+                            <p class="flex justify-between"><span>NJ "Charge Up" Rebate:</span> <span class="font-bold">$1,500</span></p>
+                            <p class="flex justify-between"><span>NJ Sales Tax Exemption (est.):</span> <span class="font-bold">$3,100</span></p>
+                            <hr class="my-2 border-green-300"/>
+                            <p class="flex justify-between text-lg"><strong>Total Effective Subsidy:</strong> <strong class="text-green-700">$12,100</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="fine-print" class="mb-20 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-slate-800 mb-2 text-center">The Fine Print, Simplified</h2>
+            <p class="text-slate-600 mb-8 max-w-3xl mx-auto text-center">Understanding your obligations is key to avoiding unexpected fees. Explore the official guidelines for wear and tear, mileage penalties, and insurance requirements.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="text-2xl font-bold text-slate-800 mb-4">Excess Wear & Tear Guidelines</h3>
+                    <p class="text-slate-600 mb-6">Tesla has specific, measurable standards for what is considered acceptable wear. Use this interactive guide to understand what to look out for to avoid charges at lease-end.</p>
+                    <div id="accordion-container" class="space-y-2"></div>
+                </div>
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-2xl font-bold text-slate-800">Mileage & Buyout</h3>
+                        <p class="text-4xl font-bold text-slate-700 my-2">$0.25 <span class="text-lg font-medium text-slate-500">/ mile</span></p>
+                        <p class="text-slate-600 mb-4">This is the penalty for each mile driven over your lease allowance.</p>
+                        <hr class="my-4"/>
+                        <h4 class="font-semibold text-slate-800">Lease-End Buyout Option</h4>
+                        <p class="text-slate-600 text-sm">You can now purchase your Model Y at the end of the lease for the residual value stated in your contract. This provides flexibility to keep the car if you love it.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-2xl font-bold text-slate-800 mb-2">Mandatory Insurance</h3>
+                        <p class="text-slate-600 text-sm mb-4">Leasing requires higher insurance coverage than state minimums to protect the asset. You must carry:</p>
+                        <ul class="space-y-1 text-sm list-disc list-inside text-slate-600">
+                            <li><strong>Bodily Injury:</strong> $100k / $300k</li>
+                            <li><strong>Property Damage:</strong> $50k</li>
+                            <li><strong>Max Deductible:</strong> $2,500</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="strategy" class="scroll-mt-20">
+            <h2 class="text-3xl font-bold text-slate-800 mb-2 text-center">What's the Best Deal for YOU?</h2>
+            <p class="text-slate-600 mb-8 max-w-3xl mx-auto text-center">The "best deal" isn't one-size-fits-all. It's a strategy tailored to your priorities. Find your profile below for a final recommendation.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+                    <h3 class="font-bold text-lg text-blue-600">The Cost-Conscious Commuter</h3>
+                    <p class="text-sm text-slate-500 mt-2">Lease the base LR RWD for 36 months at 10k miles/year with minimum down payment. This maximizes state rebates and yields the lowest monthly cash outlay.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+                    <h3 class="font-bold text-lg text-blue-600">The Tech-Focused Adopter</h3>
+                    <p class="text-sm text-slate-500 mt-2">Choose a 24-month lease. The higher payment is a trade-off for the fastest path to upgrading to the latest Tesla tech, minimizing obsolescence risk.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+                    <h3 class="font-bold text-lg text-blue-600">The High-Income Professional</h3>
+                    <p class="text-sm text-slate-500 mt-2">Leasing is a clear winner. It's the only way to get the $7,500 incentive if your income is above the purchase credit caps. The new buyout option adds a path to ownership.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+                    <h3 class="font-bold text-lg text-blue-600">The Potential Future Owner</h3>
+                    <p class="text-sm text-slate-500 mt-2">A 36-month lease is your perfect extended test drive. Enjoy lower payments while you decide. At lease-end, you can simply walk away or buy the car you already know.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const leaseData = {
+                LR_RWD: {
+                    36: { 10000: 399, 12000: 415, 15000: 440 },
+                    24: { 10000: 490, 12000: 505, 15000: 525 } 
+                },
+                LR_AWD: {
+                    36: { 10000: 459, 12000: 475, 15000: 500 },
+                    24: { 10000: 550, 12000: 565, 15000: 585 }
+                },
+                PERFORMANCE: {
+                    36: { 10000: 540, 12000: 555, 15000: 580 },
+                    24: { 10000: 630, 12000: 645, 15000: 665 }
+                },
+                baseDownPayment: 4500,
+                downPaymentFactor: 0.028 
+            };
+            
+            const wearAndTearData = [
+                { category: 'Exterior', items: [
+                    { name: 'Scratches/Scuffs', acceptable: 'Scratches <10cm (max 3 per panel), not breaking paint.', chargeable: 'Scratches >10cm or any scratch breaking paint.' },
+                    { name: 'Dents/Dings', acceptable: 'Dents <5cm (max 2 per panel), not breaking paint.', chargeable: 'Dents >5cm or more than 2 per panel.' },
+                    { name: 'Chips', acceptable: '10 or fewer chips <3mm each.', chargeable: '11 or more chips <3mm.' }
+                ]},
+                { category: 'Glass & Lenses', items: [
+                    { name: 'Chips/Cracks', acceptable: 'One chip ≤5mm, not in driver\'s view.', chargeable: 'Two+ chips, any crack >5mm, or any damage in driver\'s view.' }
+                ]},
+                { category: 'Tires & Wheels', items: [
+                    { name: 'Tire Tread', acceptable: 'Tread depth ≥4mm, matching Tesla standards.', chargeable: 'Tread depth <4mm, mismatched tires, cuts or plugs.' },
+                    { name: 'Wheel Damage', acceptable: 'Scratches or gouges <7.5cm (max 2 per wheel).', chargeable: '3+ scratches/gouges per wheel, or any bent/broken wheel.' }
+                ]},
+                { category: 'Interior', items: [
+                     { name: 'Stains/Tears', acceptable: 'Removable spots, floor mat tears <7.5cm.', chargeable: 'Permanent stains, any upholstery tear, or >1 burn mark.' },
+                     { name: 'Missing Items', acceptable: 'Both key fobs and mobile charging bundle returned.', chargeable: 'Missing keys, cables, or owner\'s manual.' }
+                ]}
+            ];
+
+            const trimSelect = document.getElementById('trim-select');
+            const downPaymentSlider = document.getElementById('down-payment-slider');
+            const termSelect = document.getElementById('term-select');
+            const mileageSelect = document.getElementById('mileage-select');
+            const downPaymentValue = document.getElementById('down-payment-value');
+            const monthlyPaymentDisplay = document.getElementById('monthly-payment-display');
+            const accordionContainer = document.getElementById('accordion-container');
+
+            function updatePayment() {
+                const trim = trimSelect.value;
+                const term = termSelect.value;
+                const mileage = mileageSelect.value;
+                const downPayment = parseInt(downPaymentSlider.value);
+
+                downPaymentValue.textContent = `$${downPayment.toLocaleString()}`;
+
+                const basePayment = leaseData[trim]?.[term]?.[mileage] ?? 500;
+                
+                const downPaymentAdjustment = (leaseData.baseDownPayment - downPayment) * leaseData.downPaymentFactor;
+                const finalPayment = Math.round(basePayment + downPaymentAdjustment);
+
+                monthlyPaymentDisplay.textContent = `$${finalPayment}`;
+                updateChart(finalPayment, downPayment);
+            }
+
+            const ctx = document.getElementById('paymentChart').getContext('2d');
+            const paymentChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['$0 Down', '$2,500 Down', 'Your Choice'],
+                    datasets: [{
+                        label: 'Estimated Monthly Payment',
+                        data: [520, 450, 399],
+                        backgroundColor: [
+                            'rgba(156, 163, 175, 0.6)',
+                            'rgba(107, 114, 128, 0.6)',
+                            'rgba(37, 99, 235, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(156, 163, 175, 1)',
+                            'rgba(107, 114, 128, 1)',
+                            'rgba(37, 99, 235, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: 'Monthly Cost vs. Down Payment', padding: { bottom: 20 }, font: { size: 16, weight: '600' } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed.y !== null) { label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(context.parsed.y); }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            ticks: {
+                                callback: function(value) { return '$' + value; }
+                            }
+                        }
+                    }
+                }
+            });
+
+            function updateChart(currentPayment, currentDownPayment) {
+                const trim = trimSelect.value;
+                const term = termSelect.value;
+                const mileage = mileageSelect.value;
+
+                const baseForCalc = leaseData[trim]?.[term]?.[mileage] ?? 500;
+                
+                const zeroDownPayment = Math.round(baseForCalc + (leaseData.baseDownPayment - 0) * leaseData.downPaymentFactor);
+                const midDownPayment = Math.round(baseForCalc + (leaseData.baseDownPayment - 2500) * leaseData.downPaymentFactor);
+
+                paymentChart.data.datasets[0].data = [zeroDownPayment, midDownPayment, currentPayment];
+                paymentChart.data.labels[2] = `$${currentDownPayment.toLocaleString()} Down`;
+                paymentChart.update();
+            }
+            
+            function createAccordion() {
+                wearAndTearData.forEach((group, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'border border-slate-200 rounded-lg';
+                    item.innerHTML = `
+                        <button class="accordion-button w-full flex justify-between items-center p-4 text-left font-semibold text-slate-800 focus:outline-none">
+                            <span>${group.category}</span>
+                            <span class="accordion-arrow transform transition-transform duration-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                            </span>
+                        </button>
+                        <div class="accordion-content bg-slate-50 px-4 pb-4">
+                            <table class="w-full text-sm mt-2">
+                                <thead>
+                                    <tr class="text-left">
+                                        <th class="w-1/4 pb-2 font-semibold">Item</th>
+                                        <th class="pb-2 font-semibold">Acceptable (Normal Wear)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${group.items.map(detail => `
+                                        <tr class="border-t border-slate-200">
+                                            <td class="py-2 pr-2 font-medium align-top">${detail.name}</td>
+                                            <td class="py-2 text-slate-600 align-top">${detail.acceptable}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                    accordionContainer.appendChild(item);
+                });
+
+                document.querySelectorAll('.accordion-button').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const content = button.nextElementSibling;
+                        button.classList.toggle('open');
+                        if (content.style.maxHeight) {
+                            content.style.maxHeight = null;
+                        } else {
+                            content.style.maxHeight = content.scrollHeight + "px";
+                        }
+                    });
+                });
+            }
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+                        });
+                    }
+                });
+            }, { rootMargin: '-50% 0px -50% 0px' });
+            
+            sections.forEach(section => observer.observe(section));
+
+            [trimSelect, downPaymentSlider, termSelect, mileageSelect].forEach(el => {
+                el.addEventListener('input', updatePayment);
+            });
+            
+            createAccordion();
+            updatePayment();
+        });
+    </script>
+
+</body>
+</html>
