@@ -97,3 +97,8 @@ workout.crib.qwezey.com {
 	root * /etc/caddy/workout
 	file_server
 }
+
+body-mastery.crib.qwezey.com {
+	root * /etc/caddy/body-mastery
+	file_server
+}

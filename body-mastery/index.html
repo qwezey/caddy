@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Body Mastery Protocol</title>
+    <style>
+      :root {
+        --bg-color: #121212;
+        --card-bg: #1e1e1e;
+        --primary: #bb86fc;
+        --secondary: #03dac6;
+        --text-main: #e0e0e0;
+        --text-muted: #a0a0a0;
+        --danger: #cf6679;
+        --success: #4caf50;
+        --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        font-family: var(--font-family);
+        line-height: 1.6;
+        padding-bottom: 80px; /* Space for bottom nav */
+      }
+
+      /* --- Typography --- */
+      h1,
+      h2,
+      h3 {
+        color: var(--text-main);
+        font-weight: 600;
+      }
+      h1 {
+        font-size: 1.5rem;
+        text-align: center;
+        padding: 1rem;
+        border-bottom: 1px solid #333;
+      }
+      h2 {
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+        color: var(--primary);
+      }
+      p {
+        margin-bottom: 1rem;
+        color: var(--text-muted);
+        font-size: 0.95rem;
+      }
+      small {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+
+      /* --- Layout --- */
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 1rem;
+      }
+      .hidden {
+        display: none !important;
+      }
+
+      /* --- Navigation --- */
+      .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: var(--card-bg);
+        display: flex;
+        justify-content: space-around;
+        padding: 0.8rem 0;
+        border-top: 1px solid #333;
+        z-index: 100;
+      }
+
+      .nav-item {
+        color: var(--text-muted);
+        text-align: center;
+        font-size: 0.75rem;
+        text-decoration: none;
+        flex: 1;
+        cursor: pointer;
+      }
+
+      .nav-item.active {
+        color: var(--primary);
+        font-weight: bold;
+      }
+      .nav-icon {
+        display: block;
+        font-size: 1.2rem;
+        margin-bottom: 4px;
+      }
+
+      /* --- Workout Cards --- */
+      .day-selector {
+        display: flex;
+        overflow-x: auto;
+        gap: 10px;
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+        scrollbar-width: none; /* Hide scrollbar Firefox */
+      }
+      .day-selector::-webkit-scrollbar {
+        display: none;
+      }
+
+      .day-btn {
+        background: var(--card-bg);
+        border: 1px solid #333;
+        color: var(--text-main);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .day-btn.active {
+        background: var(--primary);
+        color: #000;
+        border-color: var(--primary);
+      }
+
+      .exercise-card {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--secondary);
+      }
+
+      .exercise-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+      }
+
+      .exercise-title {
+        font-weight: bold;
+        font-size: 1.1rem;
+      }
+      .exercise-meta {
+        font-size: 0.9rem;
+        color: var(--secondary);
+        font-weight: bold;
+      }
+
+      .exercise-details {
+        background: #252525;
+        padding: 0.8rem;
+        border-radius: 4px;
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+      }
+
+      .detail-row {
+        display: flex;
+        margin-bottom: 0.5rem;
+      }
+      .detail-label {
+        font-weight: bold;
+        width: 80px;
+        flex-shrink: 0;
+        color: var(--text-muted);
+      }
+      .detail-content {
+        color: var(--text-main);
+      }
+
+      .tag {
+        display: inline-block;
+        background: #333;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        margin-right: 5px;
+      }
+
+      /* --- Timer --- */
+      .timer-btn {
+        background: #333;
+        color: #fff;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        cursor: pointer;
+        margin-top: 5px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .timer-display {
+        font-family: monospace;
+        font-weight: bold;
+        margin-left: 10px;
+        color: var(--secondary);
+      }
+
+      /* --- Checkbox --- */
+      .check-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .check-label {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+      }
+      input[type="checkbox"] {
+        transform: scale(1.3);
+        accent-color: var(--secondary);
+      }
+
+      /* --- Library & Info --- */
+      .info-section {
+        margin-bottom: 2rem;
+      }
+      .info-card {
+        background: var(--card-bg);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+      }
+      .cue-list li {
+        margin-bottom: 0.5rem;
+        margin-left: 1.2rem;
+      }
+
+      .progression-arrow {
+        color: var(--secondary);
+        margin: 0 5px;
+      }
+
+      /* --- Status Bar --- */
+      .status-pill {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: bold;
+        text-transform: uppercase;
+      }
+      .status-sas {
+        background: rgba(187, 134, 252, 0.2);
+        color: #bb86fc;
+      }
+      .status-bas {
+        background: rgba(3, 218, 198, 0.2);
+        color: #03dac6;
+      }
+      .status-rec {
+        background: rgba(76, 175, 80, 0.2);
+        color: #4caf50;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Body Mastery Protocol</h1>
+    </header>
+
+    <div id="view-workout" class="container">
+      <div class="day-selector">
+        <button class="day-btn active" onclick="loadDay('day1')">
+          Day 1: SAS
+        </button>
+        <button class="day-btn" onclick="loadDay('day2')">Day 2: BAS</button>
+        <button class="day-btn" onclick="loadDay('day3')">Day 3: Flow</button>
+        <button class="day-btn" onclick="loadDay('day4')">
+          Day 4: SAS Var
+        </button>
+        <button class="day-btn" onclick="loadDay('day5')">
+          Day 5: BAS Var
+        </button>
+      </div>
+
+      <div id="workout-content"></div>
+    </div>
+
+    <div id="view-library" class="container hidden">
+      <h2>Exercise Library</h2>
+      <p>Technical cues and progressions from the protocol.</p>
+      <div id="library-content"></div>
+    </div>
+
+    <div id="view-guide" class="container hidden">
+      <h2>The Philosophy</h2>
+
+      <div class="info-card">
+        <h3>SAS vs BAS</h3>
+        <p>
+          <strong>Straight Arm Strength (SAS):</strong> The defining
+          characteristic of mastery. Elbows locked. Load transfers through
+          connective tissue. <br /><em
+            >Examples: Planche, Front Lever, Iron Cross.</em
+          >
+        </p>
+        <p>
+          <strong>Bent Arm Strength (BAS):</strong> Traditional muscle
+          hypertrophy. Muscle belly lengthens/shortens. <br /><em
+            >Examples: Pushups, Rows, Curls.</em
+          >
+        </p>
+      </div>
+
+      <div class="info-card">
+        <h3>Key Concepts</h3>
+        <ul class="cue-list">
+          <li>
+            <strong>Compression:</strong> Active folding of the body (L-Sit).
+            Requires hip flexor strength at short range.
+          </li>
+          <li>
+            <strong>Hollow Body:</strong> Anti-extension. Ribs down, pelvis
+            tucked. The "Master Shape."
+          </li>
+          <li>
+            <strong>Scapular Rhythm:</strong> <br />
+            - Handstand: Elevation <br />
+            - Planche: Protraction + Depression <br />
+            - Front Lever: Retraction + Depression
+          </li>
+        </ul>
+      </div>
+
+      <div class="info-card">
+        <h3>Periodization</h3>
+        <ul class="cue-list">
+          <li>
+            <strong>Wk 1-4 (Accumulation):</strong> Master form. Keep 2 reps in
+            reserve.
+          </li>
+          <li>
+            <strong>Wk 5-8 (Intensification):</strong> Harder leverage (Tuck ->
+            Adv Tuck). Add weight.
+          </li>
+          <li>
+            <strong>Wk 9-11 (Peak):</strong> Test limits. Full Pistols.
+            Muscle-up transitions.
+          </li>
+          <li>
+            <strong>Wk 12 (Deload):</strong> 50% volume. Crucial for tendon
+            health.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <nav class="bottom-nav">
+      <a class="nav-item active" onclick="switchView('workout', this)">
+        <span class="nav-icon">💪</span>
+        Workout
+      </a>
+      <a class="nav-item" onclick="switchView('library', this)">
+        <span class="nav-icon">📚</span>
+        Library
+      </a>
+      <a class="nav-item" onclick="switchView('guide', this)">
+        <span class="nav-icon">🧠</span>
+        Theory
+      </a>
+    </nav>
+
+    <script>
+      // --- DATA SOURCE ---
+      // Based on the provided text analysis (Source 221-241)
+
+      const exercises = {
+        // Warmups
+        wrist_routine: {
+          name: "GMB Wrist Routine",
+          reps: "10-20 reps each",
+          cues: "Wrist Shakes, Finger Pulses, First Knuckle Raises, Dorsal Pushups. Essential for preventing carpal stress.",
+          tags: ["Prehab"],
+        },
+        shoulder_dislocate: {
+          name: "Shoulder Dislocates",
+          reps: "10-15 reps",
+          cues: "Use band or broomstick. Keep elbows straight. Opens chest/anterior delts.",
+          tags: ["Mobility"],
+        },
+        skin_the_cat: {
+          name: "Skin the Cat",
+          reps: "3 x 3 reps",
+          cues: "Hang -> Knees to chest -> Rotate feet through arms -> Lower behind. Master stretch for shoulder extension.",
+          tags: ["Mobility", "SAS"],
+        },
+        animal_warmup: {
+          name: "Animal Flow Warmup",
+          reps: "2 mins each",
+          cues: "Beast (Crawling on hands/toes, knees hovering). Crab (Reverse crawl, chest up).",
+          tags: ["Flow"],
+        },
+
+        // SAS (Straight Arm)
+        handstand_wall: {
+          name: "Chest-to-Wall Handstand",
+          reps: "Accumulate 60s",
+          cues: "Walk feet up wall. Shrug shoulders UP (Elevation). Posterior pelvic tilt (Hollow). Finger pulse to balance.",
+          tags: ["Push", "Vertical"],
+        },
+        planche_lean: {
+          name: "Planche Lean",
+          reps: "4 x 20-30s",
+          cues: "Pushup position. Lean forward. Scapula PROTRACTED (spread) and DEPRESSED (down). Glutes squeezed.",
+          tags: ["Push", "Horizontal"],
+        },
+        front_lever_tuck: {
+          name: "Tuck Front Lever",
+          reps: "4 x 15-20s",
+          cues: "Hang from bar/rings. Knees to chest. Arms LOCKED straight. Scapula RETRACTED (pinched) and DEPRESSED.",
+          tags: ["Pull", "Horizontal"],
+        },
+
+        // Core
+        l_sit: {
+          name: "L-Sit",
+          reps: "3 x Max (stop -2s fail)",
+          cues: "Floor or parallettes. Push floor away (Depression). If full L is too hard, use tuck. Fight for leg height.",
+          tags: ["Core", "Compression"],
+        },
+        hollow_body: {
+          name: "Hollow Body Hold",
+          reps: "3 x 45-60s",
+          cues: "Lower back GLUED to floor. Legs/shoulders lifted. Shallow banana shape.",
+          tags: ["Core"],
+        },
+        pike_pulses: {
+          name: "Seated Pike Pulses",
+          reps: "3 x 15 reps",
+          cues: "Sit legs straight. Hands near knees. Pulse legs up without leaning back. Hip flexor isolation.",
+          tags: ["Core", "Compression"],
+        },
+
+        // BAS (Bent Arm)
+        explosive_pullup: {
+          name: "Explosive Pullups",
+          reps: "5 sets x 3 reps",
+          cues: "Pull to nipples/lower ribs. Max velocity. Do not grind. Rest 2-3 mins.",
+          tags: ["Pull", "Vertical"],
+        },
+        hspu_negative: {
+          name: "Wall HSPU Negative",
+          reps: "4 sets x 3-5 reps",
+          cues: "Kick up. Lower slowly (5s). Tripod head position at bottom. Kick down and reset.",
+          tags: ["Push", "Vertical"],
+        },
+        rows: {
+          name: "Ring/Doorframe Rows",
+          reps: "3 sets x 10-12 reps",
+          cues: "Lean back. Pull chest to anchor. Retract scapula at top. Feet elevated to increase difficulty.",
+          tags: ["Pull", "Horizontal"],
+        },
+        archer_pushup: {
+          name: "Archer Pushups",
+          reps: "3 sets x 8-10/side",
+          cues: "Wide hands. Lower to one side, keep other arm STRAIGHT. Minimal assistance from straight arm.",
+          tags: ["Push", "Horizontal"],
+        },
+        pistol_squat: {
+          name: "Pistol Squats",
+          reps: "4 sets x 5-8/leg",
+          cues: "Use box or doorframe assist if needed. Keep heel flat. Passive leg straight.",
+          tags: ["Legs"],
+        },
+        nordic_curl: {
+          name: "Nordic Curl Negatives",
+          reps: "3 sets x 5-8 reps",
+          cues: "Anchor feet. Hips extended (straight line knees to shoulders). Lower slowly. Catch with hands.",
+          tags: ["Legs", "Posterior"],
+        },
+
+        // Variations (Days 4-5)
+        frog_stand: {
+          name: "Frog Stand (Crow)",
+          reps: "4 x Max Hold",
+          cues: "Knees on elbows. Balance practice. Grip floor.",
+          tags: ["Skill"],
+        },
+        weighted_pullup: {
+          name: "Weighted Pullups",
+          reps: "3 sets x 5-8 reps",
+          cues: "Backpack with books/water. Full ROM.",
+          tags: ["Pull", "Vertical"],
+        },
+        ppp: {
+          name: "Pseudo Planche Pushup",
+          reps: "4 sets x 8-10 reps",
+          cues: "Hands at waist level. Shoulders move FORWARD of hands. Protract at top.",
+          tags: ["Push", "Horizontal"],
+        },
+        shrimp_squat: {
+          name: "Shrimp Squat",
+          reps: "3 sets x 8-10/leg",
+          cues: "Hold ankle behind glute. Knee taps floor. Torso upright.",
+          tags: ["Legs"],
+        },
+      };
+
+      const plans = {
+        day1: {
+          title: "Day 1: Straight Arm Strength",
+          type: "sas",
+          desc: "Focus on connective tissue and static holds.",
+          routine: [
+            "wrist_routine",
+            "shoulder_dislocate",
+            "handstand_wall",
+            "planche_lean",
+            "front_lever_tuck",
+            "l_sit",
+            "hollow_body",
+          ],
+        },
+        day2: {
+          title: "Day 2: Bent Arm Strength",
+          type: "bas",
+          desc: "Focus on hypertrophy and explosive power.",
+          routine: [
+            "animal_warmup",
+            "explosive_pullup",
+            "hspu_negative",
+            "rows",
+            "archer_pushup",
+            "pistol_squat",
+            "nordic_curl",
+          ],
+        },
+        day3: {
+          title: "Day 3: Active Recovery",
+          type: "rec",
+          desc: "Mobility and Flow.",
+          customHtml: `
+                    <div class="exercise-card">
+                        <div class="exercise-header"><span class="exercise-title">30/30 Squat Challenge</span></div>
+                        <p>Accumulate 30 mins total in a deep resting squat today. Heels flat, spine relaxed.</p>
+                    </div>
+                    <div class="exercise-card">
+                        <div class="exercise-header"><span class="exercise-title">Joint Circles</span></div>
+                        <p>Neck, shoulders, wrists, hips, knees, ankles. 10 mins.</p>
+                    </div>
+                    <div class="exercise-card">
+                        <div class="exercise-header"><span class="exercise-title">Light Flow</span></div>
+                        <p>15 mins continuous movement (Ape, Monkey, Lizard crawl).</p>
+                    </div>
+                `,
+        },
+        day4: {
+          title: "Day 4: SAS Variation",
+          type: "sas",
+          desc: "Skill work and Compression.",
+          routine: [
+            "handstand_wall",
+            "frog_stand",
+            "skin_the_cat",
+            "pike_pulses",
+          ],
+        },
+        day5: {
+          title: "Day 5: BAS Variation",
+          type: "bas",
+          desc: "High volume basics.",
+          routine: ["weighted_pullup", "ppp", "rows", "shrimp_squat"],
+        },
+      };
+
+      // --- FUNCTIONS ---
+
+      function loadDay(dayKey) {
+        // Update buttons
+        document
+          .querySelectorAll(".day-btn")
+          .forEach((btn) => btn.classList.remove("active"));
+        event.target.classList.add("active");
+
+        const container = document.getElementById("workout-content");
+        const dayData = plans[dayKey];
+
+        container.innerHTML = `
+                <div style="margin-bottom:1rem;">
+                    <h2>${dayData.title}</h2>
+                    <span class="status-pill status-${
+                      dayData.type
+                    }">${dayData.type.toUpperCase()} Focus</span>
+                    <p style="margin-top:0.5rem">${dayData.desc}</p>
+                </div>
+            `;
+
+        if (dayData.customHtml) {
+          container.innerHTML += dayData.customHtml;
+          return;
+        }
+
+        dayData.routine.forEach((exKey) => {
+          const ex = exercises[exKey];
+          if (!ex) return;
+
+          const timerBtn =
+            ex.reps.includes("s") || ex.reps.includes("Hold")
+              ? `<button class="timer-btn" onclick="startTimer(this)">⏱ Start Timer <span class="timer-display"></span></button>`
+              : "";
+
+          const html = `
+                    <div class="exercise-card">
+                        <div class="exercise-header">
+                            <span class="exercise-title">${ex.name}</span>
+                            <span class="exercise-meta">${ex.reps}</span>
+                        </div>
+                        <div class="tags">
+                            ${ex.tags
+                              .map((t) => `<span class="tag">${t}</span>`)
+                              .join("")}
+                        </div>
+                        <div class="check-wrapper">
+                            <input type="checkbox" id="check_${exKey}">
+                            <label for="check_${exKey}" class="check-label">Completed</label>
+                        </div>
+                        ${timerBtn}
+                        <div class="exercise-details">
+                            <strong>Key Cues:</strong> ${ex.cues}
+                        </div>
+                    </div>
+                `;
+          container.innerHTML += html;
+        });
+      }
+
+      function loadLibrary() {
+        const container = document.getElementById("library-content");
+        container.innerHTML = "";
+
+        // Group by primary tag for organization
+        Object.keys(exercises).forEach((key) => {
+          const ex = exercises[key];
+          container.innerHTML += `
+                    <div class="exercise-card" style="border-left-color: #555;">
+                        <div class="exercise-header">
+                            <span class="exercise-title">${ex.name}</span>
+                        </div>
+                        <p>${ex.cues}</p>
+                        <small>Target: ${ex.tags.join(", ")}</small>
+                    </div>
+                `;
+        });
+      }
+
+      function switchView(viewName, navEl) {
+        // Hide all views
+        document.getElementById("view-workout").classList.add("hidden");
+        document.getElementById("view-library").classList.add("hidden");
+        document.getElementById("view-guide").classList.add("hidden");
+
+        // Show selected
+        document.getElementById(`view-${viewName}`).classList.remove("hidden");
+
+        // Update Nav
+        document
+          .querySelectorAll(".nav-item")
+          .forEach((item) => item.classList.remove("active"));
+        if (navEl) navEl.classList.add("active");
+
+        // Specific loads
+        if (viewName === "library") loadLibrary();
+        if (viewName === "workout") {
+          // Determine current day of week to auto-select?
+          // For now, default to previously selected or Day 1
+        }
+      }
+
+      let interval;
+      function startTimer(btn) {
+        if (interval) clearInterval(interval);
+        const display = btn.querySelector(".timer-display");
+        let seconds = 0;
+
+        btn.classList.add("active");
+        btn.innerHTML = `⏹ Stop Timer <span class="timer-display">0s</span>`;
+        const newDisplay = btn.querySelector(".timer-display");
+
+        // Reset functionality
+        btn.onclick = function () {
+          clearInterval(interval);
+          btn.innerHTML = `⏱ Start Timer <span class="timer-display"></span>`;
+          btn.onclick = function () {
+            startTimer(btn);
+          };
+        };
+
+        interval = setInterval(() => {
+          seconds++;
+          newDisplay.innerText = seconds + "s";
+        }, 1000);
+      }
+
+      // Initialize
+      loadDay("day1");
+    </script>
+  </body>
+</html>
