@@ -102,3 +102,8 @@ body-mastery.crib.qwezey.com {
 	root * /etc/caddy/body-mastery
 	file_server
 }
+
+fa-ramadan.crib.qwezey.com {
+	root * /etc/caddy/fa-ramadan
+	file_server
+}
