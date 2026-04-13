@@ -5,10 +5,7 @@
       "label": "Caddy Reload",
       "type": "shell",
       "command": "sudo systemctl reload caddy",
-      "problemMatcher": [],
-      "runOptions": {
-        "runOn": "folderOpen"
-      }
+      "problemMatcher": []
     }
   ]
 }
