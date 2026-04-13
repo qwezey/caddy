@@ -1,5 +1,4 @@
 // 79Prayers client
-const STORAGE_NOTIFY = "79prayers:notify";
 function getApiUrlForDate(date = new Date()) {
   const y = date.getFullYear();
   const m = date.getMonth() + 1;
@@ -14,13 +13,10 @@ const staticTimes = {
   isha: "21:30",
 };
 
-let scheduleHandles = [];
 let intervalHandles = [];
 let times = [];
 
 const timesGrid = document.getElementById("timesGrid");
-const notifySwitch = document.getElementById("notifySwitch");
-const notifyHint = document.getElementById("notifyHint");
 const todayEl = document.getElementById("todayDate");
 const heroType = document.getElementById("heroType");
 const heroTitle = document.getElementById("heroTitle");
@@ -83,88 +79,9 @@ function toFuture(d) {
   return d;
 }
 
-function clearSchedules() {
-  scheduleHandles.forEach((id) => clearTimeout(id));
-  scheduleHandles = [];
-}
-
 function clearIntervals() {
   intervalHandles.forEach((id) => clearInterval(id));
   intervalHandles = [];
-}
-
-function notify(title, body) {
-  if (
-    Notification.permission === "granted" &&
-    localStorage.getItem(STORAGE_NOTIFY) === "true"
-  ) {
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.ready.then((registration) => {
-        try {
-          registration.showNotification(title, {
-            body: body,
-            icon: "icon.svg",
-          });
-        } catch (e) {
-          console.warn("Service worker notification failed", e);
-          try {
-            new Notification(title, { body, icon: "icon.svg" });
-          } catch (err) {
-            console.warn(err);
-          }
-        }
-      });
-    } else {
-      try {
-        new Notification(title, { body, icon: "icon.svg" });
-      } catch (e) {
-        console.warn(e);
-      }
-    }
-    playAzanTone();
-  }
-}
-
-function scheduleAll() {
-  clearSchedules();
-  if (
-    !(
-      Notification.permission === "granted" &&
-      localStorage.getItem(STORAGE_NOTIFY) === "true"
-    )
-  )
-    return;
-
-  const now = new Date();
-  times.forEach((item) => {
-    if (item.azan) {
-      const msAzan = toFuture(item.azan).getTime() - now.getTime();
-      if (msAzan > 0) {
-        scheduleHandles.push(
-          setTimeout(() => {
-            const body =
-              item.key === "maghrib"
-                ? `Azan for ${item.label} at ${formatTime(item.azan)}`
-                : `Azan for ${item.label} in 10 minutes at ${formatTime(item.prayer)}`;
-            notify(`Azan — ${item.label}`, body);
-          }, msAzan),
-        );
-      }
-    }
-    if (item.prayer) {
-      const msPrayer = toFuture(item.prayer).getTime() - now.getTime();
-      if (msPrayer > 0) {
-        scheduleHandles.push(
-          setTimeout(() => {
-            notify(
-              `Prayer — ${item.label}`,
-              `It's time for ${item.label} (${formatTime(item.prayer)})`,
-            );
-          }, msPrayer),
-        );
-      }
-    }
-  });
 }
 
 function computeNextEvent() {
@@ -433,58 +350,6 @@ async function loadAndCompute() {
     ];
   }
   renderTimes();
-  scheduleAll();
 }
 
-function updateNotifyUI() {
-  const perm = Notification.permission;
-  const enabled = localStorage.getItem(STORAGE_NOTIFY) === "true";
-  if (notifySwitch) {
-    if (perm !== "granted" && enabled)
-      localStorage.setItem(STORAGE_NOTIFY, "false");
-    notifySwitch.checked = localStorage.getItem(STORAGE_NOTIFY) === "true";
-  }
-  if (notifyHint) {
-    if (perm === "granted") {
-      notifyHint.textContent =
-        notifySwitch && notifySwitch.checked ? "On" : "Off";
-    } else if (perm === "denied") {
-      notifyHint.textContent = "Blocked";
-    } else {
-      notifyHint.textContent = "Click to allow";
-    }
-  }
-}
-
-if (notifySwitch) {
-  notifySwitch.addEventListener("change", async () => {
-    if (!notifySwitch.checked) {
-      localStorage.setItem(STORAGE_NOTIFY, "false");
-      updateNotifyUI();
-      clearSchedules();
-      return;
-    }
-    if (Notification.permission !== "granted") {
-      const p = await Notification.requestPermission();
-      if (p !== "granted") {
-        localStorage.setItem(STORAGE_NOTIFY, "false");
-        notifySwitch.checked = false;
-        updateNotifyUI();
-        return;
-      }
-    }
-    localStorage.setItem(STORAGE_NOTIFY, "true");
-    updateNotifyUI();
-    scheduleAll();
-    playAzanTone(); // Feedback that sound works
-  });
-}
-
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js").catch(() => {});
-}
-
-if (!localStorage.getItem(STORAGE_NOTIFY))
-  localStorage.setItem(STORAGE_NOTIFY, "false");
-updateNotifyUI();
 loadAndCompute();
