@@ -16,31 +16,88 @@
     <!-- Visualization & Content Choices: The report's content is entirely instructional text. Goal: Guide the user through physical exercises. Presentation: Each stretch is presented on a distinct 'card' (HTML/CSS div) containing its name, instructions, and duration. Cards are grouped by routine (Warm-up, Cool-down, etc.) and displayed based on tab selection. Visuals: Simple Unicode characters (e.g., 🤸, 🧘, ↔️) are used as icons on each card to provide quick visual cues without using forbidden SVG or image files. Interaction: Users navigate between routines using tab buttons. This interaction is handled by vanilla JavaScript which dynamically shows/hides the relevant content sections. A link to a YouTube search page is provided for each stretch. This card-and-tab system organizes the information logically for a practical application and improves on the simple list format of the source report. Library/Method: Vanilla JS for DOM manipulation, Tailwind CSS for styling. -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
+      :root {
+        --bg: #f8f7f4;
+        --text: #403d39;
+        --muted: #6b6460;
+        --nav-active: #0284c7;
+        --card-bg: #ffffff;
+        --card-border: #e5e7eb;
+        --card-shadow:
+          0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        --youtube-color: #c2410c;
+        --youtube-color-hover: #9a3412;
+        --alert-bg: rgba(14, 165, 233, 0.08);
+        --alert-border: #0284c7;
+        --alert-text: #075985;
+        --tag-bg: #e0f2fe;
+        --border: #e5e7eb;
+      }
+
+      /* Dark theme via system preference */
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0b1221;
+          --text: #e6eef6;
+          --muted: #bfcbdc;
+          --nav-active: #38bdf8;
+          --card-bg: #0f1724;
+          --card-border: #1f2937;
+          --card-shadow:
+            0 10px 15px -3px rgba(0, 0, 0, 0.6),
+            0 4px 6px -4px rgba(0, 0, 0, 0.6);
+          --youtube-color: #fb923c;
+          --youtube-color-hover: #fb7a3c;
+          --alert-bg: rgba(99, 102, 241, 0.06);
+          --alert-border: #06b6d4;
+          --alert-text: #93c5fd;
+          --tag-bg: rgba(56, 189, 248, 0.08);
+          --border: #374151;
+        }
+      }
+
+      /* Also support explicit JS-driven toggle via data-theme on :root */
+      :root[data-theme="dark"] {
+        --bg: #0b1221;
+        --text: #e6eef6;
+        --muted: #bfcbdc;
+        --nav-active: #38bdf8;
+        --card-bg: #0f1724;
+        --card-border: #1f2937;
+        --card-shadow:
+          0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -4px rgba(0, 0, 0, 0.6);
+        --youtube-color: #fb923c;
+        --youtube-color-hover: #fb7a3c;
+        --alert-bg: rgba(99, 102, 241, 0.06);
+        --alert-border: #06b6d4;
+        --alert-text: #93c5fd;
+        --tag-bg: rgba(56, 189, 248, 0.08);
+        --border: #374151;
+      }
+
       body {
         font-family: "Inter", sans-serif;
-        background-color: #f8f7f4;
-        color: #403d39;
+        background-color: var(--bg);
+        color: var(--text);
       }
       .nav-btn {
         transition: all 0.3s ease;
         border-bottom: 3px solid transparent;
       }
       .nav-btn.active {
-        color: #0284c7; /* sky-600 */
-        border-bottom-color: #0284c7; /* sky-600 */
+        color: var(--nav-active);
+        border-bottom-color: var(--nav-active);
       }
       .card {
-        background-color: #ffffff;
-        border: 1px solid #e5e7eb;
+        background-color: var(--card-bg);
+        border: 1px solid var(--card-border);
         transition:
           transform 0.2s ease-in-out,
           box-shadow 0.2s ease-in-out;
       }
       .card:hover {
         transform: translateY(-4px);
-        box-shadow:
-          0 10px 15px -3px rgb(0 0 0 / 0.1),
-          0 4px 6px -4px rgb(0 0 0 / 0.1);
+        box-shadow: var(--card-shadow);
       }
       .content-section {
         display: none;
@@ -53,11 +110,43 @@
         align-items: center;
         text-decoration: none;
         font-weight: 500;
-        color: #c2410c; /* orange-700 */
+        color: var(--youtube-color);
         transition: color 0.2s ease;
       }
       .youtube-link:hover {
-        color: #9a3412; /* orange-800 */
+        color: var(--youtube-color-hover);
+      }
+
+      /* Override common Tailwind color utilities used on this page */
+      .text-gray-800 {
+        color: var(--text) !important;
+      }
+      .text-gray-600 {
+        color: var(--muted) !important;
+      }
+      .text-sky-800 {
+        color: var(--nav-active) !important;
+      }
+      .text-amber-900 {
+        color: var(--nav-active) !important;
+      }
+      .border-gray-200 {
+        border-color: var(--border) !important;
+      }
+      .bg-sky-100 {
+        background-color: var(--tag-bg) !important;
+      }
+      .bg-sky-100\/60 {
+        background-color: var(--alert-bg) !important;
+      }
+      .bg-amber-100\/60 {
+        background-color: var(--alert-bg) !important;
+      }
+      .border-sky-500 {
+        border-color: var(--alert-border) !important;
+      }
+      .border-amber-500 {
+        border-color: var(--alert-border) !important;
       }
     </style>
   </head>
@@ -175,6 +264,24 @@
     </div>
 
     <script>
+      // Auto theme: detect system preference and set data-theme on :root
+      (function () {
+        const root = document.documentElement;
+        const mq =
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)");
+        function apply(isDark) {
+          if (isDark) root.setAttribute("data-theme", "dark");
+          else root.removeAttribute("data-theme");
+        }
+        if (mq) {
+          apply(mq.matches);
+          if (mq.addEventListener)
+            mq.addEventListener("change", (e) => apply(e.matches));
+          else if (mq.addListener) mq.addListener((e) => apply(e.matches));
+        }
+      })();
+
       const routines = {
         warmup: {
           target: "warmup-grid",
