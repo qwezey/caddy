@@ -13,8 +13,8 @@ sugar.crib.qwezey.com {
 	file_server
 }
 
-tayeb-stretches.crib.qwezey.com {
-	root * /etc/caddy/tayeb-stretches
+beginner-stretches.crib.qwezey.com {
+	root * /etc/caddy/beginner-stretches
 	file_server
 }
 
