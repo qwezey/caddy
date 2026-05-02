@@ -7,7 +7,7 @@ function getApiUrlForDate(date = new Date()) {
 }
 
 const staticTimes = {
-  fajr: "05:45",
+  fajr: "05:30",
   zuhr: "16:00",
   asr: "18:00",
   isha: "21:30",
@@ -234,9 +234,11 @@ async function loadAndCompute() {
     const prayerFajr = parseApiTime("fajr", staticTimes.fajr);
     const prayerZuhr = parseApiTime("zuhr", staticTimes.zuhr);
     const prayerAsr = parseApiTime("asr", staticTimes.asr);
-    const prayerIsha = parseApiTime("isha", staticTimes.isha);
     const prayerMaghrib = officialMaghrib
       ? new Date(officialMaghrib.getTime() + 5 * 60 * 1000)
+      : null;
+    const prayerIsha = officialIsha
+      ? new Date(officialIsha.getTime() + 5 * 60 * 1000)
       : null;
 
     const azanFajr = prayerFajr
@@ -249,9 +251,7 @@ async function loadAndCompute() {
       ? new Date(prayerAsr.getTime() - 10 * 60 * 1000)
       : null;
     const azanMaghrib = officialMaghrib ? officialMaghrib : null;
-    const azanIsha = prayerIsha
-      ? new Date(prayerIsha.getTime() - 10 * 60 * 1000)
-      : null;
+    const azanIsha = officialIsha ? officialIsha : null;
 
     times = [
       {
