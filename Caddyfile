@@ -1,3 +1,11 @@
+# Reverse proxy
+
+hermes.crib.qwezey.com {
+	reverse_proxy http://hermes.tail597925.ts.net:8787
+}
+
+# File servers
+
 vitamin-d.crib.qwezey.com {
 	root * /etc/caddy/vitamin-d
 	file_server
@@ -109,6 +117,6 @@ fa-ramadan.crib.qwezey.com {
 }
 
 79prayers.crib.qwezey.com {
-    root * /etc/caddy/79prayers
-    file_server
+	root * /etc/caddy/79prayers
+	file_server
 }
