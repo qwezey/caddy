@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Errati-Core Workout Timer | Athlean Burst</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Teko:wght@500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .font-display {
+      font-family: 'Teko', sans-serif;
+      letter-spacing: 0.04em;
+    }
+    .pulse-glow {
+      box-shadow: 0 0 35px rgba(239, 68, 68, 0.45);
+    }
+    .rest-glow {
+      box-shadow: 0 0 35px rgba(234, 179, 8, 0.45);
+    }
+    .radial-progress {
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+    }
+    /* Smooth progress transition */
+    circle {
+      transition: stroke-dashoffset 0.25s linear;
+    }
+    /* Custom scrollbar for workout breakdown */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #18181b;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #3f3f46;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #71717a;
+    }
+  </style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col justify-between selection:bg-red-500 selection:text-white">
+
+  <header class="w-full bg-zinc-900 border-b border-zinc-800 sticky top-0 z-30 shadow-md">
+    <!-- Athlean Burst Style Yellow Top Header Banner -->
+    <div class="bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 text-zinc-950 font-black px-4 py-2 flex flex-wrap items-center justify-between shadow-inner">
+      <div class="flex items-center space-x-2">
+        <span class="bg-zinc-950 text-amber-400 text-xs uppercase px-2 py-0.5 rounded font-black tracking-wider">ATHLEAN BURST</span>
+        <h1 class="text-sm sm:text-base font-extrabold tracking-wide uppercase">ERRATI-CORE WORKOUT</h1>
+      </div>
+      <div class="flex items-center space-x-1 font-bold text-xs uppercase bg-zinc-950/20 px-2 py-0.5 rounded backdrop-blur-sm">
+        <svg class="w-4 h-4 text-red-600 animate-pulse fill-current" viewBox="0 0 24 24">
+          <path d="M12 23c6.075 0 11-4.925 11-11 0-4.577-2.793-8.5-6.786-10.158a.75.75 0 00-.987.894 8.508 8.508 0 01.773 3.514c0 3.327-2.146 6.155-5.148 7.159a.75.75 0 01-.89-.488 4.982 4.982 0 00-4.66-3.421c-.722 0-1.408.156-2.028.435a.75.75 0 00-.417.87C3.993 15.65 7.697 23 12 23z"/>
+        </svg>
+        <span class="text-zinc-900 font-extrabold">XERO REST PROTOCOL</span>
+      </div>
+    </div>
+    
+    <!-- Subtitle Banner -->
+    <div class="bg-zinc-900 px-4 py-1.5 flex items-center justify-between text-xs border-b border-zinc-800">
+      <p class="text-red-500 font-bold uppercase tracking-widest text-[11px] sm:text-xs">
+        IT'S TIME TO CREATE A SIX PACK SHOCK
+      </p>
+      <div class="flex items-center space-x-3 text-zinc-400">
+        <!-- Audio Mode Indicator -->
+        <button id="audio-toggle-btn" class="flex items-center space-x-1 hover:text-white transition p-1 rounded hover:bg-zinc-800" title="Toggle Sound">
+          <span id="audio-icon">🔊</span>
+          <span id="audio-label" class="text-[11px] font-semibold hidden sm:inline">Voice & Beeps</span>
+        </button>
+        <!-- Wake Lock Indicator -->
+        <div id="wakelock-badge" class="flex items-center space-x-1 text-[11px] text-zinc-500" title="Keeps your screen awake during workout">
+          <span>📱</span>
+          <span class="hidden sm:inline">Screen On</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-4xl w-full mx-auto p-4 sm:p-6 flex flex-col justify-center items-center">
+    
+    <!-- Status / Round & Block Indicator Cards -->
+    <div class="w-full grid grid-cols-3 gap-2 sm:gap-4 mb-4">
+      <div class="bg-zinc-900/90 border border-zinc-800 rounded-xl p-2.5 sm:p-3 text-center shadow-sm">
+        <span class="text-[10px] sm:text-xs uppercase font-bold text-zinc-400 block tracking-wider">Round</span>
+        <span id="round-indicator" class="text-lg sm:text-2xl font-black text-amber-400">1 / 2</span>
+      </div>
+      <div class="bg-zinc-900/90 border border-zinc-800 rounded-xl p-2.5 sm:p-3 text-center shadow-sm">
+        <span class="text-[10px] sm:text-xs uppercase font-bold text-zinc-400 block tracking-wider">Block</span>
+        <span id="block-indicator" class="text-lg sm:text-2xl font-black text-red-500">1 / 3</span>
+      </div>
+      <div class="bg-zinc-900/90 border border-zinc-800 rounded-xl p-2.5 sm:p-3 text-center shadow-sm">
+        <span class="text-[10px] sm:text-xs uppercase font-bold text-zinc-400 block tracking-wider">Total Elapsed</span>
+        <span id="total-time-indicator" class="text-lg sm:text-2xl font-black text-zinc-200">00:00</span>
+      </div>
+    </div>
+
+    <!-- Active Step Status Banner -->
+    <div id="phase-banner" class="w-full text-center py-2 px-4 rounded-xl font-black text-sm uppercase tracking-wider mb-3 transition-colors duration-300 bg-red-600/20 text-red-400 border border-red-500/30">
+      WORK INTERVAL
+    </div>
+
+    <div class="relative flex flex-col items-center justify-center my-2">
+      <!-- SVG Circular Progress Ring -->
+      <div class="relative w-64 h-64 sm:w-80 sm:h-80 flex items-center justify-center">
+        <svg class="w-full h-full radial-progress" viewBox="0 0 100 100">
+          <!-- Background track -->
+          <circle
+            cx="50"
+            cy="50"
+            r="44"
+            class="stroke-zinc-800/80"
+            stroke-width="7"
+            fill="transparent"
+          />
+          <!-- Dynamic progress ring -->
+          <circle
+            id="progress-ring"
+            cx="50"
+            cy="50"
+            r="44"
+            class="stroke-red-500"
+            stroke-width="7"
+            stroke-linecap="round"
+            fill="transparent"
+            stroke-dasharray="276.46"
+            stroke-dashoffset="0"
+          />
+        </svg>
+
+        <!-- Center Display Content -->
+        <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
+          <span id="timer-seconds" class="font-display text-7xl sm:text-8xl font-bold leading-none tracking-tight text-white transition-all">
+            60
+          </span>
+          <span id="timer-sublabel" class="text-xs uppercase tracking-widest font-extrabold text-zinc-400 mt-1">
+            SECONDS LEFT
+          </span>
+          <span id="status-tag" class="mt-2 text-xs font-bold px-2.5 py-0.5 rounded-full bg-zinc-800 text-zinc-300">
+            Ready to Start
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Current Exercise Name & Notes -->
+    <div class="text-center w-full max-w-lg mt-1 mb-4">
+      <h2 id="current-exercise-title" class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight min-h-[2.5rem] flex items-center justify-center">
+        Mountain Climbers
+      </h2>
+      <p id="current-exercise-sub" class="text-sm font-semibold text-amber-400 min-h-[1.25rem]">
+        High intensity cadence
+      </p>
+    </div>
+
+    <!-- Xero Rest Protocol Card (Shows dynamically during Rest phases) -->
+    <div id="xero-rest-card" class="w-full max-w-lg bg-gradient-to-b from-amber-950/40 to-zinc-900 border-2 border-amber-500/50 rounded-2xl p-4 sm:p-5 mb-5 text-center hidden transition-all duration-300">
+      <div class="flex items-center justify-center space-x-2 text-amber-400 font-black text-sm uppercase mb-1">
+        <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span>XERO REST PROTOCOL ACTIVE</span>
+      </div>
+      <p class="text-xs text-zinc-300 font-medium leading-relaxed mb-3">
+        Max rest: <strong class="text-white font-bold">2:00</strong>. No minimum rest required! Catch your breath and hit resume as soon as your heart rate steadies.
+      </p>
+      
+      <!-- Big One-Tap Ready Button for Rest Protocol -->
+      <button id="skip-rest-btn" class="w-full py-4 px-6 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-zinc-950 font-black text-lg sm:text-xl rounded-xl shadow-lg transform active:scale-95 transition flex items-center justify-center space-x-2">
+        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+          <path d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z"/>
+        </svg>
+        <span>I'M READY! SKIP REST & GO</span>
+      </button>
+      <div class="mt-2 text-[11px] text-zinc-400">
+        Rest timer auto-advances at 00:00 if max limit is reached.
+      </div>
+    </div>
+
+    <!-- Next Up Preview Bar -->
+    <div id="next-up-card" class="w-full max-w-lg bg-zinc-900 border border-zinc-800/80 rounded-xl p-3 flex items-center justify-between mb-5 shadow-sm">
+      <div class="flex items-center space-x-2.5 overflow-hidden">
+        <span class="bg-zinc-800 text-zinc-400 font-black text-[10px] sm:text-xs uppercase px-2 py-1 rounded">NEXT</span>
+        <span id="next-exercise-name" class="font-bold text-sm text-zinc-200 truncate">Superman Plank (Right leg/left arm)</span>
+      </div>
+      <span id="next-exercise-duration" class="text-xs font-extrabold text-amber-400 whitespace-nowrap ml-2">60s</span>
+    </div>
+
+    <div class="w-full max-w-lg flex items-center justify-center gap-3">
+      <!-- Previous Step Button -->
+      <button id="prev-btn" class="p-3.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white rounded-xl active:scale-95 transition flex items-center justify-center" title="Previous exercise">
+        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+          <path d="M19 5.5v13a.5.5 0 01-.757.429L9 13.06v5.44a.5.5 0 01-.757.429l-7.5-4.5a.5.5 0 010-.858l7.5-4.5A.5.5 0 019 9.5v5.44l9.243-5.869A.5.5 0 0119 5.5z"/>
+        </svg>
+      </button>
+
+      <!-- Primary Start / Pause Button -->
+      <button id="play-pause-btn" class="flex-1 py-4 px-6 bg-red-600 hover:bg-red-500 text-white font-black text-xl rounded-xl shadow-lg transform active:scale-[0.98] transition flex items-center justify-center space-x-2">
+        <svg id="play-icon" class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+          <path d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z"/>
+        </svg>
+        <svg id="pause-icon" class="w-6 h-6 fill-current hidden" viewBox="0 0 24 24">
+          <path d="M6.75 5.25a.75.75 0 01.75.75v12a.75.75 0 01-1.5 0v-12a.75.75 0 01.75-.75zm10.5 0a.75.75 0 01.75.75v12a.75.75 0 01-1.5 0v-12a.75.75 0 01.75-.75z"/>
+        </svg>
+        <span id="play-btn-text">START WORKOUT</span>
+      </button>
+
+      <!-- Next Step Button -->
+      <button id="next-btn" class="p-3.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white rounded-xl active:scale-95 transition flex items-center justify-center" title="Skip to next exercise">
+        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+          <path d="M5 5.5v13a.5.5 0 00.757.429L15 13.06v5.44a.5.5 0 00.757.429l7.5-4.5a.5.5 0 000-.858l-7.5-4.5A.5.5 0 0015 9.5v5.44L5.757 9.071A.5.5 0 005 5.5z"/>
+        </svg>
+      </button>
+
+      <!-- Reset Workout Button -->
+      <button id="reset-btn" class="p-3.5 bg-zinc-800 hover:bg-red-950/60 hover:text-red-400 text-zinc-400 rounded-xl active:scale-95 transition flex items-center justify-center" title="Reset Workout">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+      </button>
+    </div>
+  </main>
+
+  <section class="w-full max-w-4xl mx-auto px-4 pb-6">
+    <div class="bg-zinc-900/80 border border-zinc-800 rounded-2xl overflow-hidden shadow-lg backdrop-blur">
+      <button id="toggle-list-btn" class="w-full px-5 py-3.5 flex items-center justify-between text-left hover:bg-zinc-800/50 transition">
+        <div class="flex items-center space-x-2">
+          <span class="text-amber-400">📋</span>
+          <span class="font-extrabold text-xs sm:text-sm tracking-wide uppercase text-zinc-200">Errati-Core Routine Blueprint</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <span class="text-xs text-zinc-400 font-medium">Click any exercise to jump</span>
+          <svg id="list-chevron" class="w-4 h-4 text-zinc-400 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </button>
+
+      <!-- Routine Steps List -->
+      <div id="workout-list-container" class="border-t border-zinc-800 max-h-72 overflow-y-auto divide-y divide-zinc-800/50">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Workout Finished Modal -->
+  <div id="finish-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-zinc-900 border-2 border-amber-500 rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl relative">
+      <div class="w-16 h-16 bg-amber-500/20 text-amber-400 rounded-full flex items-center justify-center mx-auto mb-4 border border-amber-500/40">
+        <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <h3 class="text-3xl font-black text-white uppercase tracking-tight font-display">SIX PACK SHOCKED!</h3>
+      <p class="text-zinc-300 text-sm mt-1">You conquered both rounds of the Athlean Burst Errati-Core protocol.</p>
+      
+      <div class="bg-zinc-950 rounded-xl p-4 my-6 border border-zinc-800 grid grid-cols-2 gap-3 text-left">
+        <div>
+          <span class="text-zinc-500 text-[11px] uppercase font-bold block">Total Time</span>
+          <span id="final-total-time" class="text-xl font-black text-amber-400">14:20</span>
+        </div>
+        <div>
+          <span class="text-zinc-500 text-[11px] uppercase font-bold block">Rounds Done</span>
+          <span class="text-xl font-black text-white">2 / 2</span>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <button id="modal-restart-btn" class="w-full py-3.5 px-4 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-black rounded-xl uppercase tracking-wider text-sm transition">
+          Restart Workout
+        </button>
+        <button id="modal-close-btn" class="w-full py-2.5 px-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-semibold rounded-xl text-xs transition">
+          Close Overview
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Audio synthesizer helper for clean sound generation without external audio files
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.audioMode = 2; // 0: Mute, 1: Beeps only, 2: Voice + Beeps
+        this.speechAvailable = ('speechSynthesis' in window);
+      }
+
+      initCtx() {
+        if (!this.ctx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) {
+            this.ctx = new AudioContextClass();
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      playTone(freq, type = 'sine', duration = 0.15, gainVal = 0.2) {
+        if (this.audioMode === 0) return;
+        this.initCtx();
+        if (!this.ctx) return;
+
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          gain.gain.setValueAtTime(gainVal, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) {
+          console.warn("Audio playback issue:", e);
+        }
+      }
+
+      beepLow() {
+        this.playTone(440, 'triangle', 0.15, 0.25);
+      }
+
+      beepHigh() {
+        this.playTone(880, 'square', 0.35, 0.3);
+      }
+
+      beepRestEnd() {
+        this.playTone(587.33, 'sine', 0.2, 0.25);
+        setTimeout(() => this.playTone(880, 'square', 0.4, 0.3), 150);
+      }
+
+      speak(text) {
+        if (this.audioMode < 2 || !this.speechAvailable) return;
+        try {
+          window.speechSynthesis.cancel();
+          const utter = new SpeechSynthesisUtterance(text);
+          utter.rate = 1.05;
+          utter.pitch = 1.0;
+          utter.volume = 0.85;
+          window.speechSynthesis.speak(utter);
+        } catch (e) {
+          console.warn("Speech synthesis error:", e);
+        }
+      }
+    }
+
+    // Athlean Burst: Errati-Core Specification from sheet
+    // Block 1:
+    //  - Mountain Climbers (60s)
+    //  - Superman Plank (right leg/left arm) (60s)
+    //  - Mountain Climbers (60s)
+    //  - Superman Plank (left leg/right arm) (60s)
+    //  - Rest (Xero: Max 120s)
+    // Block 2:
+    //  - Roll Planks (60s)
+    //  - Side Scissor Plank Left (30s)
+    //  - Rolling Planks (60s)
+    //  - Side Scissor Plank Right (30s)
+    //  - Rest (Xero: Max 120s)
+    // Block 3:
+    //  - Alpine Climbers (60s)
+    //  - Cliffhanger Planks (15s)
+    //  - Alpine Climbers (60s)
+    //  - Cliffhanger Planks (15s)
+    //  - Rest (Xero: Max 120s)
+    // Total 2 rounds.
+    function generateErratiCoreTimeline() {
+      const schedule = [];
+      const totalRounds = 2;
+
+      for (let r = 1; r <= totalRounds; r++) {
+        // Block 1
+        schedule.push({
+          round: r,
+          block: 1,
+          isRest: false,
+          name: "Mountain Climbers",
+          sub: "Speed & high knee drive",
+          duration: 60
+        });
+        schedule.push({
+          round: r,
+          block: 1,
+          isRest: false,
+          name: "Superman Plank",
+          sub: "Right leg / Left arm elevated",
+          duration: 60
+        });
+        schedule.push({
+          round: r,
+          block: 1,
+          isRest: false,
+          name: "Mountain Climbers",
+          sub: "Push the pace, don't tap out",
+          duration: 60
+        });
+        schedule.push({
+          round: r,
+          block: 1,
+          isRest: false,
+          name: "Superman Plank",
+          sub: "Left leg / Right arm elevated",
+          duration: 60
+        });
+        schedule.push({
+          round: r,
+          block: 1,
+          isRest: true,
+          name: "Xero Rest Protocol",
+          sub: "Catch breath! Max 2:00, go when ready",
+          duration: 120
+        });
+
+        // Block 2
+        schedule.push({
+          round: r,
+          block: 2,
+          isRest: false,
+          name: "Roll Planks",
+          sub: "Smooth forearm rotation",
+          duration: 60
+        });
+        schedule.push({
+          round: r,
+          block: 2,
+          isRest: false,
+          name: "Side Scissor Plank Left",
+          sub: "Left side base, scissor top leg",
+          duration: 30
+        });
+        schedule.push({
+          round: r,
+          block: 2,
+          isRest: false,
+          name: "Rolling Planks",
+          sub: "Controlled rotation & hip level",
+          duration: 60
+        });
+        schedule.push({
+          round: r,
+          block: 2,
+          isRest: false,
+          name: "Side Scissor Plank Right",
+          sub: "Right side base, scissor top leg",
+          duration: 30
+        });
+        schedule.push({
+          round: r,
+          block: 2,
+          isRest: true,
+          name: "Xero Rest Protocol",
+          sub: "Catch breath! Max 2:00, go when ready",
+          duration: 120
+        });
+
+        // Block 3
+        schedule.push({
+          round: r,
+          block: 3,
+          isRest: false,
+          name: "Alpine Climbers",
+          sub: "Hands elevated or wide alpine stance",
+          duration: 60
+        });
+        schedule.push({
+          round: r,
+          block: 3,
+          isRest: false,
+          name: "Cliffhanger Planks",
+          sub: "Fingertip / extended plank tension",
+          duration: 15
+        });
+        schedule.push({
+          round: r,
+          block: 3,
+          isRest: false,
+          name: "Alpine Climbers",
+          sub: "Explosive tempo to the finish",
+          duration: 60
+        });
+        schedule.push({
+          round: r,
+          block: 3,
+          isRest: false,
+          name: "Cliffhanger Planks",
+          sub: "Hold strong! Pure core grit",
+          duration: 15
+        });
+
+        // If it's round 1, we rest before round 2. If it's round 2, workout ends!
+        if (r < totalRounds) {
+          schedule.push({
+            round: r,
+            block: 3,
+            isRest: true,
+            name: "Xero Rest Protocol",
+            sub: "End of Round 1. Prepare for Round 2! (Max 2:00)",
+            duration: 120
+          });
+        }
+      }
+
+      return schedule;
+    }
+
+    const timeline = generateErratiCoreTimeline();
+    const sounds = new SoundEngine();
+
+    let currentIndex = 0;
+    let secondsLeft = timeline[0].duration;
+    let isRunning = false;
+    let timerInterval = null;
+    let totalSecondsElapsed = 0;
+    let wakeLock = null;
+
+    // DOM Elements
+    const roundIndicator = document.getElementById('round-indicator');
+    const blockIndicator = document.getElementById('block-indicator');
+    const totalTimeIndicator = document.getElementById('total-time-indicator');
+    const phaseBanner = document.getElementById('phase-banner');
+    const progressRing = document.getElementById('progress-ring');
+    const timerSeconds = document.getElementById('timer-seconds');
+    const timerSublabel = document.getElementById('timer-sublabel');
+    const statusTag = document.getElementById('status-tag');
+    const currentExerciseTitle = document.getElementById('current-exercise-title');
+    const currentExerciseSub = document.getElementById('current-exercise-sub');
+    const xeroRestCard = document.getElementById('xero-rest-card');
+    const skipRestBtn = document.getElementById('skip-rest-btn');
+    const nextExerciseName = document.getElementById('next-exercise-name');
+    const nextExerciseDuration = document.getElementById('next-exercise-duration');
+    const playPauseBtn = document.getElementById('play-pause-btn');
+    const playIcon = document.getElementById('play-icon');
+    const pauseIcon = document.getElementById('pause-icon');
+    const playBtnText = document.getElementById('play-btn-text');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const audioToggleBtn = document.getElementById('audio-toggle-btn');
+    const audioIcon = document.getElementById('audio-icon');
+    const audioLabel = document.getElementById('audio-label');
+    const workoutListContainer = document.getElementById('workout-list-container');
+    const toggleListBtn = document.getElementById('toggle-list-btn');
+    const listChevron = document.getElementById('list-chevron');
+    const finishModal = document.getElementById('finish-modal');
+    const finalTotalTime = document.getElementById('final-total-time');
+    const modalRestartBtn = document.getElementById('modal-restart-btn');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
+
+    const CIRCUMFERENCE = 2 * Math.PI * 44; // 276.46
+    progressRing.style.strokeDasharray = `${CIRCUMFERENCE} ${CIRCUMFERENCE}`;
+
+    async function requestWakeLock() {
+      try {
+        if ('wakeLock' in navigator) {
+          wakeLock = await navigator.wakeLock.request('screen');
+        }
+      } catch (err) {
+        console.warn('Wake Lock request error:', err);
+      }
+    }
+
+    function releaseWakeLock() {
+      if (wakeLock !== null) {
+        wakeLock.release().then(() => {
+          wakeLock = null;
+        }).catch(() => {});
+      }
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      if (wakeLock !== null && document.visibilityState === 'visible' && isRunning) {
+        requestWakeLock();
+      }
+    });
+
+    function formatTime(secs) {
+      const m = Math.floor(secs / 60);
+      const s = secs % 60;
+      return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    function updateUI() {
+      const step = timeline[currentIndex];
+      const nextStep = timeline[currentIndex + 1];
+
+      // Update counters
+      roundIndicator.textContent = `${step.round} / 2`;
+      blockIndicator.textContent = `${step.block} / 3`;
+      totalTimeIndicator.textContent = formatTime(totalSecondsElapsed);
+
+      // Current Exercise Display
+      currentExerciseTitle.textContent = step.name;
+      currentExerciseSub.textContent = step.sub;
+
+      // Seconds display
+      if (step.isRest) {
+        // Show mm:ss format for rest since it's 2 minutes
+        timerSeconds.textContent = formatTime(secondsLeft);
+        timerSublabel.textContent = "REST REMAINING (MAX 2:00)";
+      } else {
+        timerSeconds.textContent = secondsLeft;
+        timerSublabel.textContent = "SECONDS LEFT";
+      }
+
+      // Ring progress calculation
+      const progressFraction = (step.duration - secondsLeft) / step.duration;
+      const offset = CIRCUMFERENCE - (progressFraction * CIRCUMFERENCE);
+      progressRing.style.strokeDashoffset = offset;
+
+      // Phase Styling (Work vs Rest)
+      if (step.isRest) {
+        phaseBanner.className = "w-full text-center py-2 px-4 rounded-xl font-black text-sm uppercase tracking-wider mb-3 transition-colors duration-300 bg-amber-500/20 text-amber-400 border border-amber-500/40";
+        phaseBanner.textContent = "⚡ XERO REST PROTOCOL — RECOVER & GO";
+        progressRing.classList.remove('stroke-red-500');
+        progressRing.classList.add('stroke-amber-400');
+        xeroRestCard.classList.remove('hidden');
+        statusTag.className = "mt-2 text-xs font-bold px-3 py-1 rounded-full bg-amber-950 text-amber-300 border border-amber-600/40";
+        statusTag.textContent = "Xero Rest: Resume whenever ready!";
+      } else {
+        phaseBanner.className = "w-full text-center py-2 px-4 rounded-xl font-black text-sm uppercase tracking-wider mb-3 transition-colors duration-300 bg-red-600/20 text-red-400 border border-red-500/30";
+        phaseBanner.textContent = `BLOCK ${step.block} • WORK INTERVAL`;
+        progressRing.classList.remove('stroke-amber-400');
+        progressRing.classList.add('stroke-red-500');
+        xeroRestCard.classList.add('hidden');
+        statusTag.className = "mt-2 text-xs font-bold px-3 py-1 rounded-full bg-zinc-800 text-zinc-300";
+        statusTag.textContent = isRunning ? "Work Interval in Progress" : "Paused";
+      }
+
+      // Next step preview
+      if (nextStep) {
+        nextExerciseName.textContent = nextStep.name + (nextStep.sub ? ` (${nextStep.sub})` : '');
+        nextExerciseDuration.textContent = nextStep.isRest ? 'Max 2m' : `${nextStep.duration}s`;
+      } else {
+        nextExerciseName.textContent = "Workout Complete!";
+        nextExerciseDuration.textContent = "🏁";
+      }
+
+      // Highlight in list
+      renderWorkoutList();
+    }
+
+    function renderWorkoutList() {
+      workoutListContainer.innerHTML = '';
+      
+      let currentRoundGroup = 0;
+      timeline.forEach((step, idx) => {
+        const isCurrent = idx === currentIndex;
+        const isPassed = idx < currentIndex;
+
+        const row = document.createElement('div');
+        row.className = `p-3.5 flex items-center justify-between text-xs sm:text-sm cursor-pointer transition ${
+          isCurrent 
+            ? (step.isRest ? 'bg-amber-950/60 border-l-4 border-amber-500 font-bold' : 'bg-red-950/60 border-l-4 border-red-500 font-bold')
+            : (isPassed ? 'opacity-40 hover:opacity-80' : 'hover:bg-zinc-800/40')
+        }`;
+
+        row.onclick = () => jumpToStep(idx);
+
+        const leftCol = document.createElement('div');
+        leftCol.className = 'flex items-center space-x-3 truncate';
+
+        const badge = document.createElement('span');
+        badge.className = `w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${
+          isCurrent 
+            ? (step.isRest ? 'bg-amber-500 text-black' : 'bg-red-600 text-white')
+            : (isPassed ? 'bg-zinc-800 text-zinc-500' : 'bg-zinc-800 text-zinc-300')
+        }`;
+        badge.textContent = idx + 1;
+
+        const textDiv = document.createElement('div');
+        textDiv.className = 'truncate';
+
+        const titleSpan = document.createElement('span');
+        titleSpan.className = step.isRest ? 'text-amber-400 font-bold' : 'text-zinc-100 font-semibold';
+        titleSpan.textContent = `R${step.round} B${step.block} • ${step.name}`;
+
+        const descSpan = document.createElement('span');
+        descSpan.className = 'text-[11px] text-zinc-400 block truncate';
+        descSpan.textContent = step.sub;
+
+        textDiv.appendChild(titleSpan);
+        textDiv.appendChild(descSpan);
+        leftCol.appendChild(badge);
+        leftCol.appendChild(textDiv);
+
+        const rightCol = document.createElement('div');
+        rightCol.className = 'flex items-center space-x-2 pl-2';
+
+        const durBadge = document.createElement('span');
+        durBadge.className = `text-[11px] font-mono px-2 py-0.5 rounded ${
+          step.isRest ? 'bg-amber-500/20 text-amber-300 font-bold' : 'bg-zinc-800 text-zinc-400'
+        }`;
+        durBadge.textContent = step.isRest ? 'Max 2:00' : `${step.duration}s`;
+
+        rightCol.appendChild(durBadge);
+
+        row.appendChild(leftCol);
+        row.appendChild(rightCol);
+        workoutListContainer.appendChild(row);
+      });
+    }
+
+    function tick() {
+      totalSecondsElapsed++;
+      secondsLeft--;
+
+      // Audio countdown alerts
+      if (secondsLeft <= 3 && secondsLeft > 0) {
+        sounds.beepLow();
+      }
+
+      if (secondsLeft === 0) {
+        advanceStep(true);
+        return;
+      }
+
+      updateUI();
+    }
+
+    function advanceStep(autoAdvance = false) {
+      if (currentIndex < timeline.length - 1) {
+        currentIndex++;
+        const nextStep = timeline[currentIndex];
+        secondsLeft = nextStep.duration;
+
+        if (nextStep.isRest) {
+          sounds.beepRestEnd();
+          sounds.speak("Xero Rest Protocol. Rest up to two minutes or resume when ready.");
+        } else {
+          sounds.beepHigh();
+          sounds.speak(`Go! ${nextStep.name}`);
+        }
+
+        updateUI();
+      } else {
+        // Workout Finished!
+        finishWorkout();
+      }
+    }
+
+    function prevStep() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        secondsLeft = timeline[currentIndex].duration;
+        updateUI();
+      }
+    }
+
+    function jumpToStep(idx) {
+      if (idx >= 0 && idx < timeline.length) {
+        currentIndex = idx;
+        secondsLeft = timeline[currentIndex].duration;
+        updateUI();
+      }
+    }
+
+    function startTimer() {
+      if (isRunning) return;
+      sounds.initCtx();
+      requestWakeLock();
+      isRunning = true;
+      playIcon.classList.add('hidden');
+      pauseIcon.classList.remove('hidden');
+      playBtnText.textContent = "PAUSE";
+      playPauseBtn.className = "flex-1 py-4 px-6 bg-zinc-800 hover:bg-zinc-700 text-white font-black text-xl rounded-xl shadow-lg transform active:scale-[0.98] transition flex items-center justify-center space-x-2";
+
+      // If at start, announce
+      if (totalSecondsElapsed === 0) {
+        sounds.beepHigh();
+        sounds.speak(`Starting Errati-Core. Round 1. ${timeline[0].name}`);
+      }
+
+      timerInterval = setInterval(tick, 1000);
+      updateUI();
+    }
+
+    function pauseTimer() {
+      if (!isRunning) return;
+      isRunning = false;
+      clearInterval(timerInterval);
+      timerInterval = null;
+      releaseWakeLock();
+      playIcon.classList.remove('hidden');
+      pauseIcon.classList.add('hidden');
+      playBtnText.textContent = "RESUME";
+      playPauseBtn.className = "flex-1 py-4 px-6 bg-red-600 hover:bg-red-500 text-white font-black text-xl rounded-xl shadow-lg transform active:scale-[0.98] transition flex items-center justify-center space-x-2";
+      statusTag.textContent = "Paused";
+    }
+
+    function togglePlayPause() {
+      if (isRunning) {
+        pauseTimer();
+      } else {
+        startTimer();
+      }
+    }
+
+    function resetWorkout() {
+      pauseTimer();
+      currentIndex = 0;
+      totalSecondsElapsed = 0;
+      secondsLeft = timeline[0].duration;
+      playBtnText.textContent = "START WORKOUT";
+      updateUI();
+    }
+
+    function finishWorkout() {
+      pauseTimer();
+      sounds.speak("Workout complete! Outstanding effort.");
+      finalTotalTime.textContent = formatTime(totalSecondsElapsed);
+      finishModal.classList.remove('hidden');
+    }
+
+    playPauseBtn.addEventListener('click', togglePlayPause);
+    
+    prevBtn.addEventListener('click', () => {
+      prevStep();
+    });
+
+    nextBtn.addEventListener('click', () => {
+      advanceStep(false);
+    });
+
+    resetBtn.addEventListener('click', () => {
+      resetWorkout();
+    });
+
+    // Skip Rest immediately (Xero Rest Protocol Core Feature)
+    skipRestBtn.addEventListener('click', () => {
+      if (timeline[currentIndex].isRest) {
+        advanceStep(false);
+        if (!isRunning) {
+          startTimer();
+        }
+      }
+    });
+
+    // Audio Mode Toggle (Cycle: Both -> Beeps Only -> Mute)
+    audioToggleBtn.addEventListener('click', () => {
+      sounds.audioMode = (sounds.audioMode + 1) % 3;
+      if (sounds.audioMode === 2) {
+        audioIcon.textContent = "🔊";
+        audioLabel.textContent = "Voice & Beeps";
+      } else if (sounds.audioMode === 1) {
+        audioIcon.textContent = "🔔";
+        audioLabel.textContent = "Beeps Only";
+      } else {
+        audioIcon.textContent = "🔇";
+        audioLabel.textContent = "Muted";
+      }
+    });
+
+    // Blueprint drawer accordion toggle
+    toggleListBtn.addEventListener('click', () => {
+      const isHidden = workoutListContainer.classList.contains('hidden');
+      if (isHidden) {
+        workoutListContainer.classList.remove('hidden');
+        listChevron.classList.remove('rotate-180');
+      } else {
+        workoutListContainer.classList.add('hidden');
+        listChevron.classList.add('rotate-180');
+      }
+    });
+
+    // Modal buttons
+    modalRestartBtn.addEventListener('click', () => {
+      finishModal.classList.add('hidden');
+      resetWorkout();
+      startTimer();
+    });
+
+    modalCloseBtn.addEventListener('click', () => {
+      finishModal.classList.add('hidden');
+    });
+
+    // Initial Render
+    updateUI();
+  </script>
+</body>
+</html>

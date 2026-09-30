@@ -120,3 +120,8 @@ fa-ramadan.crib.qwezey.com {
 	root * /etc/caddy/79prayers
 	file_server
 }
+
+errati-core.crib.qwezey.com {
+	root * /etc/caddy/errati-core
+	file_server
+}
